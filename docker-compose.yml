@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  # PostgreSQL with PostGIS
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: solistech_db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-solistech}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-solistech_secure_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-solistech_pro}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-solistech} -d ${POSTGRES_DB:-solistech_pro}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - solistech_network
+
+  # Adminer - Database Admin UI (Optional, for development)
+  adminer:
+    image: adminer:latest
+    container_name: solistech_adminer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+    name: solistech_postgres_data
+
+networks:
+  solistech_network:
+    name: solistech_network
+    driver: bridge

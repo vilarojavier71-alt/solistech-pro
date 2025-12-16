@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SolisTechPro</string>
+    <string name="title_activity_main">SolisTechPro</string>
+    <string name="package_name">com.solistech.pro</string>
+    <string name="custom_url_scheme">com.solistech.pro</string>
+</resources>

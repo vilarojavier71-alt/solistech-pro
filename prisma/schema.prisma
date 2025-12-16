@@ -1,0 +1,651 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USERS & AUTH (NextAuth compatible)
+// ============================================================================
+
+model users {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String   @unique
+  password_hash   String?
+  full_name       String?
+  avatar_url      String?
+  role            String?  @default("employee")
+  department      String?
+  organization_id String?  @db.Uuid
+  email_verified  Boolean? @default(false)
+  is_test_admin   Boolean? @default(false)
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization           organizations?          @relation(fields: [organization_id], references: [id])
+  accounts               accounts[]
+  sessions               sessions[]
+  customers              customers[]
+  projects               projects[]
+  assigned_projects      projects[]              @relation("assigned_projects")
+  assigned_leads         leads[]
+  time_entries           time_entries[]
+  invoices               invoices[]
+  gmail_token            gmail_tokens?
+  accounting_journals    accounting_journals[]
+  phase_changes          project_phase_history[]
+  processed_transactions project_transactions[]  @relation("processed_transactions")
+  uploaded_documents     project_documents[]     @relation("uploaded_documents")
+  reviewed_documents     project_documents[]     @relation("reviewed_documents")
+  assigned_appointments  appointments[]
+  created_invitations    invitations[]
+  client_portal_project  projects?               @relation("client_portal_project")
+
+  @@index([organization_id, role])
+  @@index([email])
+}
+
+model organizations {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                   String
+  slug                   String    @unique
+  logo_url               String?
+  tax_id                 String?
+  address                Json?
+  phone                  String?
+  email                  String?
+  // Subscription fields
+  subscription_status    String?   @default("basic") // basic, active, past_due, canceled
+  subscription_plan      String?   @default("basic") // basic, pro
+  stripe_customer_id     String?
+  stripe_subscription_id String?
+  max_employees          Int       @default(0) // 0 = basic plan (no employees)
+  current_employee_count Int       @default(0)
+  subscription_ends_at   DateTime? @db.Timestamptz(6)
+  is_god_mode            Boolean   @default(false)
+  created_at             DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime? @default(now()) @db.Timestamptz(6)
+
+  users               users[]
+  customers           customers[]
+  leads               leads[]
+  projects            projects[]
+  invoices            invoices[]
+  subscriptions       subscriptions[]
+  settings            organization_settings?
+  operating_expenses  operating_expenses[]
+  inventory_items     inventory_items[]
+  accounting_accounts accounting_accounts[]
+  accounting_journals accounting_journals[]
+  sales               sales[]
+  appointment         appointments[]
+  invitations         invitations[]
+
+  @@index([subscription_plan, subscription_status])
+}
+
+model organization_settings {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id           String    @unique @db.Uuid
+  ai_provider               String?
+  ai_api_key_encrypted      String?
+  ai_api_key_valid          Boolean?  @default(false)
+  ai_api_key_last_validated DateTime?
+  presentation_template     String?   @default("ebro-solar")
+  default_fiscal_deduction  String?   @default("40")
+  created_at                DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at                DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+}
+
+// Subscription history and tracking
+model subscriptions {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id        String   @db.Uuid
+  stripe_subscription_id String   @unique
+  stripe_price_id        String
+  status                 String // active, past_due, canceled, trialing
+  current_period_start   DateTime @db.Timestamptz(6)
+  current_period_end     DateTime @db.Timestamptz(6)
+  cancel_at_period_end   Boolean  @default(false)
+  created_at             DateTime @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// NEXTAUTH TABLES
+// ============================================================================
+
+model accounts {
+  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id             String  @db.Uuid
+  type                String
+  provider            String
+  provider_account_id String
+  refresh_token       String?
+  access_token        String?
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_account_id])
+}
+
+model sessions {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  session_token String   @unique
+  user_id       String   @db.Uuid
+  expires       DateTime @db.Timestamptz(6)
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model verification_tokens {
+  identifier String
+  token      String   @unique
+  expires    DateTime @db.Timestamptz(6)
+
+  @@id([identifier, token])
+}
+
+// ============================================================================
+// BUSINESS TABLES
+// ============================================================================
+
+model customers {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id   String?  @db.Uuid
+  created_by        String?  @db.Uuid
+  name              String
+  email             String?
+  phone             String?
+  nif               String?
+  address           String?
+  city              String?
+  postal_code       String?
+  province          String?
+  country           String?
+  notes             String?
+  custom_attributes Json?    @default("{}")
+  status            String?  @default("active")
+  is_active         Boolean? @default(true)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @db.Timestamptz(6)
+
+  organization    organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_by_user users?         @relation(fields: [created_by], references: [id], onDelete: SetNull)
+  projects        projects[]
+  invoices        invoices[]
+  appointments    appointments[]
+
+  @@index([organization_id, name])
+  @@index([organization_id, email])
+  @@index([organization_id, nif])
+}
+
+model leads {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  name            String
+  email           String?
+  phone           String?
+  company         String?
+  source          String?  @default("web") // web, referral, cold_call, etc.
+  status          String   @default("new") // new, contacted, qualified, proposal, won, lost
+  estimated_value Decimal? @db.Decimal(12, 2)
+  notes           String?
+  assigned_to     String?  @db.Uuid
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization  organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  assigned_user users?        @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, status])
+}
+
+model projects {
+  id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id          String?   @db.Uuid
+  client_id                String?   @db.Uuid
+  name                     String
+  description              String?
+  installation_type        String?
+  status                   String?   @default("quote")
+  system_size_kwp          Decimal?  @db.Decimal
+  estimated_production_kwh Decimal?  @db.Decimal
+  estimated_savings        Decimal?  @db.Decimal
+  location                 Json?
+  cadastral_reference      String?
+  cadastral_data           Json?
+  created_by               String?   @db.Uuid
+  // Portal Cliente - Campos de seguimiento
+  installation_phase       Int       @default(0) // 0-7 fases
+  legalization_status      String?   @default("pending")
+  installation_date        DateTime? @db.Date
+  activation_date          DateTime? @db.Date
+  expected_completion      DateTime? @db.Date
+  client_portal_enabled    Boolean   @default(false)
+  client_access_token      String?
+  assigned_technician_id   String?   @db.Uuid
+  phase_notes              String?
+  portal_user_id           String?   @unique @db.Uuid // [PROJECT ISOLATION] One client user, one project
+  // Solar Core - Campos de negocio
+  solar_phase              String    @default("DRAFT") // DRAFT, PHASE_0A, PHASE_1_DOCS, PHASE_2_REVIEW, APPROVED, CORRECTIONS
+  payment_status           String    @default("PENDING") // PENDING, PAID, REFUNDED
+  total_amount             Decimal?  @db.Decimal(12, 2) // CRÍTICO: No usar Float
+  engineer_verdict         Json? // { verdict: "OK"|"REJECT", reason?: string, reviewed_at: Date }
+  contract_url             String?
+  created_at               DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization        organizations?          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer            customers?              @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  created_by_user     users?                  @relation(fields: [created_by], references: [id])
+  assigned_technician users?                  @relation("assigned_projects", fields: [assigned_technician_id], references: [id])
+  portal_user         users?                  @relation("client_portal_project", fields: [portal_user_id], references: [id])
+  time_entries        time_entries[]
+  invoices            invoices[]
+  phase_history       project_phase_history[]
+  transactions        project_transactions[]
+  documents           project_documents[]
+
+  @@index([organization_id, status])
+  @@index([location])
+  @@index([client_id, client_portal_enabled])
+  @@index([organization_id, created_at])
+}
+
+model time_entries {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id            String    @db.Uuid
+  project_id         String?   @db.Uuid
+  clock_in           DateTime  @db.Timestamptz(6)
+  clock_out          DateTime? @db.Timestamptz(6)
+  lat_in             Decimal?  @db.Decimal
+  lng_in             Decimal?  @db.Decimal
+  address_in         String?
+  lat_out            Decimal?  @db.Decimal
+  lng_out            Decimal?  @db.Decimal
+  address_out        String?
+  total_minutes      Int?
+  is_verified        Boolean?  @default(false)
+  verification_notes String?
+  status             String?   @default("active")
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+
+  user    users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project projects? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+}
+
+model invoices {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id      String?   @db.Uuid
+  invoice_number       String
+  sequential_number    Int?
+  customer_id          String?   @db.Uuid
+  project_id           String?   @db.Uuid
+  customer_name        String?
+  customer_nif         String?
+  customer_address     String?
+  customer_city        String?
+  customer_postal_code String?
+  customer_email       String?
+  issue_date           DateTime  @default(now()) @db.Date
+  due_date             DateTime? @db.Date
+  status               String?   @default("draft")
+  payment_status       String?   @default("pending")
+  subtotal             Decimal?  @default(0) @db.Decimal(12, 2)
+  tax_amount           Decimal?  @default(0) @db.Decimal(12, 2)
+  total                Decimal?  @default(0) @db.Decimal(12, 2)
+  notes                String?
+  internal_notes       String?
+  created_by           String?   @db.Uuid
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization    organizations?  @relation(fields: [organization_id], references: [id])
+  customer        customers?      @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  project         projects?       @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  created_by_user users?          @relation(fields: [created_by], references: [id])
+  lines           invoice_lines[]
+
+  @@unique([organization_id, invoice_number])
+  @@index([organization_id, status])
+  @@index([issue_date])
+  @@index([organization_id, due_date])
+}
+
+model invoice_lines {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoice_id          String   @db.Uuid
+  line_order          Int
+  description         String
+  quantity            Decimal  @default(1) @db.Decimal(10, 2)
+  unit_price          Decimal  @default(0) @db.Decimal(12, 2)
+  discount_percentage Decimal? @default(0) @db.Decimal(5, 2)
+  discount_amount     Decimal? @default(0) @db.Decimal(12, 2)
+  tax_rate            Decimal? @default(21) @db.Decimal(5, 2)
+  tax_amount          Decimal? @default(0) @db.Decimal(12, 2)
+  subtotal            Decimal  @db.Decimal(12, 2)
+  total               Decimal  @db.Decimal(12, 2)
+
+  invoice invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// FINANCE & INVENTORY (GAP ANALYSIS FIXES)
+// ============================================================================
+
+model operating_expenses {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  description     String
+  amount          Decimal  @db.Decimal(12, 2)
+  category        String // Office, Equipment, Marketing, etc.
+  date            DateTime @db.Date
+  receipt_url     String?
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, date])
+}
+
+model inventory_items {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  name            String
+  sku             String?
+  category        String?
+  quantity        Int      @default(0)
+  min_quantity    Int?     @default(5)
+  unit_price      Decimal? @db.Decimal(12, 2)
+  location        String?
+  notes           String?
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, sku])
+}
+
+// ============================================================================
+// RBAC SYSTEM (ROLES & PERMISSIONS)
+// ============================================================================
+
+model permissions {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug        String   @unique // e.g. "users:view", "invoices:create"
+  description String?
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  roles role_permissions[]
+}
+
+model role_permissions {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  role            String // e.g. "admin", "owner", "ingeniero"
+  permission_slug String
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  permission permissions @relation(fields: [permission_slug], references: [slug], onDelete: Cascade)
+
+  @@unique([role, permission_slug])
+  @@index([role])
+}
+
+// ============================================================================
+// ACCOUNTING / DOUBLE-ENTRY BOOKKEEPING
+// ============================================================================
+
+model accounting_accounts {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  code            String
+  name            String
+  type            String // asset, liability, equity, revenue, expense
+  parent_id       String?  @db.Uuid
+  is_group        Boolean  @default(false)
+  is_active       Boolean  @default(true)
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  parent       accounting_accounts?      @relation("AccountHierarchy", fields: [parent_id], references: [id])
+  children     accounting_accounts[]     @relation("AccountHierarchy")
+  transactions accounting_transactions[]
+
+  @@unique([organization_id, code])
+  @@index([organization_id, type])
+}
+
+model accounting_journals {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  date            DateTime @db.Date
+  description     String
+  reference       String?
+  status          String   @default("draft") // draft, posted, void
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+  created_by      String?  @db.Uuid
+
+  organization    organizations             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_by_user users?                    @relation(fields: [created_by], references: [id])
+  transactions    accounting_transactions[]
+
+  @@index([organization_id, date])
+  @@index([organization_id, status])
+}
+
+model accounting_transactions {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  journal_id  String   @db.Uuid
+  account_id  String   @db.Uuid
+  debit       Decimal  @default(0) @db.Decimal(20, 2)
+  credit      Decimal  @default(0) @db.Decimal(20, 2)
+  description String?
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  journal accounting_journals @relation(fields: [journal_id], references: [id], onDelete: Cascade)
+  account accounting_accounts @relation(fields: [account_id], references: [id], onDelete: Restrict)
+
+  @@index([journal_id])
+  @@index([account_id])
+}
+
+// ============================================================================
+// GMAIL INTEGRATION (Encrypted Tokens)
+// ============================================================================
+
+model gmail_tokens {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id       String   @unique @db.Uuid
+  access_token  String // Encrypted
+  refresh_token String // Encrypted (Critical)
+  scope         String
+  email         String
+  expires_at    BigInt
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @default(now()) @db.Timestamptz(6)
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// PORTAL CLIENTE - Historial de Fases
+// ============================================================================
+
+model project_phase_history {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id String   @db.Uuid
+  from_phase Int?
+  to_phase   Int
+  changed_by String   @db.Uuid
+  notes      String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  user    users    @relation(fields: [changed_by], references: [id])
+
+  @@index([project_id, created_at(sort: Desc)])
+}
+
+// ============================================================================
+// SOLAR CORE - Transacciones Financieras
+// ============================================================================
+
+model project_transactions {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id      String   @db.Uuid
+  amount          Decimal  @db.Decimal(12, 2)
+  transaction_ref String   @unique // Referencia bancaria única
+  payment_method  String? // transfer, card, cash
+  notes           String?
+  processed_by    String   @db.Uuid
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  user    users    @relation("processed_transactions", fields: [processed_by], references: [id])
+
+  @@index([project_id, created_at(sort: Desc)])
+}
+
+// ============================================================================
+// SOLAR CORE - Documentos de Proyecto (Flujo Ping-Pong)
+// ============================================================================
+
+model project_documents {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  project_id       String    @db.Uuid
+  type             String // DNI, FACTURA_LUZ, CONTRATO, CIE, OTRO
+  status           String    @default("PENDING") // PENDING, UPLOADED, REJECTED, APPROVED
+  url              String? // URL del archivo subido
+  file_name        String?
+  rejection_reason String? // Feedback del ingeniero si es rechazado
+  uploaded_by      String?   @db.Uuid
+  reviewed_by      String?   @db.Uuid
+  uploaded_at      DateTime?
+  reviewed_at      DateTime?
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime  @default(now()) @db.Timestamptz(6)
+
+  project  projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  uploader users?   @relation("uploaded_documents", fields: [uploaded_by], references: [id])
+  reviewer users?   @relation("reviewed_documents", fields: [reviewed_by], references: [id])
+
+  @@index([project_id, type])
+  @@index([project_id, status])
+}
+
+// ============================================================================
+// LEGACY TABLES RECOVERY (MIGRATION FIXES)
+// ============================================================================
+
+model sales {
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id     String?  @db.Uuid
+  customer_id         String?  @db.Uuid
+  customer_name       String?
+  dni                 String?
+  customer_email      String?
+  customer_phone      String?
+  sale_number         String?
+  amount              Decimal? @db.Decimal(12, 2)
+  material            String?
+  created_by          String?  @db.Uuid
+  sale_date           DateTime? @db.Timestamptz(6)
+  payment_method      String?
+  payment_terms       String?
+  payment_status      String?   @default("pending")
+  documentation_status String?  @default("pending")
+  engineering_status   String?  @default("pending")
+  process_status       String?  @default("not_started")
+  installation_status  String?  @default("pending")
+  documentation_notes  String?
+  access_code          String?
+  canvasser_id         String?
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @default(now()) @db.Timestamptz(6)
+
+  organization    organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, sale_number])
+}
+
+model appointments {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String?  @db.Uuid
+  title           String?
+  description     String?
+  start_time      DateTime? @db.Timestamptz(6)
+  end_time        DateTime? @db.Timestamptz(6)
+  customer_id     String?   @db.Uuid
+  assigned_to     String?   @db.Uuid
+  created_by      String?   @db.Uuid
+  address         String?
+  status          String?   @default("scheduled")
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization  organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer      customers?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  assignee      users?         @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, start_time])
+}
+
+model client_notifications {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sale_id           String   @db.Uuid
+  title             String
+  message           String
+  notification_type String   // info, success, warning, error, action_required
+  action_label      String?
+  action_url        String?
+  read              Boolean  @default(false)
+  read_at           DateTime? @db.Timestamptz(6)
+  sent_email        Boolean  @default(false)
+  sent_sms          Boolean  @default(false)
+  sent_push         Boolean  @default(false)
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("client_notifications")
+}
+
+// ============================================================================
+// INVITATION SYSTEM (Client Onboarding)
+// ============================================================================
+
+model invitations {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  token           String   @unique // 6-8 chars alphanumeric
+  email           String?
+  role            String   @default("client")
+  status          String   @default("pending") // pending, used, revoked
+  expires_at      DateTime @db.Timestamptz(6)
+  created_by      String   @db.Uuid
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  creator      users         @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, status])
+  @@index([token])
+}

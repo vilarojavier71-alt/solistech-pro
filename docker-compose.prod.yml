@@ -1,0 +1,19 @@
+services:
+  app:
+    container_name: solistech-pro
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production
+    environment:
+      - NODE_ENV=production
+    networks:
+      - solistech_network
+
+networks:
+  solistech_network:
+    external: true

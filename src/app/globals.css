@@ -1,0 +1,247 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --radius: 1rem;
+
+    /* Light Mode Colors - Mantenido para compatibilidad */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 142 76% 36%;
+    /* Verde #10B981 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 142 76% 36%;
+    /* Verde */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142 76% 36%;
+    /* Verde */
+
+    /* Chart Colors */
+    --chart-1: 142 76% 36%;
+    /* Verde */
+    --chart-2: 151 55% 41.5%;
+    --chart-3: 32 94% 56%;
+    --chart-4: 270 50% 40%;
+    --chart-5: 330 81% 60%;
+
+    /* Sidebar Specific */
+    --sidebar-background: 0 0% 3%;
+    /* Negro */
+    --sidebar-foreground: 0 0% 98%;
+    /* Blanco */
+    --sidebar-primary: 142 76% 36%;
+    /* Verde */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 76% 36%;
+    /* Verde */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 15%;
+    /* Gris muy oscuro */
+    --sidebar-ring: 142 76% 36%;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* PALETA BLANCO/NEGRO/VERDE - WCAG AAA */
+    --background: 0 0% 7%;
+    /* #121212 Off-Black (reduce fatiga visual) */
+    --foreground: 0 0% 100%;
+    /* #FFFFFF Blanco puro */
+
+    --card: 0 0% 3%;
+    /* #080808 Negro muy oscuro */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 142 76% 36%;
+    /* #10B981 Verde Emerald-500 */
+    --primary-foreground: 0 0% 0%;
+    /* Texto negro sobre verde */
+
+    --secondary: 0 0% 10%;
+    /* #1A1A1A Gris muy oscuro */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 75%;
+    /* #BFBFBF Gris claro - WCAG AAA */
+
+    --accent: 142 76% 36%;
+    /* Verde */
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84% 45%;
+    /* Rojo ajustado */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    /* #262626 Borde sutil */
+    --input: 0 0% 15%;
+    --ring: 142 76% 36%;
+    /* Verde */
+
+    --chart-1: 142 76% 36%;
+    /* Verde */
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    --sidebar-background: 0 0% 7%;
+    /* #121212 Off-Black (reduce fatiga visual) */
+    --sidebar-foreground: 0 0% 85%;
+    /* Gris claro */
+    --sidebar-primary: 142 76% 36%;
+    /* Verde */
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 142 76% 36%;
+    /* Verde */
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 142 76% 36%;
+
+    /* THE GLOW SYSTEM - Verde */
+    --glow-color: 142 76% 36%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  }
+
+  /* Prevent scrolling issues */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .shadow-holded {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .transition-holded {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* --- DARK INDUSTRIAL LUXURY UTILITIES --- */
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+
+  /* GLOW UTILITIES */
+  .glow-border {
+    @apply border border-transparent;
+    background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+      linear-gradient(45deg, transparent 25%, hsl(var(--glow-color) / 0.5) 50%, transparent 75%) border-box;
+  }
+
+  .text-gradient-silver {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-400;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-amber-200 to-amber-500;
+  }
+
+  .text-gradient-emerald {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-emerald-300 to-emerald-600;
+  }
+
+  /* CUSTOM SCROLLBAR - Sidebar & Global */
+  /* Webkit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(142 76% 36% / 0.5);
+    /* Verde con transparencia */
+  }
+
+  /* Sidebar específico - scrollbar verde fantasma */
+  [data-sidebar] ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  [data-sidebar] ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  [data-sidebar] ::-webkit-scrollbar-thumb {
+    background: hsl(142 76% 36% / 0.2);
+    /* Verde muy sutil */
+    border-radius: 2px;
+  }
+
+  [data-sidebar] ::-webkit-scrollbar-thumb:hover {
+    background: hsl(142 76% 36% / 0.4);
+    /* Verde más visible en hover */
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  [data-sidebar] {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(142 76% 36% / 0.2) transparent;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
