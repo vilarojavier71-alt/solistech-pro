@@ -9,7 +9,8 @@
 providers = ["node"]
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm"]
+# Note: npm is bundled with nodejs, not a separate package in Nix
+nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = ["npm ci --legacy-peer-deps"]
