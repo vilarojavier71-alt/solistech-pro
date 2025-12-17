@@ -1,9 +1,9 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+# libc6-compat and openssl required for Prisma on Alpine
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -25,8 +25,10 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Use local prisma version (not npx which installs latest 7.x with breaking changes)
-RUN ./node_modules/.bin/prisma generate
+# Generate Prisma client - use npm exec to find the local binary
+RUN npm exec prisma generate
+
+# Build with memory limit for low-RAM VPS
 RUN NODE_OPTIONS="--max-old-space-size=3584" npm run build
 
 # Production image, copy all the files and run next
