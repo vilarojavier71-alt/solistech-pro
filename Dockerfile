@@ -28,7 +28,9 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Generate Prisma client - use npm exec to find the local binary
 RUN npm exec prisma generate
 
-# Build with conservative memory limit (4GB) for aggressive GC\n# Combined with disabled source maps, this should complete the build\nRUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+# Build with conservative memory limit (4GB) for aggressive GC
+# Combined with disabled source maps, this should complete the build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
