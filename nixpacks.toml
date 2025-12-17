@@ -1,7 +1,7 @@
 # ============================================================================
 # NIXPACKS CONFIGURATION - SOLISTECH PRO
 # ============================================================================
-# Fixes Coolify/Nixpacks misdetection (detects as "deno" instead of "node")
+# Fixes Coolify/Nixpacks for Next.js with output: 'standalone'
 # Memory limit prevents OOM during build on low-RAM VPS
 # ============================================================================
 
@@ -16,11 +16,16 @@ nixPkgs = ["nodejs_20"]
 cmds = ["npm ci --legacy-peer-deps"]
 
 [phases.build]
-# Prisma generate + Build with 3.5GB memory limit (leaves ~512MB for system)
+# Prisma generate + Build with 3.5GB memory limit
+# Then copy static assets required for standalone mode
 cmds = [
     "npx prisma generate",
-    "NODE_OPTIONS='--max-old-space-size=3584' npm run build"
+    "NODE_OPTIONS='--max-old-space-size=3584' npm run build",
+    "cp -r .next/static .next/standalone/.next/static",
+    "cp -r public .next/standalone/public"
 ]
 
 [start]
-cmd = "npm start"
+# With output: 'standalone', must use node server.js (not npm start)
+cmd = "node .next/standalone/server.js"
+
