@@ -2,8 +2,8 @@ FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# libc6-compat and OpenSSL 1.1 for Prisma compatibility on Alpine
-RUN apk add --no-cache libc6-compat openssl1.1-compat
+# libc6-compat and openssl for Prisma on Alpine
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
