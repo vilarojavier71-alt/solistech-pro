@@ -3,6 +3,7 @@
 # ============================================================================
 # Fixes Coolify/Nixpacks for Next.js with output: 'standalone'
 # Memory limit prevents OOM during build on low-RAM VPS
+# CACHE_BUSTER: 2024-12-17T18:30:00 - Force clean rebuild
 # ============================================================================
 
 # Force Node.js provider
