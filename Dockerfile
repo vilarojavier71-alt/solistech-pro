@@ -28,8 +28,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Generate Prisma client - use npm exec to find the local binary
 RUN npm exec prisma generate
 
-# Build with memory limit for low-RAM VPS
-RUN NODE_OPTIONS="--max-old-space-size=3584" npm run build
+# Build with memory limit for 8GB VPS (leaves 2GB for system)
+RUN NODE_OPTIONS="--max-old-space-size=6144" npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
