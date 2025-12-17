@@ -5,8 +5,16 @@ const nextConfig = {
   output: 'standalone',
   reactStrictMode: true,
 
+  // === MEMORY OPTIMIZATION ===
+  // Disable source maps to reduce memory during build
+  productionBrowserSourceMaps: false,
+
   typescript: {
     ignoreBuildErrors: true,
+  },
+  eslint: {
+    // Ignore ESLint during build to save memory
+    ignoreDuringBuilds: true,
   },
   experimental: {
     serverActions: {
