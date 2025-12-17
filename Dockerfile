@@ -25,7 +25,8 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN npx prisma generate
+# Use local prisma version (not npx which installs latest 7.x with breaking changes)
+RUN ./node_modules/.bin/prisma generate
 RUN NODE_OPTIONS="--max-old-space-size=3584" npm run build
 
 # Production image, copy all the files and run next
