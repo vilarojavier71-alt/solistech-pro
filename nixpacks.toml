@@ -3,7 +3,7 @@
 # ============================================================================
 # Fixes Coolify/Nixpacks for Next.js with output: 'standalone'
 # Memory limit prevents OOM during build on low-RAM VPS
-# CACHE_BUSTER: 2024-12-17T18:30:00 - Force clean rebuild
+# CACHE_BUSTER: 2024-12-17T18:35:00 - Fix static files path
 # ============================================================================
 
 # Force Node.js provider
@@ -18,15 +18,17 @@ cmds = ["npm ci --legacy-peer-deps"]
 
 [phases.build]
 # Prisma generate + Build with 3.5GB memory limit
-# Then copy static assets required for standalone mode
+# Then copy static assets to correct locations for standalone mode
 cmds = [
     "npx prisma generate",
     "NODE_OPTIONS='--max-old-space-size=3584' npm run build",
+    "mkdir -p .next/standalone/.next",
     "cp -r .next/static .next/standalone/.next/static",
     "cp -r public .next/standalone/public"
 ]
 
 [start]
-# With output: 'standalone', must use node server.js (not npm start)
-cmd = "node .next/standalone/server.js"
+# Run from the standalone directory
+cmd = "cd .next/standalone && node server.js"
+
 
