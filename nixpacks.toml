@@ -1,0 +1,25 @@
+# ============================================================================
+# NIXPACKS CONFIGURATION - SOLISTECH PRO
+# ============================================================================
+# Fixes Coolify/Nixpacks misdetection (detects as "deno" instead of "node")
+# Memory limit prevents OOM during build on low-RAM VPS
+# ============================================================================
+
+# Force Node.js provider
+providers = ["node"]
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm"]
+
+[phases.install]
+cmds = ["npm ci --legacy-peer-deps"]
+
+[phases.build]
+# Prisma generate + Build with 3.5GB memory limit (leaves ~512MB for system)
+cmds = [
+    "npx prisma generate",
+    "NODE_OPTIONS='--max-old-space-size=3584' npm run build"
+]
+
+[start]
+cmd = "npm start"

@@ -1,0 +1,42 @@
+# ============================================================================
+# CADDYFILE - SOLISTECH PRO (motorgap.es)
+# ============================================================================
+# Reverse proxy configuration with automatic HTTPS via Let's Encrypt
+# Copy to /etc/caddy/Caddyfile and run: systemctl reload caddy
+# ============================================================================
+
+motorgap.es {
+    # Reverse proxy to Next.js app
+    reverse_proxy localhost:3000
+
+    # Security headers
+    header {
+        # HSTS - Force HTTPS for 1 year
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Clickjacking protection
+        X-Frame-Options "SAMEORIGIN"
+        # XSS Protection
+        X-XSS-Protection "1; mode=block"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/motorgap.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+        format json
+    }
+
+    # Compression
+    encode gzip zstd
+}
+
+# Redirect www to non-www
+www.motorgap.es {
+    redir https://motorgap.es{uri} permanent
+}
