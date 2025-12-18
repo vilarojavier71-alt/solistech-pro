@@ -5,13 +5,17 @@ import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
-// [FIX] Use Object.create to inherit from prisma instance (preserving prototype)
-// while allowing us to attach the required aliases locally.
-const prismaAdapterClient = Object.create(prisma)
-prismaAdapterClient.user = prisma.users
-prismaAdapterClient.account = prisma.accounts
-prismaAdapterClient.session = prisma.sessions
-prismaAdapterClient.verificationToken = prisma.verification_tokens
+// [FIX] Use Proxy to map model names without mutating the singleton or breaking prototype chain.
+// This is CI/CD safe and preserves all original Prisma methods.
+const prismaAdapterClient = new Proxy(prisma, {
+    get(target: any, prop) {
+        if (prop === "user") return target.users
+        if (prop === "account") return target.accounts
+        if (prop === "session") return target.sessions
+        if (prop === "verificationToken") return target.verification_tokens
+        return target[prop]
+    },
+})
 
 // Debug check
 if (!prisma.users) {
