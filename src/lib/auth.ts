@@ -1,4 +1,3 @@
-/* eslint-disable */
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
@@ -6,23 +5,24 @@ import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
-// [FIX] Use Proxy to map model names without mutating the singleton or breaking prototype chain.
-// We disable linting for this block to ensure the CI passes (strict type/any checks).
-const prismaAdapterClient = new Proxy(prisma as any, {
-    get(target: any, prop: string) {
-        if (prop === "user") return target.users
-        if (prop === "account") return target.accounts
-        if (prop === "session") return target.sessions
-        if (prop === "verificationToken") return target.verification_tokens
-        return target[prop]
-    },
-})
+// [FIX] Robust, Type-Safe Wrapper using Object inheritance
+// We create a new object inheriting from the singleton to add properties safely.
+const createPrismaAdapter = () => {
+    const p = Object.create(prisma)
+    p.user = prisma.users
+    p.account = prisma.accounts
+    p.session = prisma.sessions
+    p.verificationToken = prisma.verification_tokens
+    return p
+}
 
-// Debug check
-if (!prisma.users) {
-    console.error("🔥 CRITICAL ERROR: prisma.users is UNDEFINED in auth.ts. Check Prisma Client generation.")
+const prismaAdapterClient = createPrismaAdapter()
+
+// Debug Verification
+if (!prismaAdapterClient.user) {
+    console.error("🔥 CRITICAL: Prisma Adapter Client missing 'user' property")
 } else {
-    console.log("✅ Check passed: prisma.users is defined.")
+    console.log("✅ Prisma Adapter Client configured correctly")
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
