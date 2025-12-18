@@ -209,6 +209,7 @@ export async function getCashFlowReport(startDate?: string, endDate?: string) {
                 totalIncome,
                 totalExpenses,
                 netCashFlow,
+                monthlyData: [], // TODO: implement monthly grouping
                 invoiceCount: invoices.length,
                 expenseCount: expenses.length
             }
