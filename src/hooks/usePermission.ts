@@ -1,6 +1,6 @@
 'use client'
 
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
 
 type AppRole = 'owner' | 'admin' | 'user' | 'pica' | 'installer' | 'sales' | 'engineer' | 'commercial'
@@ -18,9 +18,9 @@ const PERMISSION_MATRIX: Record<AppRole, Permission[]> = {
     admin: ['view_financials', 'view_projects_financials', 'manage_team', 'assign_leads', 'edit_settings'],
     sales: ['view_financials', 'view_projects_financials', 'assign_leads'],
     commercial: ['view_financials', 'view_projects_financials', 'assign_leads'],
-    engineer: ['view_projects_financials'], // Only technical costs maybe? No, requested "Blind Installer". Engineer typically sees money.
+    engineer: ['view_projects_financials'],
     installer: [], // BLIND
-    pica: [], // BLIND (Only own commissions maybe, but not project financials)
+    pica: [], // BLIND
     user: []
 }
 
@@ -28,36 +28,30 @@ const PERMISSION_MATRIX: Record<AppRole, Permission[]> = {
  * Hook to check if current user has specific granular permission
  */
 export function usePermission(permission: Permission) {
+    const { data: session, status } = useSession()
     const [hasPermission, setHasPermission] = useState(false)
     const [loading, setLoading] = useState(true)
     const [role, setRole] = useState<AppRole | 'user'>('user')
 
     useEffect(() => {
-        async function check() {
-            try {
-                const { role: userRole } = await getUserRoleAction()
+        if (status === 'loading') return
 
-                if (!userRole) {
-                    setHasPermission(false)
-                    setLoading(false)
-                    return
-                }
+        try {
+            // Get role from session - fallback to 'user' if not present
+            const userRole = (session?.user as any)?.role || 'user'
+            setRole(userRole as AppRole)
 
-                setRole(userRole as AppRole)
+            // Matrix Check
+            const rolePermissions = PERMISSION_MATRIX[userRole as AppRole] || []
+            setHasPermission(rolePermissions.includes(permission))
 
-                // Matrix Check
-                const rolePermissions = PERMISSION_MATRIX[userRole as AppRole] || []
-                setHasPermission(rolePermissions.includes(permission))
-
-            } catch (e) {
-                setHasPermission(false)
-                console.error("Permission check error", e)
-            } finally {
-                setLoading(false)
-            }
+        } catch (e) {
+            setHasPermission(false)
+            console.error("Permission check error", e)
+        } finally {
+            setLoading(false)
         }
-        check()
-    }, [permission])
+    }, [permission, session, status])
 
     return { hasPermission, loading, role }
 }

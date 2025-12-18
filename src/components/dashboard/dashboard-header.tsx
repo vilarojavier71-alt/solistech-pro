@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { createBrowserClient } from "@supabase/ssr"
+import { signOut } from "next-auth/react"
 import { getUnreadCount, getNotifications, markAsRead, markAllAsRead } from "@/lib/actions/notifications"
 
 interface DashboardHeaderProps {
@@ -26,11 +26,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
     const [unreadCount, setUnreadCount] = useState(0)
     const [notifications, setNotifications] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
-
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
 
     useEffect(() => {
         setMounted(true)
@@ -83,8 +78,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
     }
 
     const handleSignOut = async () => {
-        await supabase.auth.signOut()
-        window.location.href = "/login"
+        await signOut({ callbackUrl: "/login" })
     }
 
     const initials = user?.email?.substring(0, 2).toUpperCase() || "U"

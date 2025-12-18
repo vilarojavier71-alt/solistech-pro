@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/db'
 
 // Constants for calculations
 const PANEL_POWER = 550 // Watts per panel (modern high-efficiency panel)
@@ -17,7 +18,6 @@ interface CalculationRequest {
     roofTilt: number
 }
 
-import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUserWithRole } from '@/lib/session'
 
 // Orientation to azimuth mapping
@@ -39,13 +39,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        // Verify Subscription
-        const supabase = createAdminClient()
-        const { data: org } = await supabase
-            .from('organizations')
-            .select('subscription_plan, is_god_mode')
-            .eq('id', user.organizationId)
-            .single()
+        // Verify Subscription with Prisma
+        const org = await prisma.organizations.findUnique({
+            where: { id: user.organizationId },
+            select: { subscription_plan: true, is_god_mode: true }
+        })
 
         const isPro = org?.subscription_plan === 'pro' || org?.is_god_mode
         if (!isPro) {

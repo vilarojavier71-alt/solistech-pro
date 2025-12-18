@@ -1,0 +1,525 @@
+================================================================================
+GUÍA COMPLETA DE DESPLIEGUE: NEXT.JS + PRISMA EN COOLIFY (VPS)
+================================================================================
+Versión: 1.0
+Fecha: Diciembre 2024
+Autor: Generado durante sesión de debugging
+
+Esta guía documenta todos los pasos necesarios para desplegar una aplicación 
+Next.js con Prisma y PostgreSQL en un VPS usando Coolify, evitando los errores 
+más comunes.
+
+================================================================================
+TABLA DE CONTENIDOS
+================================================================================
+
+1. REQUISITOS PREVIOS
+2. PREPARACIÓN DEL SERVIDOR VPS
+3. PREPARACIÓN DEL CÓDIGO FUENTE
+4. CONFIGURACIÓN EN COOLIFY
+5. DESPLIEGUE
+6. POST-DESPLIEGUE (MIGRACIONES)
+7. VERIFICACIÓN
+8. TROUBLESHOOTING (Errores Comunes)
+9. COMANDOS ÚTILES
+
+================================================================================
+1. REQUISITOS PREVIOS
+================================================================================
+
+SERVIDOR VPS:
+- Sistema operativo: Ubuntu 22.04 o superior
+- RAM mínima: 4GB (recomendado 8GB)
+- Disco: 20GB mínimo
+- Acceso SSH como root
+- Puerto 22 (SSH), 80 (HTTP), 443 (HTTPS) abiertos
+
+CÓDIGO FUENTE:
+- Next.js 13 o superior con App Router
+- output: 'standalone' configurado en next.config.mjs
+- Prisma configurado para PostgreSQL
+- Repositorio en GitHub (público o privado con acceso)
+
+DOMINIO:
+- Dominio configurado apuntando a la IP del servidor
+- Registro A: tudominio.com -> IP_DEL_SERVIDOR
+- (Opcional) Registro CNAME: www -> tudominio.com
+
+================================================================================
+2. PREPARACIÓN DEL SERVIDOR VPS
+================================================================================
+
+2.1 CONEXIÓN SSH
+----------------
+Desde tu terminal local (PowerShell, Terminal, o similar):
+
+    ssh root@<IP_DEL_SERVIDOR>
+
+Introduce la contraseña cuando se solicite.
+
+
+2.2 INSTALACIÓN DE COOLIFY
+--------------------------
+Coolify es una plataforma self-hosted para despliegues. Instalación:
+
+    curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+
+Esto instalará Docker, Coolify y todos los componentes necesarios.
+El proceso puede tardar 5-10 minutos.
+
+Una vez completado, accede a:
+    http://<IP_DEL_SERVIDOR>:8000
+
+Crea tu cuenta de administrador en la primera visita.
+
+
+2.3 AÑADIR SWAP (CRÍTICO PARA BUILDS DE NEXT.JS)
+------------------------------------------------
+Next.js consume MUCHA memoria durante el build. Sin SWAP, el proceso será
+terminado (SIGKILL) por el kernel cuando se agote la RAM.
+
+COMANDOS (ejecutar como root):
+
+    # Crear archivo de swap de 4GB
+    sudo fallocate -l 4G /swapfile
+    
+    # Establecer permisos correctos
+    sudo chmod 600 /swapfile
+    
+    # Configurar como swap
+    sudo mkswap /swapfile
+    
+    # Activar swap
+    sudo swapon /swapfile
+    
+    # Hacer permanente (sobrevive reinicios)
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    
+    # Verificar que está activo
+    free -h
+
+RESULTADO ESPERADO:
+    Swap:          4.0Gi          0B       4.0Gi
+
+IMPORTANTE: Sin este paso, builds de proyectos medianos/grandes FALLARÁN.
+
+
+2.4 VERIFICAR SERVICIOS ACTIVOS EN PUERTO 80
+--------------------------------------------
+Antes de que Coolify pueda usar el puerto 80, asegúrate de que no hay
+otros servicios usándolo:
+
+    sudo lsof -i :80
+
+Si hay algo (como nginx, apache, caddy):
+
+    # Para nginx
+    sudo systemctl stop nginx
+    sudo systemctl disable nginx
+    
+    # Para apache
+    sudo systemctl stop apache2
+    sudo systemctl disable apache2
+    
+    # Para caddy
+    sudo systemctl stop caddy
+    sudo systemctl disable caddy
+
+================================================================================
+3. PREPARACIÓN DEL CÓDIGO FUENTE
+================================================================================
+
+3.1 ARCHIVO next.config.mjs
+---------------------------
+IMPORTANTE: El output DEBE ser 'standalone' para despliegues en Docker.
+
+    /** @type {import('next').NextConfig} */
+    const nextConfig = {
+      // OBLIGATORIO para Docker
+      output: 'standalone',
+      
+      // Optimizaciones de memoria para el build
+      productionBrowserSourceMaps: false,
+      
+      // Evitar fallos por errores de TypeScript/ESLint
+      typescript: {
+        ignoreBuildErrors: true,
+      },
+      eslint: {
+        ignoreDuringBuilds: true,
+      },
+      
+      // Resto de tu configuración...
+    };
+    
+    export default nextConfig;
+
+
+3.2 DOCKERFILE
+--------------
+Crea un archivo llamado "Dockerfile" (sin extensión) en la raíz del proyecto:
+
+    FROM node:22-alpine AS base
+    
+    # Etapa 1: Dependencias
+    FROM base AS deps
+    RUN apk add --no-cache libc6-compat openssl
+    WORKDIR /app
+    COPY package.json package-lock.json* ./
+    RUN npm ci --legacy-peer-deps
+    
+    # Etapa 2: Build
+    FROM base AS builder
+    WORKDIR /app
+    COPY --from=deps /app/node_modules ./node_modules
+    COPY . .
+    
+    # Variables de entorno para optimizar memoria
+    ENV NEXT_TELEMETRY_DISABLED=1
+    ENV GENERATE_SOURCEMAP=false
+    ENV SKIP_TYPE_CHECK=true
+    
+    # Generar cliente Prisma
+    RUN npm exec prisma generate
+    
+    # Build con límite de memoria (ajustar según RAM disponible)
+    # 4096 = 4GB, usar si tienes 8GB RAM + SWAP
+    # 3072 = 3GB, usar si tienes menos recursos
+    RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+    
+    # Etapa 3: Producción (imagen final pequeña)
+    FROM base AS runner
+    WORKDIR /app
+    
+    ENV NODE_ENV=production
+    ENV NEXT_TELEMETRY_DISABLED=1
+    
+    RUN addgroup --system --gid 1001 nodejs
+    RUN adduser --system --uid 1001 nextjs
+    
+    COPY --from=builder /app/public ./public
+    
+    RUN mkdir .next
+    RUN chown nextjs:nodejs .next
+    
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+    
+    USER nextjs
+    
+    EXPOSE 3000
+    
+    ENV PORT=3000
+    ENV HOSTNAME="0.0.0.0"
+    
+    CMD ["node", "server.js"]
+
+
+3.3 ARCHIVO .dockerignore
+-------------------------
+Crea un archivo ".dockerignore" para excluir archivos innecesarios:
+
+    node_modules
+    .next
+    .git
+    .env*
+    !.env.example
+    *.md
+    .vscode
+    playwright-report
+    test-results
+    coverage
+
+
+3.4 SCHEMA DE PRISMA
+--------------------
+Asegúrate de que tu prisma/schema.prisma tiene el datasource correcto:
+
+    datasource db {
+      provider = "postgresql"
+      url      = env("DATABASE_URL")
+    }
+
+================================================================================
+4. CONFIGURACIÓN EN COOLIFY
+================================================================================
+
+4.1 CREAR BASE DE DATOS POSTGRESQL
+-----------------------------------
+1. En Coolify, ve a "Resources" > "+ New"
+2. Selecciona "Database"
+3. Elige "PostgreSQL"
+4. Configuración:
+   - Name: mi-proyecto-db
+   - Version: 16 (o la más reciente)
+   - Database Name: postgres
+   - Generate password: Sí
+5. Click "Create"
+6. Espera a que el estado sea "Running" (verde)
+
+IMPORTANTE: Anota o copia:
+- Host interno (algo como: u0ww8o4gkgck88gccskscgo0)
+- Usuario (normalmente: postgres)
+- Contraseña (generada)
+- Puerto (5432)
+
+DATABASE_URL será:
+    postgres://postgres:TU_PASSWORD@HOST_INTERNO:5432/postgres
+
+
+4.2 CREAR APLICACIÓN
+--------------------
+1. En Coolify, ve a "Resources" > "+ New"
+2. Selecciona "Application"
+3. Elige "GitHub"
+4. Conecta tu cuenta de GitHub si es la primera vez
+5. Selecciona el repositorio y la rama (normalmente "main")
+
+CONFIGURACIÓN CRÍTICA:
+
+   Build Pack:         Dockerfile    (NO Nixpacks)
+   Dockerfile:         Dockerfile    (ruta al archivo)
+   Domain:             tudominio.com
+   Port:               3000
+
+
+4.3 VARIABLES DE ENTORNO
+------------------------
+En la pestaña "Environment Variables", añade:
+
+    DATABASE_URL=postgres://postgres:PASSWORD@HOST_INTERNO:5432/postgres
+    NEXTAUTH_URL=https://tudominio.com
+    NEXTAUTH_SECRET=genera-con-openssl-rand-base64-32
+    NODE_ENV=production
+
+Para generar NEXTAUTH_SECRET:
+    openssl rand -base64 32
+
+FORMATO IMPORTANTE:
+- Una variable por línea
+- SIN comentarios (#)
+- SIN espacios alrededor del =
+- SIN comillas (excepto si el valor las necesita)
+
+
+4.4 OPCIONES AVANZADAS
+----------------------
+En la pestaña "Advanced":
+
+   [x] Disable Build Cache     (recomendado primera vez)
+   [ ] Enable Auto Deploy      (opcional)
+   
+Health Check (opcional pero recomendado):
+   Path: /api/health
+   Port: 3000
+
+================================================================================
+5. DESPLIEGUE
+================================================================================
+
+5.1 PRIMER DESPLIEGUE
+---------------------
+1. Verifica que toda la configuración está correcta
+2. Click en "Deploy"
+3. Ve a la pestaña "Deployments" para ver el progreso
+4. El build puede tardar 5-15 minutos dependiendo del proyecto
+
+QUÉ DEBERÍAS VER:
+- [deps]: npm ci completando
+- [builder]: prisma generate
+- [builder]: npm run build (THIS TAKES THE LONGEST)
+- [runner]: copiando archivos
+- "Building docker image completed"
+- "Container started"
+
+
+5.2 SI EL BUILD FALLA
+---------------------
+Busca en los logs:
+
+ERROR: signal SIGKILL
+   Causa: Sin memoria
+   Solución: Añadir SWAP, reducir NODE_OPTIONS
+
+ERROR: ENOENT prisma schema not found
+   Causa: Ruta incorrecta de prisma
+   Solución: Verificar prisma/schema.prisma existe
+
+ERROR: npm ci failed
+   Causa: package-lock.json no sincronizado
+   Solución: npm install localmente, commit package-lock.json
+
+================================================================================
+6. POST-DESPLIEGUE (MIGRACIONES)
+================================================================================
+
+Después de que el container esté corriendo, necesitas crear las tablas
+en la base de datos.
+
+6.1 OPCIÓN A: DESDE SSH (RECOMENDADO)
+-------------------------------------
+Conecta por SSH y ejecuta:
+
+    # Ver contenedores corriendo
+    docker ps
+    
+    # Busca el contenedor de tu app (algo como: ucogcs40c4g4ggowokgs8cok-xxx)
+    # Ejecuta migraciones
+    docker exec -it <container_app> npx prisma migrate deploy
+
+Si el container no tiene Prisma CLI (standalone), usa la opción B.
+
+
+6.2 OPCIÓN B: SQL DIRECTO
+-------------------------
+Ejecuta el SQL contra PostgreSQL:
+
+    # Conectar a PostgreSQL
+    docker exec -it <container_postgres> psql -U postgres -d postgres
+    
+    # Ejecutar CREATE TABLE statements
+    # (Genera el SQL con: npx prisma migrate diff --from-empty --to-schema-datamodel=prisma/schema.prisma --script)
+
+
+6.3 OPCIÓN C: DESDE TU PC LOCAL
+-------------------------------
+Si PostgreSQL está expuesto públicamente (NO RECOMENDADO en producción):
+
+    # Setear DATABASE_URL apuntando al servidor
+    $env:DATABASE_URL="postgres://postgres:PASSWORD@IP_SERVIDOR:5432/postgres"
+    npx prisma migrate deploy
+
+================================================================================
+7. VERIFICACIÓN
+================================================================================
+
+7.1 VERIFICAR CONTAINER
+-----------------------
+En SSH:
+    docker ps
+    docker logs <container_id>
+
+Debería mostrar:
+    ▲ Next.js 14.x
+    ✓ Ready in XXXms
+
+
+7.2 VERIFICAR SITIO WEB
+-----------------------
+Abre en navegador:
+    https://tudominio.com
+
+Debería cargar la página sin errores 502 o 500.
+
+
+7.3 VERIFICAR SSL
+-----------------
+El certificado SSL se genera automáticamente por Traefik/Let's Encrypt.
+Puede tardar 1-2 minutos en generarse.
+
+================================================================================
+8. TROUBLESHOOTING (ERRORES COMUNES)
+================================================================================
+
+ERROR: 502 Bad Gateway
+----------------------
+CAUSA: El proxy (Traefik) no puede conectar al container
+SOLUCIONES:
+1. Verificar que el container está corriendo: docker ps
+2. Verificar logs: docker logs <container>
+3. Reiniciar Traefik: En Coolify > Servers > Proxy > Restart
+4. Verificar que otro servicio no usa puerto 80: lsof -i :80
+
+
+ERROR: 500 Internal Server Error en /api/auth
+---------------------------------------------
+CAUSA: Base de datos vacía o NEXTAUTH_SECRET incorrecto
+SOLUCIONES:
+1. Verificar DATABASE_URL en variables de entorno
+2. Ejecutar migraciones de Prisma
+3. Verificar que NEXTAUTH_SECRET está configurado
+4. Verificar que PostgreSQL está corriendo
+
+
+ERROR: SIGKILL durante build
+----------------------------
+CAUSA: Sin memoria (OOM - Out of Memory)
+SOLUCIONES:
+1. Añadir SWAP al servidor (ver sección 2.3)
+2. Reducir NODE_OPTIONS: --max-old-space-size=3072
+3. Desactivar source maps: GENERATE_SOURCEMAP=false
+4. Desactivar ESLint: eslint.ignoreDuringBuilds: true
+
+
+ERROR: Port 80 is in use
+------------------------
+CAUSA: Otro servicio está usando el puerto
+SOLUCIÓN:
+    lsof -i :80
+    systemctl stop <servicio>
+    systemctl disable <servicio>
+
+
+ERROR: Prisma schema not found
+------------------------------
+CAUSA: El container standalone no incluye prisma/
+SOLUCIÓN: Ejecutar migraciones fuera del container o antes del build
+
+
+ERROR: Role "postgres" does not exist
+-------------------------------------
+CAUSA: Usuario de PostgreSQL incorrecto
+SOLUCIÓN: Usar el usuario correcto de las credenciales de Coolify
+
+================================================================================
+9. COMANDOS ÚTILES
+================================================================================
+
+SSH:
+    ssh root@<IP_SERVIDOR>
+
+VER CONTENEDORES:
+    docker ps
+    docker ps -a  (incluye detenidos)
+
+VER LOGS:
+    docker logs <container_id>
+    docker logs -f <container_id>  (seguir en tiempo real)
+
+ENTRAR EN CONTAINER:
+    docker exec -it <container_id> sh
+
+REINICIAR CONTAINER:
+    docker restart <container_id>
+
+VER USO DE MEMORIA:
+    free -h
+    htop
+
+VER USO DE DISCO:
+    df -h
+
+VER QUÉ USA UN PUERTO:
+    lsof -i :80
+    lsof -i :3000
+
+MATAR PROCESO POR PUERTO:
+    fuser -k 80/tcp
+
+VERIFICAR SWAP:
+    swapon --show
+    free -h
+
+VER LOGS DE COOLIFY:
+    docker logs coolify
+
+================================================================================
+FIN DE LA GUÍA
+================================================================================
+
+Para actualizaciones o correcciones, consultar la documentación oficial:
+- Coolify: https://coolify.io/docs
+- Next.js: https://nextjs.org/docs/deployment
+- Prisma: https://www.prisma.io/docs/guides/deployment
+
+================================================================================

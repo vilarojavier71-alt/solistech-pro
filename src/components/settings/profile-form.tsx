@@ -1,7 +1,6 @@
 ﻿'use client'
 
 import { useState } from 'react'
-import { User } from '@supabase/supabase-js'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,7 +10,7 @@ import { Loader2, Upload } from 'lucide-react'
 import { updateProfile, uploadAvatar } from '@/lib/actions/settings'
 
 interface ProfileFormProps {
-    user: User
+    user: { id: string; email?: string | null }
     profile: any
 }
 

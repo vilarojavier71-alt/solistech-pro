@@ -16,3 +16,14 @@ export async function completeOnboarding() {
     return { success: true }
 }
 
+export async function checkOnboardingStatus() {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        return { hasCompletedOnboarding: true } // No user = skip tour
+    }
+
+    // STUB: For now, return true to skip the tour
+    // TODO: Implement proper check against users table when field exists
+    return { hasCompletedOnboarding: true }
+}

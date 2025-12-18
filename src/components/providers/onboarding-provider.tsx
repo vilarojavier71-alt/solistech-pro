@@ -1,13 +1,11 @@
 ﻿"use client"
-// Client boundary forced
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { createBrowserClient } from '@supabase/ssr' // Usando librería moderna
+import { useSession } from 'next-auth/react'
 import { TOUR_STEPS, TourStep } from '@/lib/onboarding/tour-config'
-import { completeOnboarding } from '@/lib/actions/onboarding'
+import { completeOnboarding, checkOnboardingStatus } from '@/lib/actions/onboarding'
 
-// 1. Definimos la firma de la función en la interfaz
 interface OnboardingContextType {
     isActive: boolean
     currentStepIndex: number
@@ -15,7 +13,7 @@ interface OnboardingContextType {
     nextStep: () => void
     prevStep: () => void
     skipTour: () => void
-    restartOnboardingTour: () => void // 👉 NUEVA FUNCIÓN AÑADIDA
+    restartOnboardingTour: () => void
     checkAndStartTour: () => Promise<void>
     isLoading: boolean
 }
@@ -29,32 +27,21 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
     const router = useRouter()
     const pathname = usePathname()
-
-    const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const { data: session, status } = useSession()
 
     const currentStep = TOUR_STEPS[currentStepIndex] || null
 
     const checkAndStartTour = useCallback(async () => {
         setIsLoading(true)
         try {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) {
+            if (status === 'loading') return
+            if (!session?.user) {
                 setIsLoading(false)
                 return
             }
 
-            // Updated to query 'users' table based on migration
-            const { data: userRecord } = await supabase
-                .from('users')
-                .select('has_completed_onboarding')
-                .eq('id', user.id)
-                .single()
-
-            if (userRecord && !userRecord.has_completed_onboarding) {
-                // Optional: Only start in dashboard
+            const result = await checkOnboardingStatus()
+            if (result && !result.hasCompletedOnboarding) {
                 if (window.location.pathname.includes('/dashboard')) {
                     setIsActive(true)
                 }
@@ -64,7 +51,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         } finally {
             setIsLoading(false)
         }
-    }, [supabase])
+    }, [session, status])
 
     useEffect(() => {
         if (isActive && currentStep?.route && pathname !== currentStep.route) {
@@ -96,10 +83,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         await completeOnboarding()
     }
 
-    // 2. Implementamos la lógica de reinicio
     const restartOnboardingTour = () => {
-        setCurrentStepIndex(0) // Volver al paso 1
-        setIsActive(true)      // Activar el tour
+        setCurrentStepIndex(0)
+        setIsActive(true)
     }
 
     return (
@@ -110,7 +96,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
             nextStep,
             prevStep,
             skipTour,
-            restartOnboardingTour, // 👉 Exponemos la función al contexto
+            restartOnboardingTour,
             checkAndStartTour,
             isLoading
         }}>

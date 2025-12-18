@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Search, Send, AlertCircle, FileText, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, Send, AlertCircle, FileText, CheckCircle, ChevronDown, ChevronUp, ChevronRight, ChevronLeft } from 'lucide-react'
 import { searchHelpArticles, createTicket } from '@/lib/actions/help'
 
 /**

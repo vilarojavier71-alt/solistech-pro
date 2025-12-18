@@ -74,13 +74,13 @@ export interface StorageAdapter {
 /**
  * Proveedor actual de storage (configurar via ENV)
  */
-export type StorageProvider = 'supabase' | 's3' | 'r2' | 'local'
+export type StorageProvider = 's3' | 'r2' | 'local'
 
 /**
  * Obtener el adaptador de storage según configuración
  */
 export async function getStorageAdapter(): Promise<StorageAdapter> {
-    const provider = (process.env.STORAGE_PROVIDER || 'supabase') as StorageProvider
+    const provider = (process.env.STORAGE_PROVIDER || 'local') as StorageProvider
 
     switch (provider) {
         case 's3':
@@ -92,15 +92,12 @@ export async function getStorageAdapter(): Promise<StorageAdapter> {
             return new R2StorageAdapter()
 
         case 'local':
+        default:
             const { LocalStorageAdapter } = await import('./adapters/local')
             return new LocalStorageAdapter()
-
-        case 'supabase':
-        default:
-            const { SupabaseStorageAdapter } = await import('./adapters/supabase')
-            return new SupabaseStorageAdapter()
     }
 }
 
 // Re-export para uso simplificado
 export { getStorageAdapter as storage }
+
