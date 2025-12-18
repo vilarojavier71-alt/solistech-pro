@@ -1,4 +1,5 @@
-FROM node:22-alpine AS base
+# node:20-alpine includes OpenSSL 1.1 which is required by Prisma 5.x
+FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -38,8 +39,13 @@ RUN NODE_OPTIONS="--max-old-space-size=3072" npm run build
 FROM base AS runner
 WORKDIR /app
 
+# Install OpenSSL for Prisma runtime (libssl.so.1.1)
+RUN apk add --no-cache openssl libc6-compat
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Trust host for NextAuth behind proxy
+ENV AUTH_TRUST_HOST=true
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
