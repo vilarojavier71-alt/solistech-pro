@@ -5,15 +5,13 @@ import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
-// [CRITICAL FIX] Manual wrapper to guarantee model mapping
-// We use Object.assign to attach properties to the existing instance
-// ensuring we keep all prototype methods ($connect, $transaction, etc.)
-const prismaAdapterClient = Object.assign(prisma, {
-    user: prisma.users,
-    account: prisma.accounts,
-    session: prisma.sessions,
-    verificationToken: prisma.verification_tokens,
-}) as any
+// [FIX] Use Object.create to inherit from prisma instance (preserving prototype)
+// while allowing us to attach the required aliases locally.
+const prismaAdapterClient = Object.create(prisma)
+prismaAdapterClient.user = prisma.users
+prismaAdapterClient.account = prisma.accounts
+prismaAdapterClient.session = prisma.sessions
+prismaAdapterClient.verificationToken = prisma.verification_tokens
 
 // Debug check
 if (!prisma.users) {
