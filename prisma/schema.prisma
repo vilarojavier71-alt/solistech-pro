@@ -132,31 +132,31 @@ model subscriptions {
 // ============================================================================
 
 model accounts {
-  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id             String  @db.Uuid
-  type                String
-  provider            String
-  provider_account_id String
-  refresh_token       String?
-  access_token        String?
-  expires_at          Int?
-  token_type          String?
-  scope               String?
-  id_token            String?
-  session_state       String?
+  id                String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String  @map("user_id") @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refreshToken      String? @map("refresh_token")
+  accessToken       String? @map("access_token")
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
+  scope             String?
+  idToken           String? @map("id_token")
+  sessionState      String? @map("session_state")
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, provider_account_id])
+  @@unique([provider, providerAccountId])
 }
 
 model sessions {
-  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  session_token String   @unique
-  user_id       String   @db.Uuid
-  expires       DateTime @db.Timestamptz(6)
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime @db.Timestamptz(6)
 
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user users @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model verification_tokens {
