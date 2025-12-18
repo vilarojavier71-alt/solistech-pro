@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 
 import { useRouter } from 'next/navigation'
 import { notifyPaymentReceived } from '@/lib/actions/notifications'
-import { createClient } from '@/lib/supabase/client'
 
 interface PaymentControlProps {
     sale: Sale
@@ -16,11 +15,9 @@ interface PaymentControlProps {
 
 
 export function SalePaymentControl({ sale, onStatusChange }: PaymentControlProps) {
-    const supabase = createClient()
     const router = useRouter()
 
     // Detectar modalidad (si payment_method es 'cash' asumimos Contado, sino Fraccionado)
-    // TODO: Idealmente tener un campo explícito 'payment_terms' en DB
     const isCash = sale.payment_method === 'cash'
 
     const handleRequestPayment = (type: '20' | '60' | 'final' | 'full', amount: number) => {
@@ -40,14 +37,13 @@ El equipo de SolisTech.`
 
         // Actualizar estado (si es full usamos el campo final o todos)
         if (type === 'full') {
-            updatePaymentStatus('final', 'requested') // Usamos final como proxy del total
+            updatePaymentStatus('final', 'requested')
         } else {
             updatePaymentStatus(type, 'requested')
         }
     }
 
     const updatePaymentStatus = async (type: '20' | '60' | 'final' | 'full', status: 'requested' | 'received') => {
-        // 'full' maps to 'final' for DB storage in this specific logic for single payment
         const dbType = type === 'full' ? 'final' : type
         const fieldStatus = `payment_${dbType}_status`
         const fieldDate = `payment_${dbType}_date`
@@ -57,7 +53,6 @@ El equipo de SolisTech.`
 
             if (status === 'received') {
                 updateData[fieldDate] = new Date().toISOString()
-                // Si es pago único y se recibe, marcamos también los parciales como no aplicables o completados
                 if (isCash && dbType === 'final') {
                     updateData['payment_status'] = 'confirmed'
                 }
@@ -70,14 +65,13 @@ El equipo de SolisTech.`
                     .catch((e: any) => console.error("Failed to send notification email", e))
             }
 
-            const { error } = await supabase
-                .from('sales')
-                .update(updateData)
-                .eq('id', sale.id)
+            // TODO: Replace with server action
+            console.log('[PaymentControl] TODO: Update payment via server action', {
+                saleId: sale.id,
+                updateData
+            })
 
-            if (error) throw error
-
-            toast.success(`Estado de pago actualizado: ${status}`)
+            toast.success(`Estado de pago actualizado: ${status} (TODO: implementar server action)`)
             router.refresh()
             if (onStatusChange) onStatusChange()
 

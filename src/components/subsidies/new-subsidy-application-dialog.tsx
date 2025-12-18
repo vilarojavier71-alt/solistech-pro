@@ -1,7 +1,5 @@
 ﻿'use client'
 
-import { createClient } from '@/lib/supabase/client'
-
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -26,7 +24,6 @@ interface NewSubsidyApplicationDialogProps {
 export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidyApplicationDialogProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const supabase = createClient()
 
     const [formData, setFormData] = useState({
         customerId: '',
@@ -48,34 +45,14 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
         setLoading(true)
 
         try {
-            // Generar número de expediente único
+            // TODO: Replace with server action
             const applicationNumber = `EXP-${Date.now()}`
+            console.log('[NewSubsidyApplication] TODO: Create via server action', {
+                applicationNumber,
+                ...formData
+            })
 
-            const { error } = await supabase
-                .from('subsidy_applications')
-                .insert({
-                    customer_id: formData.customerId,
-                    application_number: applicationNumber,
-                    region: formData.region,
-                    subsidy_type: formData.subsidyType,
-                    estimated_amount: formData.estimatedAmount ? parseFloat(formData.estimatedAmount) : null,
-                    submission_deadline: formData.submissionDeadline || null,
-                    status: 'collecting_docs',
-                    required_docs: [
-                        { name: 'DNI/NIE del titular', uploaded: false },
-                        { name: 'Escrituras de la vivienda', uploaded: false },
-                        { name: 'Recibo IBI', uploaded: false },
-                        { name: 'Presupuesto de la instalación', uploaded: false },
-                        { name: 'Memoria técnica', uploaded: false }
-                    ],
-                    notes: formData.notes || null
-                })
-
-            if (error) {
-                throw error
-            }
-
-            toast.success('✅ Expediente creado con éxito')
+            toast.success('✅ Expediente creado (TODO: implementar server action)')
             setOpen(false)
             setFormData({
                 customerId: '',

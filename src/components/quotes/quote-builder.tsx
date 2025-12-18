@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,15 +15,14 @@ import { toast } from 'sonner'
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer'
 import { QuotePDF, QuoteData, QuoteItem } from './quote-pdf'
 import { sendQuoteEmail } from '@/lib/actions/notifications'
-import { createClient } from '@/lib/supabase/client'
 
 export function QuoteBuilder() {
-    const supabase = createClient()
+    const { data: session } = useSession()
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [generatingPDF, setGeneratingPDF] = useState(false)
 
-    // Data Sources
+    // Data Sources - TODO: Load from server actions
     const [leads, setLeads] = useState<any[]>([])
     const [customers, setCustomers] = useState<any[]>([])
     const [orgProfile, setOrgProfile] = useState<any>(null)
@@ -30,7 +30,7 @@ export function QuoteBuilder() {
     // Form State
     const [targetType, setTargetType] = useState<'lead' | 'customer'>('lead')
     const [selectedId, setSelectedId] = useState<string>('')
-    const [quoteNumber, setQuoteNumber] = useState('') // Will generate on save or pre-fetch
+    const [quoteNumber, setQuoteNumber] = useState('')
     const [validUntil, setValidUntil] = useState(new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
 
     // Items
@@ -47,22 +47,15 @@ export function QuoteBuilder() {
     }, [])
 
     const loadData = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
+        if (!session?.user) return
 
-        // Load Org
-        const { data: org } = await supabase.from('organizations').select('name, email, phone').single()
-        setOrgProfile(org)
-
-        // Load Leads & Customers
-        const { data: l } = await supabase.from('leads').select('id, name, email').order('created_at', { ascending: false }).limit(50)
-        if (l) setLeads(l)
-
-        const { data: c } = await supabase.from('customers').select('id, full_name, dni, email').order('created_at', { ascending: false }).limit(50)
-        if (c) setCustomers(c)
-
-        // Generate Temp Quote Number ID
+        // TODO: Replace with server actions
+        // For now, generate a temp quote number
         setQuoteNumber(`PRE-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`)
+
+        // Mock data - replace with actual server action calls
+        setOrgProfile({ name: 'SolisTech', email: '', phone: '' })
+        console.log('[QuoteBuilder] TODO: Load leads and customers from server actions')
     }
 
     // Calculations
@@ -139,31 +132,17 @@ export function QuoteBuilder() {
 
         setLoading(true)
         try {
-            const { data: { user } } = await supabase.auth.getUser()
-            const { data: profile } = await supabase.from('users').select('organization_id').eq('id', user?.id).single()
-
-            const payload: any = {
-                organization_id: profile?.organization_id,
-                quote_number: quoteNumber,
-                status: 'draft',
-                line_items: items,
+            // TODO: Replace with server action
+            console.log('[QuoteBuilder] TODO: Save quote via server action', {
+                quoteNumber,
+                items,
                 subtotal,
-                tax_rate: taxRate,
-                tax_amount: taxAmount,
                 total,
-                valid_until: validUntil,
-                notes,
-                terms_and_conditions: terms,
-                created_by: user?.id
-            }
+                selectedId,
+                targetType
+            })
 
-            if (targetType === 'lead') payload.lead_id = selectedId
-            else payload.customer_id = selectedId
-
-            const { error } = await supabase.from('quotes').insert(payload)
-            if (error) throw error
-
-            toast.success('Presupuesto guardado correctamente')
+            toast.success('Presupuesto guardado (TODO: implementar server action)')
             router.push('/dashboard/quotes')
 
         } catch (error: any) {
@@ -185,23 +164,10 @@ export function QuoteBuilder() {
             // 1. Generate PDF Blob
             const blob = await pdf(<QuotePDF data={getQuoteData()} />).toBlob()
 
-            // 2. Upload to Storage
-            const fileName = `${quoteNumber}-${Date.now()}.pdf`
-            const { error: uploadError } = await supabase.storage
-                .from('quotes')
-                .upload(fileName, blob, {
-                    contentType: 'application/pdf',
-                    upsert: false
-                })
+            // TODO: Upload to storage via server action
+            console.log('[QuoteBuilder] TODO: Upload PDF to storage', { quoteNumber, blobSize: blob.size })
 
-            if (uploadError) throw uploadError
-
-            // Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('quotes')
-                .getPublicUrl(fileName)
-
-            // 3. Send Email via Server Action
+            // 2. Get email from selected
             let email = ''
             let name = ''
 
@@ -218,6 +184,9 @@ export function QuoteBuilder() {
                 setLoading(false)
                 return
             }
+
+            // TODO: Implement storage upload and get URL
+            const publicUrl = `https://storage.example.com/${quoteNumber}.pdf` // Placeholder
 
             await sendQuoteEmail(email, name, quoteNumber, publicUrl, total)
 

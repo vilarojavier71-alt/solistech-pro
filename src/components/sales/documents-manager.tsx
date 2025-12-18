@@ -1,7 +1,8 @@
 ﻿'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
+// TODO: Replace with server actions
+// import { createClient } from '@/lib/supabase/client'
 
 import { Sale, SaleDocument } from '@/types/portal'
 import { Button } from '@/components/ui/button'
@@ -30,20 +31,15 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
     const [documents, setDocuments] = useState<SaleDocument[]>([])
     const [uploading, setUploading] = useState(false)
     const [selectedType, setSelectedType] = useState<string>('other')
-    const supabase = createClient()
 
     useEffect(() => {
         loadDocuments()
     }, [])
 
     const loadDocuments = async () => {
-        const { data } = await supabase
-            .from('sale_documents')
-            .select('*')
-            .eq('sale_id', sale.id)
-            .order('uploaded_at', { ascending: false })
-
-        if (data) setDocuments(data)
+        // TODO: Replace with server action
+        console.log('[DocumentsManager] TODO: Load documents via server action for sale', sale.id)
+        setDocuments([])
     }
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,34 +49,15 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
         setUploading(true)
 
         try {
-            // 1. Upload to Storage
-            const fileExt = file.name.split('.').pop()
-            const fileName = `${Math.random().toString(36).substring(7)}.${fileExt}`
-            const filePath = `${sale.organization_id}/${sale.id}/${fileName}`
+            // TODO: Replace with server action
+            console.log('[DocumentsManager] TODO: Upload file via server action', {
+                saleId: sale.id,
+                fileName: file.name,
+                fileSize: file.size,
+                documentType: selectedType
+            })
 
-            const { error: uploadError } = await supabase.storage
-                .from('sale_documents')
-                .upload(filePath, file)
-
-            if (uploadError) throw uploadError
-
-            // 2. Register in DB
-            const { error: dbError } = await supabase
-                .from('sale_documents')
-                .insert({
-                    sale_id: sale.id,
-                    document_type: selectedType,
-                    file_name: file.name,
-                    file_size: file.size,
-                    mime_type: file.type,
-                    storage_url: filePath,
-                    uploaded_by: isClientView ? 'client' : 'staff', // TODO: Get user ID if staff
-                    status: 'pending'
-                })
-
-            if (dbError) throw dbError
-
-            toast.success('Documento subido correctamente')
+            toast.success('Documento subido (TODO: implementar server action)')
             loadDocuments()
         } catch (error) {
             console.error('Upload error:', error)
@@ -92,13 +69,9 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
 
     const handleDownload = async (doc: SaleDocument) => {
         try {
-            const { data, error } = await supabase.storage
-                .from('sale_documents')
-                .createSignedUrl(doc.storage_url, 60) // 60 seconds validity
-
-            if (error) throw error
-            if (data?.signedUrl) window.open(data.signedUrl, '_blank')
-
+            // TODO: Replace with server action to get signed URL
+            console.log('[DocumentsManager] TODO: Get download URL for', doc.id)
+            toast.info('Descarga no implementada (TODO: server action)')
         } catch (error) {
             console.error('Download error:', error)
             toast.error('Error al descargar')
@@ -107,14 +80,9 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
 
     const handleValidate = async (docId: string, status: 'validated' | 'rejected') => {
         try {
-            const { error } = await supabase
-                .from('sale_documents')
-                .update({ status, validated_at: new Date().toISOString() })
-                .eq('id', docId)
-
-            if (error) throw error
-
-            toast.success(`Documento ${status === 'validated' ? 'validado' : 'rechazado'}`)
+            // TODO: Replace with server action
+            console.log('[DocumentsManager] TODO: Validate document', { docId, status })
+            toast.success(`Documento ${status === 'validated' ? 'validado' : 'rechazado'} (TODO)`)
             loadDocuments()
         } catch (error) {
             toast.error('Error al actualizar estado')

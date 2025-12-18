@@ -1,11 +1,10 @@
 'use server'
 
-import { createAdminClient } from '@/lib/supabase/admin'
+import { prisma } from '@/lib/db'
 import { getCurrentUserWithRole } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-// Types
 export type PaymentMethod = {
     id: string
     name: string
@@ -15,79 +14,57 @@ export type PaymentMethod = {
     details?: any
 }
 
-// Schemas
 const PaymentMethodSchema = z.object({
     name: z.string().min(1, "El nombre es obligatorio"),
     instructions: z.string().optional(),
     is_default: z.boolean().default(false)
 })
 
-// HELPER: Robust Context Retrieval
 async function getPaymentSettingsContext() {
     const user = await getCurrentUserWithRole()
-    if (!user || !user.id) throw new Error('Usuario no autenticado (Sesión inválida)')
+    if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const supabase = createAdminClient()
+    const profile = await prisma.users.findUnique({
+        where: { id: user.id },
+        select: { organization_id: true }
+    })
 
-    const { data: profile } = await supabase
-        .from('users')
-        .select('organization_id')
-        .eq('id', user.id)
-        .single()
+    if (!profile?.organization_id) throw new Error('Organización no encontrada')
 
-    if (!profile?.organization_id) throw new Error('Organización no encontrada para el usuario.')
-
-    return { supabase, organizationId: profile.organization_id }
+    return { organizationId: profile.organization_id }
 }
-
-// Actions
 
 export async function getPaymentMethods() {
     try {
-        const { supabase, organizationId } = await getPaymentSettingsContext()
+        const { organizationId } = await getPaymentSettingsContext()
 
-        const { data, error } = await supabase
-            .from('payment_methods')
-            .select('*')
-            .eq('organization_id', organizationId)
-            .eq('is_active', true)
-            .order('is_default', { ascending: false })
-            .order('name', { ascending: true })
+        const methods = await prisma.payment_methods.findMany({
+            where: { organization_id: organizationId, is_active: true },
+            orderBy: [{ is_default: 'desc' }, { name: 'asc' }]
+        })
 
-        if (error) {
-            console.error('Error fetching payment methods:', error)
-            return []
-        }
-
-        return data as PaymentMethod[]
+        return methods as PaymentMethod[]
     } catch (error) {
-        console.error('Auth error in getPaymentMethods', error)
+        console.error('Error fetching payment methods:', error)
         return []
     }
 }
 
 export async function createPaymentMethod(data: z.infer<typeof PaymentMethodSchema>) {
     const validation = PaymentMethodSchema.safeParse(data)
-
-    if (!validation.success) {
-        return { error: 'Datos inválidos' }
-    }
+    if (!validation.success) return { error: 'Datos inválidos' }
 
     try {
-        const { supabase, organizationId } = await getPaymentSettingsContext()
+        const { organizationId } = await getPaymentSettingsContext()
 
-        const { data: newMethod, error } = await supabase
-            .from('payment_methods')
-            .insert({
+        const newMethod = await prisma.payment_methods.create({
+            data: {
                 organization_id: organizationId,
                 name: validation.data.name,
                 instructions: validation.data.instructions || null,
                 is_default: validation.data.is_default
-            })
-            .select()
-            .single()
-
-        if (error) return { error: error.message }
+            }
+        })
 
         revalidatePath('/dashboard/settings/finance')
         revalidatePath('/dashboard/invoices')
@@ -99,25 +76,20 @@ export async function createPaymentMethod(data: z.infer<typeof PaymentMethodSche
 
 export async function updatePaymentMethod(id: string, data: Partial<z.infer<typeof PaymentMethodSchema>>) {
     try {
-        const { supabase, organizationId } = await getPaymentSettingsContext()
+        const { organizationId } = await getPaymentSettingsContext()
 
-        const { data: updatedMethod, error } = await supabase
-            .from('payment_methods')
-            .update({
+        const updatedMethod = await prisma.payment_methods.updateMany({
+            where: { id, organization_id: organizationId },
+            data: {
                 name: data.name,
                 instructions: data.instructions,
                 is_default: data.is_default
-            })
-            .eq('id', id)
-            .eq('organization_id', organizationId) // Security check
-            .select()
-            .single()
-
-        if (error) return { error: error.message }
+            }
+        })
 
         revalidatePath('/dashboard/settings/finance')
         revalidatePath('/dashboard/invoices')
-        return { data: updatedMethod as PaymentMethod }
+        return { data: updatedMethod }
     } catch (error: any) {
         return { error: error.message }
     }
@@ -125,16 +97,12 @@ export async function updatePaymentMethod(id: string, data: Partial<z.infer<type
 
 export async function deletePaymentMethod(id: string) {
     try {
-        const { supabase, organizationId } = await getPaymentSettingsContext()
+        const { organizationId } = await getPaymentSettingsContext()
 
-        // Soft delete
-        const { error } = await supabase
-            .from('payment_methods')
-            .update({ is_active: false })
-            .eq('id', id)
-            .eq('organization_id', organizationId)
-
-        if (error) return { error: error.message }
+        await prisma.payment_methods.updateMany({
+            where: { id, organization_id: organizationId },
+            data: { is_active: false }
+        })
 
         revalidatePath('/dashboard/settings/finance')
         revalidatePath('/dashboard/invoices')
@@ -143,4 +111,3 @@ export async function deletePaymentMethod(id: string) {
         return { error: error.message }
     }
 }
-

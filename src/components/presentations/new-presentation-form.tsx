@@ -10,7 +10,6 @@ import { Loader2, Sparkles, Upload, FileText, Users } from 'lucide-react'
 import { toast } from 'sonner'
 import { createPresentation } from '@/lib/actions/presentation-generator'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 
 interface Customer {
@@ -25,7 +24,6 @@ interface NewPresentationFormProps {
 
 export function NewPresentationForm({ customers }: NewPresentationFormProps) {
     const router = useRouter()
-    const supabase = createClient()
 
     const [isGenerating, setIsGenerating] = useState(false)
     const [selectedCustomer, setSelectedCustomer] = useState('')
@@ -49,18 +47,14 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
 
         const fetchProjects = async () => {
             setLoadingProjects(true)
-            const { data } = await supabase
-                .from('projects')
-                .select('id, name, status')
-                .eq('customer_id', selectedCustomer)
-                .order('created_at', { ascending: false })
-
-            setProjects(data || [])
+            // TODO: Replace with server action
+            console.log('[NewPresentationForm] TODO: Fetch projects for customer', selectedCustomer)
+            setProjects([])
             setLoadingProjects(false)
         }
 
         fetchProjects()
-    }, [selectedCustomer, supabase])
+    }, [selectedCustomer])
 
     // Cargar cálculos cuando se selecciona un proyecto
     useEffect(() => {
@@ -72,18 +66,14 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
 
         const fetchCalculations = async () => {
             setLoadingCalculations(true)
-            const { data } = await supabase
-                .from('calculations')
-                .select('id, system_size_kwp, estimated_production_kwh, created_at, total_subsidies, net_cost')
-                .eq('project_id', selectedProject)
-                .order('created_at', { ascending: false })
-
-            setCalculations(data || [])
+            // TODO: Replace with server action
+            console.log('[NewPresentationForm] TODO: Fetch calculations for project', selectedProject)
+            setCalculations([])
             setLoadingCalculations(false)
         }
 
         fetchCalculations()
-    }, [selectedProject, supabase])
+    }, [selectedProject])
 
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -106,25 +96,11 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
         setIsGenerating(true)
 
         try {
-            // Subir foto si existe
+            // TODO: Implement photo upload via server action
             let photoUrl = undefined
             if (photo) {
-                const fileName = `${Date.now()}-${photo.name}`
-                const { data: uploadData, error: uploadError } = await supabase.storage
-                    .from('presentations')
-                    .upload(`originals/${fileName}`, photo)
-
-                if (uploadError) {
-                    toast.error('Error al subir la foto')
-                    setIsGenerating(false)
-                    return
-                }
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('presentations')
-                    .getPublicUrl(`originals/${fileName}`)
-
-                photoUrl = publicUrl
+                console.log('[NewPresentationForm] TODO: Upload photo via server action', photo.name)
+                // For now, skip photo upload
             }
 
             // Generar presentación
