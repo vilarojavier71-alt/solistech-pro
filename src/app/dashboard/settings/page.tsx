@@ -65,8 +65,8 @@ export default async function SettingsPage() {
             <Separator />
 
             <Tabs defaultValue="profile" orientation="vertical" className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <aside className="-mx-4 lg:w-1/5">
-                    <TabsList className="w-full flex lg:flex-col justify-start items-start gap-2 bg-transparent p-0 lg:sticky lg:top-24 h-auto">
+                <aside className="lg:w-1/5">
+                    <TabsList className="flex w-full overflow-x-auto pb-2 lg:pb-0 lg:flex-col justify-start items-start gap-2 bg-transparent p-0 lg:sticky lg:top-24 h-auto scrollbar-hide">
                         <div className="px-3 py-2 text-xs font-semibold uppercase text-muted-foreground mb-1 mt-2 hidden lg:block">Cuenta</div>
                         <TabsTrigger
                             value="profile"
