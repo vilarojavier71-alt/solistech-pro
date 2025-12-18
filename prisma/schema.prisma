@@ -85,7 +85,13 @@ model organizations {
   accounting_journals accounting_journals[]
   sales               sales[]
   appointment         appointments[]
+
   invitations         invitations[]
+  
+  // New stabilization tables
+  payment_methods     payment_methods[]
+  calculations        calculations[]
+  presentations       presentations[]
 
   @@index([subscription_plan, subscription_status])
 }
@@ -190,6 +196,7 @@ model customers {
   projects        projects[]
   invoices        invoices[]
   appointments    appointments[]
+  presentations   presentations[]
 
   @@index([organization_id, name])
   @@index([organization_id, email])
@@ -262,6 +269,8 @@ model projects {
   phase_history       project_phase_history[]
   transactions        project_transactions[]
   documents           project_documents[]
+  calculations        calculations[]
+  presentations       presentations[]
 
   @@index([organization_id, status])
   @@index([location])
@@ -650,4 +659,68 @@ model invitations {
 
   @@index([organization_id, status])
   @@index([token])
+}
+
+// ============================================================================
+// MISSING TABLES (STABILIZATION FIXES)
+// ============================================================================
+
+model payment_methods {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  name            String
+  instructions    String?
+  is_default      Boolean  @default(false)
+  is_active       Boolean  @default(true)
+  details         Json?
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, is_active])
+}
+
+model calculations {
+  id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id          String   @db.Uuid
+  project_id               String?  @db.Uuid
+  name                     String?
+  system_size_kwp          Decimal? @db.Decimal(10, 2)
+  estimated_production_kwh Decimal? @db.Decimal(12, 2)
+  estimated_savings        Decimal? @db.Decimal(12, 2)
+  location                 Json?
+  components               Json?
+  pvgis_data               Json?
+  subsidy_irpf_type        String?  @default("40")
+  created_at               DateTime @default(now()) @db.Timestamptz(6)
+  updated_at               DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  project      projects?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id])
+  @@index([project_id])
+}
+
+model presentations {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id       String   @db.Uuid
+  customer_id           String?  @db.Uuid
+  project_id            String?  @db.Uuid
+  title                 String
+  status                String   @default("draft") // draft, generating, completed, failed
+  original_photo_url    String?
+  simulated_photo_url   String?
+  powerpoint_url        String?
+  fiscal_deduction_type String?
+  created_by            String?  @db.Uuid
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime @default(now()) @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer     customers?    @relation(fields: [customer_id], references: [id], onDelete: SetNull)
+  project      projects?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, project_id])
 }
