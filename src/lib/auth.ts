@@ -3,13 +3,27 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
 import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
-import { PrismaClient } from "@prisma/client"
-// import prisma from "@/lib/db"
+import { prisma } from "@/lib/db"
 
-const prisma = new PrismaClient()
+// [CRITICAL FIX] Manual wrapper to guarantee model mapping
+// We use Object.assign to attach properties to the existing instance
+// ensuring we keep all prototype methods ($connect, $transaction, etc.)
+const prismaAdapterClient = Object.assign(prisma, {
+    user: prisma.users,
+    account: prisma.accounts,
+    session: prisma.sessions,
+    verificationToken: prisma.verification_tokens,
+}) as any
+
+// Debug check
+if (!prisma.users) {
+    console.error("🔥 CRITICAL ERROR: prisma.users is UNDEFINED in auth.ts. Check Prisma Client generation.")
+} else {
+    console.log("✅ Check passed: prisma.users is defined.")
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    adapter: PrismaAdapter(prisma),
+    adapter: PrismaAdapter(prismaAdapterClient),
     session: {
         strategy: "jwt",
     },
