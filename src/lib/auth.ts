@@ -73,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         data: {
                             email: user.email,
                             full_name: user.name || "Usuario",
-                            role: "employee",
+                            role: "user",
                             email_verified: true,
                             avatar_url: user.image,
                         },
@@ -86,7 +86,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Initial login - set basic user data
             if (user) {
                 token.id = user.id
-                token.role = (user as any).role || "employee"
+                token.role = (user as any).role || "user"
                 token.organizationId = (user as any).organizationId
             }
 
@@ -129,7 +129,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string
-                    ; (session.user as any).role = token.role || "employee"
+                    ; (session.user as any).role = token.role || "user"
                     ; (session.user as any).organizationId = token.organizationId || ""
                     ; (session.user as any).permissions = token.permissions || []
                     ; (session.user as any).plan = token.plan || "basic"
