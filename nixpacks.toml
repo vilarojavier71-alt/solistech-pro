@@ -12,16 +12,18 @@ providers = ["node"]
 [phases.setup]
 # Note: npm is bundled with nodejs, not a separate package in Nix
 nixPkgs = ["nodejs_20"]
+# OpenSSL required for Prisma
+aptPkgs = ["openssl", "ca-certificates"]
 
 [phases.install]
-cmds = ["npm ci --legacy-peer-deps"]
+cmds = ["npm ci --legacy-peer-deps --no-audit --no-fund"]
 
 [phases.build]
-# Prisma generate + Build with 3.5GB memory limit
+# Prisma generate + Build with 4GB memory limit
 # Then copy static assets to correct locations for standalone mode
 cmds = [
     "npx prisma generate",
-    "NODE_OPTIONS='--max-old-space-size=3584' npm run build",
+    "NODE_OPTIONS='--max-old-space-size=4096' npm run build",
     "mkdir -p .next/standalone/.next",
     "cp -r .next/static .next/standalone/.next/static",
     "cp -r public .next/standalone/public"
