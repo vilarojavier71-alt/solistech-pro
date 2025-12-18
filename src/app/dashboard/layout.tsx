@@ -4,9 +4,14 @@ import { getSetting } from "@/lib/actions/settings"
 import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const session = await auth()
-
-    if (!session?.user) {
+    let session
+    try {
+        session = await auth()
+        if (!session?.user) {
+            return redirect("/auth/login")
+        }
+    } catch (error) {
+        console.error("Auth check failed in DashboardLayout:", error)
         return redirect("/auth/login")
     }
 
