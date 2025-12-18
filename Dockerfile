@@ -1,72 +1,94 @@
-# node:20-alpine includes OpenSSL 1.1 which is required by Prisma 5.x
-FROM node:20-alpine AS base
+# =============================================================================
+# DOCKERFILE BLINDADO - ZERO FAILURE DEPLOYMENT
+# =============================================================================
+# Base: Debian Slim (elimina todos los problemas de OpenSSL/Alpine)
+# Optimizado para: VPS 8GB RAM + 4GB SWAP
+# =============================================================================
 
-# Install dependencies only when needed
+FROM node:20-slim AS base
+
+# Instalar dependencias de sistema necesarias para Prisma
+RUN apt-get update && apt-get install -y \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# =============================================================================
+# ETAPA 1: DEPENDENCIAS
+# =============================================================================
 FROM base AS deps
-# libc6-compat and openssl for Prisma on Alpine
-RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Copiar archivos de configuración de paquetes
 COPY package.json package-lock.json* ./
-RUN \
-    if [ -f package-lock.json ]; then npm ci --legacy-peer-deps; \
-    else echo "Lockfile not found." && exit 1; \
-    fi
 
+# Instalar dependencias con flags de supervivencia
+RUN npm ci --legacy-peer-deps --no-audit --no-fund
 
-# Rebuild the source code only when needed
+# =============================================================================
+# ETAPA 2: BUILD
+# =============================================================================
 FROM base AS builder
 WORKDIR /app
+
+# Copiar node_modules desde deps
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# === MEMORY OPTIMIZATION ENVIRONMENT VARIABLES ===
-# Disable telemetry
+# === VARIABLES DE ENTORNO CRÍTICAS PARA SUPERVIVENCIA ===
+# Desactivar telemetría (reduce overhead)
 ENV NEXT_TELEMETRY_DISABLED=1
-# Disable source map generation (critical for memory)
+# NO generar source maps (ahorra ~500MB de RAM)
 ENV GENERATE_SOURCEMAP=false
-# Skip type checking during build (already done in CI)
+# Saltar type checking (ya se hace en CI)
 ENV SKIP_TYPE_CHECK=true
+# Modo producción desde el inicio
+ENV NODE_ENV=production
+# Suprimir warnings de Sentry
+ENV SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING=1
 
-# Generate Prisma client
-RUN npm exec prisma generate
+# Generar Prisma Client con el motor correcto
+RUN npx prisma generate
 
-# Build with aggressive memory limit (3GB) - leaves 5GB for system/Docker on 8GB VPS
-RUN NODE_OPTIONS="--max-old-space-size=3072" npm run build
+# Build con límite de memoria agresivo
+# 4GB = suficiente con SWAP habilitado
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
-# Production image, copy all the files and run next
+# =============================================================================
+# ETAPA 3: PRODUCCIÓN (imagen final mínima)
+# =============================================================================
 FROM base AS runner
 WORKDIR /app
 
-# Install OpenSSL for Prisma runtime (libssl.so.1.1)
-RUN apk add --no-cache openssl libc6-compat
-
+# Variables de producción
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# Trust host for NextAuth behind proxy
+# CRÍTICO: Trust host para NextAuth detrás de proxy
 ENV AUTH_TRUST_HOST=true
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Crear usuario no-root
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
+# Copiar archivos públicos
 COPY --from=builder /app/public ./public
 
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+# Crear directorio .next y asignar permisos
+RUN mkdir .next && chown nextjs:nodejs .next
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# Copiar build standalone
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Cambiar a usuario no-root
 USER nextjs
 
+# Exponer puerto
 EXPOSE 3000
 
+# Variables de runtime
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
+# Comando de inicio
 CMD ["node", "server.js"]
-
