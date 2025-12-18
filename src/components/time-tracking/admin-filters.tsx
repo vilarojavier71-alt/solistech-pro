@@ -49,7 +49,7 @@ export function TimeTrackingFilters({ users }: TimeTrackingFiltersProps) {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <Label htmlFor="userId">Empleado</Label>
-                            <Select name="userId" defaultValue={searchParams.get('userId') || 'all'}>
+                            <Select name="userId" defaultValue={searchParams?.get('userId') || 'all'}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Todos" />
                                 </SelectTrigger>
@@ -70,7 +70,7 @@ export function TimeTrackingFilters({ users }: TimeTrackingFiltersProps) {
                                 id="dateFrom"
                                 name="dateFrom"
                                 type="date"
-                                defaultValue={searchParams.get('dateFrom') || ''}
+                                defaultValue={searchParams?.get('dateFrom') || ''}
                             />
                         </div>
 
@@ -80,7 +80,7 @@ export function TimeTrackingFilters({ users }: TimeTrackingFiltersProps) {
                                 id="dateTo"
                                 name="dateTo"
                                 type="date"
-                                defaultValue={searchParams.get('dateTo') || ''}
+                                defaultValue={searchParams?.get('dateTo') || ''}
                             />
                         </div>
 

@@ -15,7 +15,7 @@ export function NewCustomerForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const leadId = searchParams.get('from_lead')
+    const leadId = searchParams?.get('from_lead')
 
     const [formData, setFormData] = useState({
         name: '',

@@ -3,6 +3,7 @@ import { NewProjectForm } from '@/components/forms/new-project-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: 'Nuevo Proyecto | SolisTech PRO',
@@ -45,7 +46,9 @@ export default async function NewProjectPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <NewProjectForm customers={customers || []} />
+                    <Suspense fallback={<div>Cargando formulario...</div>}>
+                        <NewProjectForm customers={customers || []} />
+                    </Suspense>
                 </CardContent>
             </Card>
         </div>

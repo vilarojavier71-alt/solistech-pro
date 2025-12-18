@@ -1,6 +1,7 @@
 ﻿import { Metadata } from 'next'
 import { NewCustomerForm } from '@/components/forms/new-customer-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
     title: 'Nuevo Cliente | SolisTech PRO',
@@ -25,7 +26,9 @@ export default function NewCustomerPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <NewCustomerForm />
+                    <Suspense fallback={<div>Cargando formulario...</div>}>
+                        <NewCustomerForm />
+                    </Suspense>
                 </CardContent>
             </Card>
         </div>

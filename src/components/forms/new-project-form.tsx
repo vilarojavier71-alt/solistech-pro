@@ -26,7 +26,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    const preselectedCustomer = searchParams.get('customer')
+    const preselectedCustomer = searchParams?.get('customer')
 
     const [formData, setFormData] = useState({
         name: '',
