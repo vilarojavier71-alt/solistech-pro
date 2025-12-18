@@ -8,12 +8,12 @@ import { prisma } from "@/lib/db"
 // [FIX] Use Proxy to map model names without mutating the singleton or breaking prototype chain.
 // This is CI/CD safe and preserves all original Prisma methods.
 const prismaAdapterClient = new Proxy(prisma, {
-    get(target: any, prop) {
+    get(target, prop) {
         if (prop === "user") return target.users
         if (prop === "account") return target.accounts
         if (prop === "session") return target.sessions
         if (prop === "verificationToken") return target.verification_tokens
-        return target[prop]
+        return target[prop as keyof typeof target]
     },
 })
 
