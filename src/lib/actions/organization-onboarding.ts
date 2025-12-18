@@ -82,7 +82,7 @@ export async function createOrganization(formData: FormData) {
                     name,
                     slug,
                     tax_id: tax_id || null,
-                    subscription_plan: 'pro',
+                    subscription_plan: 'basic',
                     subscription_status: 'active'
                 }
             })
