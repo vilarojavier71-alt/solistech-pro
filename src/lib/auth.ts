@@ -5,28 +5,9 @@ import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 
-// [FIX] Robust, Type-Safe Wrapper using Object inheritance
-// We create a new object inheriting from the singleton to add properties safely.
-const createPrismaAdapter = () => {
-    const p = Object.create(prisma)
-    p.user = prisma.users
-    p.account = prisma.accounts
-    p.session = prisma.sessions
-    p.verificationToken = prisma.verification_tokens
-    return p
-}
-
-const prismaAdapterClient = createPrismaAdapter()
-
-// Debug Verification
-if (!prismaAdapterClient.user) {
-    console.error("🔥 CRITICAL: Prisma Adapter Client missing 'user' property")
-} else {
-    console.log("✅ Prisma Adapter Client configured correctly")
-}
-
+// [FIX] Now using prisma directly - models are named User, Account, Session with @@map to actual tables
 export const { handlers, auth, signIn, signOut } = NextAuth({
-    adapter: PrismaAdapter(prismaAdapterClient),
+    adapter: PrismaAdapter(prisma),
     session: {
         strategy: "jwt",
     },
@@ -53,7 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     return null
                 }
 
-                const user = await prisma.users.findUnique({
+                const user = await prisma.User.findUnique({
                     where: { email: credentials.email as string },
                 })
 
@@ -84,13 +65,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async signIn({ user, account }) {
             // For OAuth (Google), create/update user in our users table
             if (account?.provider === "google" && user.email) {
-                const existingUser = await prisma.users.findUnique({
+                const existingUser = await prisma.User.findUnique({
                     where: { email: user.email },
                 })
 
                 if (!existingUser) {
                     // Create new user from Google OAuth
-                    await prisma.users.create({
+                    await prisma.User.create({
                         data: {
                             email: user.email,
                             full_name: user.name || "Usuario",
@@ -115,7 +96,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // This ensures session reflects changes made after login (e.g., creating org)
             if (token.id) {
                 console.log('[AUTH] JWT Callback -> Fetching user data for:', token.id)
-                const dbUser = await prisma.users.findUnique({
+                const dbUser = await prisma.User.findUnique({
                     where: { id: token.id as string },
                     select: {
                         organization_id: true,
