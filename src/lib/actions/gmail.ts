@@ -11,7 +11,7 @@ export async function getGmailAuthUrl() {
 
     const state = Buffer.from(JSON.stringify({ userId: user.id })).toString('base64')
     const url = generateAuthUrl(state)
-
+    console.log('[GMAIL ACTION] Generated Auth URL:', url)
     return { url }
 }
 
