@@ -5,7 +5,7 @@ import { encrypt, decrypt } from './encryption'
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/auth/google/callback'
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${process.env.NEXTAUTH_URL}/api/gmail/callback`
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
     console.warn('Missing Google OAuth Credentials in environment variables.')
@@ -97,7 +97,7 @@ export async function getGmailClient(userId: string) {
                 where: { user_id: userId },
                 data: {
                     access_token: newEncryptedAccess,
-                    expires_at: credentials.expiry_date,
+                    expires_at: credentials.expiry_date || Date.now() + 3500 * 1000,
                     updated_at: new Date(),
                     ...(credentials.refresh_token && { refresh_token: encrypt(credentials.refresh_token) })
                 }
