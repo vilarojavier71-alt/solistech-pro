@@ -5,7 +5,8 @@ import { encrypt, decrypt } from './encryption'
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${process.env.NEXTAUTH_URL}/api/gmail/callback`
+// [FIX] Strictly use the dedicated Gmail callback to avoid conflict with NextAuth Login flow
+const REDIRECT_URI = `${process.env.NEXTAUTH_URL?.replace(/\/$/, '')}/api/gmail/callback`
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
     console.warn('Missing Google OAuth Credentials in environment variables.')
