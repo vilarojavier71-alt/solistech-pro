@@ -25,7 +25,7 @@ export default async function NewProjectPage() {
     // Get customers for dropdown
     const customers = await prisma.customers.findMany({
         where: { organization_id: profile.organization_id },
-        select: { id: true, name: true, company: true },
+        select: { id: true, name: true },
         orderBy: { name: 'asc' }
     })
 

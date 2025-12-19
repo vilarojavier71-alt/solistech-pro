@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 interface Customer {
     id: string
     name: string
-    company: string | null
+    company?: string | null
 }
 
 export function NewProjectForm({ customers }: { customers: Customer[] }) {
