@@ -8,12 +8,6 @@ const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 // [FIX] Strictly use the dedicated Gmail callback to avoid conflict with NextAuth Login flow
 const REDIRECT_URI = `${process.env.NEXTAUTH_URL?.replace(/\/$/, '')}/api/gmail/callback`
 
-console.log('----------------------------------------------------------------')
-console.log('[GMAIL AUTH CONFIG] Loading Module - VERSION CHECK: v3-strict')
-console.log('[GMAIL AUTH CONFIG] Process ENV NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
-console.log('[GMAIL AUTH CONFIG] Computed REDIRECT_URI:', REDIRECT_URI)
-console.log('----------------------------------------------------------------')
-
 if (!CLIENT_ID || !CLIENT_SECRET) {
     console.warn('Missing Google OAuth Credentials in environment variables.')
 }
