@@ -44,6 +44,12 @@ async function DashboardContent() {
 
     // Get user's profile
     console.log('[DASHBOARD PAGE] Fetching profile for User ID:', session.user.id)
+
+    // [DEBUG] Inspect Prisma Client State
+    console.log('[DEBUG DASHBOARD] Prisma Keys:', Object.keys(prisma))
+    console.log('[DEBUG DASHBOARD] prisma.User type:', typeof prisma.User)
+    console.log('[DEBUG DASHBOARD] prisma.user type:', typeof (prisma as any).user)
+
     const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true, role: true }

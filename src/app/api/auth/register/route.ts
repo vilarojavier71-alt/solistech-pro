@@ -3,6 +3,12 @@ import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
+    console.log('[REGISTER API] Starting registration process')
+    // [DEBUG] Inspect Prisma Client State
+    console.log('[REGISTER API] Prisma Keys:', Object.keys(prisma))
+    console.log('[REGISTER API] prisma.User type:', typeof prisma.User)
+    console.log('[REGISTER API] prisma.user type:', typeof (prisma as any).user)
+
     try {
         const { email, password, fullName } = await request.json()
 
