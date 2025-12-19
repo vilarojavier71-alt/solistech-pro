@@ -8,8 +8,55 @@ import { prisma } from "@/lib/db"
 // [FIX] Now using prisma directly - models are named User, Account, Session with @@map to actual tables
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
+    trustHost: true, // [FIX] Essential for deployments behind proxies (Coolify/Caddy) to prevent PKCE errors
     session: {
         strategy: "jwt",
+    },
+    cookies: {
+        sessionToken: {
+            name: `__Secure-authjs.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+        callbackUrl: {
+            name: `__Secure-authjs.callback-url`,
+            options: {
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+        csrfToken: {
+            name: `__Host-authjs.csrf-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+        pkceCodeVerifier: {
+            name: `__Secure-authjs.pkce.code_verifier`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
+        state: {
+            name: `__Secure-authjs.state`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: true,
+            },
+        },
     },
     pages: {
         signIn: "/auth/login",

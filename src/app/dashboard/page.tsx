@@ -55,6 +55,19 @@ async function DashboardContent() {
         select: { organization_id: true, full_name: true, role: true }
     })
 
+    if (!profile) {
+        console.error('[DASHBOARD PAGE] Critical: Profile not found for User ID:', session.user.id)
+        // If user is in session but not in DB, force signout or handle gracefully
+        // For now, return null or a specific error component to avoid crash
+        return (
+            <div className="p-8 text-center text-red-500">
+                <h1>Error Crítico de Cuenta</h1>
+                <p>Tu usuario existe en sesión pero no se encuentra en la base de datos.</p>
+                <p>Por favor, contacta a soporte.</p>
+            </div>
+        )
+    }
+
     console.log('[DASHBOARD PAGE] Profile Result:', profile ? 'Found' : 'NULL')
     console.log('[DASHBOARD PAGE] Org ID in DB:', profile?.organization_id)
 
