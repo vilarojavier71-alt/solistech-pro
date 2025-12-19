@@ -12,7 +12,7 @@ export async function getInvoices() {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -56,7 +56,7 @@ export async function getPaymentMethods() {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -106,7 +106,7 @@ export async function updateBillingDetails(data: {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })

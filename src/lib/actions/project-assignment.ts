@@ -14,7 +14,7 @@ export async function assignClientToProject(projectId: string, clientEmail: stri
 
     try {
         // 1. Find User by Email
-        const clientUser = await prisma.users.findUnique({
+        const clientUser = await prisma.User.findUnique({
             where: { email: clientEmail }
         })
 

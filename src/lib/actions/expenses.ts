@@ -22,7 +22,7 @@ export async function createExpense(data: { description: string; amount: number;
 
     try {
         // Get User's org
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -70,7 +70,7 @@ export async function getFinancialSummary(startDate?: string, endDate?: string) 
     if (!session?.user) return { totalIncome: 0, totalExpenses: 0, balance: 0, expenseCount: 0, recentExpenses: [] }
 
     try {
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -120,7 +120,7 @@ export async function getExpenseList() {
     const session = await auth()
     if (!session?.user) return []
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

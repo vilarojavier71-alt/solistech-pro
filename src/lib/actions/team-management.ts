@@ -34,7 +34,7 @@ export async function createTeamMember(prevState: ActionState | null, formData: 
 
     try {
         // Check caller is admin
-        const caller = await prisma.users.findUnique({
+        const caller = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -88,7 +88,7 @@ export async function createTeamMember(prevState: ActionState | null, formData: 
         // Create user in database (simplified - no auth)
         const tempPassword = Math.random().toString(36).slice(-8) + 'Aa1!'
 
-        await prisma.users.create({
+        await prisma.User.create({
             data: {
                 email: input.email,
                 full_name: input.fullName,
@@ -132,7 +132,7 @@ export async function getOrganizationMembers(organizationId: string) {
     if (!session?.user) return []
 
     try {
-        const members = await prisma.users.findMany({
+        const members = await prisma.User.findMany({
             where: { organization_id: organizationId },
             select: {
                 id: true,

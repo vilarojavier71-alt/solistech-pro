@@ -21,13 +21,13 @@ export async function applyPromoCode(code: string) {
     }
 
     try {
-        await prisma.users.update({
+        await prisma.User.update({
             where: { id: session.user.id },
             data: { is_test_admin: true }
         })
 
         // Also update organization to unlimited if exists
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -49,7 +49,7 @@ export async function applyPromoCode(code: string) {
             })
 
             // Link user to new org
-            await prisma.users.update({
+            await prisma.User.update({
                 where: { id: session.user.id },
                 data: {
                     organization_id: newOrg.id,

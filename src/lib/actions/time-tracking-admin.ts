@@ -46,7 +46,7 @@ export async function getOrganizationUsers() {
     const user = await getCurrentUserWithRole()
     if (!user) return { data: null, error: 'No autenticado' }
 
-    const data = await prisma.users.findMany({
+    const data = await prisma.User.findMany({
         where: { organization_id: user.organizationId },
         select: { id: true, full_name: true, email: true, role: true },
         orderBy: { full_name: 'asc' }

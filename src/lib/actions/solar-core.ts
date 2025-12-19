@@ -58,7 +58,7 @@ export async function createSolarSale(data: CreateSaleInput) {
     }
 
     // 3. Obtener organización del usuario
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true, department: true }
     })
@@ -150,7 +150,7 @@ export async function reconcilePayment(data: ReconcilePaymentInput) {
     }
 
     // 1. Verificar permisos (tesoreria, admin, owner)
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true, department: true, organization_id: true }
     })
@@ -268,7 +268,7 @@ export async function submitEngineerReview(data: EngineerReviewInput) {
     }
 
     // 1. Verificar permisos (ingenieria, admin, owner)
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true, department: true, organization_id: true, full_name: true }
     })

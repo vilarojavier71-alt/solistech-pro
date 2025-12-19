@@ -22,7 +22,7 @@ export async function verifyRole(allowedRoles: AppRole[]): Promise<{ authorized:
             return { authorized: false, role: null, userId: null }
         }
 
-        const userData = await prisma.users.findUnique({
+        const userData = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { role: true }
         })

@@ -55,7 +55,7 @@ export async function getOrganizationSettings() {
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -102,7 +102,7 @@ export async function saveOrganizationApiKey(
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -154,7 +154,7 @@ export async function updatePresentationSettings(
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })

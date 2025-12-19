@@ -32,7 +32,7 @@ export async function saveCalculation(data: SaveCalculationData) {
         }
 
         // Get fresh user data from DB
-        const dbUser = await prisma.users.findUnique({
+        const dbUser = await prisma.User.findUnique({
             where: { id: sessionUser.id },
             select: { organization_id: true }
         })

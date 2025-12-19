@@ -12,7 +12,7 @@ export default async function CalendarPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true }
     })

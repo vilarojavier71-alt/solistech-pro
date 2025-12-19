@@ -27,7 +27,7 @@ async function getOrganizationId(): Promise<string | null> {
 
     // 2. If missing, Try DB (Re-hydration)
     if (!orgId) {
-        const dbUser = await prisma.users.findUnique({
+        const dbUser = await prisma.User.findUnique({
             where: { id: user.id },
             select: { organization_id: true }
         })

@@ -17,7 +17,7 @@ export default async function PresentationsPage() {
 
     if (!session?.user) redirect('/auth/login')
 
-    const userData = await prisma.users.findUnique({
+    const userData = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

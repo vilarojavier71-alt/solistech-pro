@@ -166,7 +166,7 @@ export async function updateProjectPhase(
     }
 
     // Verificar que el usuario tiene rol de gestión
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true, organization_id: true }
     })
@@ -236,7 +236,7 @@ export async function toggleClientPortal(projectId: string, enabled: boolean) {
         return { error: 'No autenticado' }
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true, organization_id: true }
     })
@@ -384,7 +384,7 @@ export async function approveDocument(documentId: string) {
     }
 
     // Verificar que es staff
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })
@@ -422,7 +422,7 @@ export async function rejectDocument(documentId: string, reason: string) {
     }
 
     // Verificar que es staff
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })

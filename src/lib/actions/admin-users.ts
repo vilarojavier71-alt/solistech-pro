@@ -53,7 +53,7 @@ export async function createSystemUser(prevState: CreateUserState | null, formDa
         const { email, fullName, role, password } = validatedFields.data
 
         // Check if user exists
-        const existingUser = await prisma.users.findUnique({
+        const existingUser = await prisma.User.findUnique({
             where: { email }
         })
 
@@ -65,7 +65,7 @@ export async function createSystemUser(prevState: CreateUserState | null, formDa
         const passwordHash = await bcrypt.hash(password, 12)
 
         // Create user
-        const newUser = await prisma.users.create({
+        const newUser = await prisma.User.create({
             data: {
                 email,
                 full_name: fullName,
@@ -115,7 +115,7 @@ export async function updateSystemUser(prevState: any, formData: FormData) {
 
         const { userId, fullName, role } = validated.data
 
-        await prisma.users.update({
+        await prisma.User.update({
             where: { id: userId },
             data: { full_name: fullName, role }
         })
@@ -141,7 +141,7 @@ export async function resetUserPassword(prevState: any, formData: FormData) {
 
         const passwordHash = await bcrypt.hash(newPassword, 12)
 
-        await prisma.users.update({
+        await prisma.User.update({
             where: { id: userId },
             data: { password_hash: passwordHash }
         })
@@ -162,7 +162,7 @@ export async function deactivateSystemUser(userId: string) {
         const currentUser = await getCurrentUserWithRole()
         if (currentUser?.id === userId) return { error: 'No puedes desactivar tu propia cuenta' }
 
-        await prisma.users.update({
+        await prisma.User.update({
             where: { id: userId },
             data: { email_verified: false } // Soft deactivate relying on email_verified logic (or we could use a new status field)
         })

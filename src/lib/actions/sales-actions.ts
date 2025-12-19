@@ -32,7 +32,7 @@ export async function getCustomersForSelect() {
 
 export async function getTeamForSelect(roles: string[]) {
     try {
-        const team = await prisma.users.findMany({
+        const team = await prisma.User.findMany({
             where: { role: { in: roles } },
             select: { id: true, full_name: true, role: true },
             orderBy: { full_name: 'asc' }

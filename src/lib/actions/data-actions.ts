@@ -31,7 +31,7 @@ export async function importDataFromCsv<T = any>(
 
     try {
         // Get User's Organization
-        const userDetails = await prisma.users.findUnique({
+        const userDetails = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })

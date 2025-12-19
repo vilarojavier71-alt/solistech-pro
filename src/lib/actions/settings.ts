@@ -67,7 +67,7 @@ export async function updateProfile(data: any) {
     const user = await getCurrentUserWithRole()
     if (!user) throw new Error('No autenticado')
 
-    await prisma.users.update({
+    await prisma.User.update({
         where: { id: user.id },
         data: {
             full_name: data.fullName,

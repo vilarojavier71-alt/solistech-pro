@@ -21,7 +21,7 @@ export async function createLead(formData: FormData) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -66,7 +66,7 @@ export async function getLeads() {
     const session = await auth()
     if (!session?.user?.id) return []
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -104,7 +104,7 @@ export async function deleteLead(id: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

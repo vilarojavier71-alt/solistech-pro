@@ -10,7 +10,7 @@ export default async function AdminUsersPage() {
     if (!session?.user) redirect("/auth/login")
 
     // Get current user role
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })

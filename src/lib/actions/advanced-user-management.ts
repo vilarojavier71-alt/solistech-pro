@@ -26,7 +26,7 @@ export async function createAdvancedTeamMember(data: AdvancedUserFormValues) {
 
     try {
         // Get caller's org and God Mode status
-        const caller = await prisma.users.findUnique({
+        const caller = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: {
                 organization_id: true,
@@ -68,7 +68,7 @@ export async function createAdvancedTeamMember(data: AdvancedUserFormValues) {
 
         // NOTE: We are ignoring jobTitle and workZoneId as they are not in the schema yet
         // TODO: Add these fields to prisma schema later
-        const newUser = await prisma.users.create({
+        const newUser = await prisma.User.create({
             data: {
                 email: step1.email,
                 full_name: step1.fullName,

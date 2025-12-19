@@ -25,7 +25,7 @@ export default async function SettingsPage() {
     if (!session?.user) return null
 
     // Get user profile
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
     })
 

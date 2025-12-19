@@ -18,7 +18,7 @@ export default async function TeamSettingsPage() {
     if (!session?.user) return null
 
     // Get Org ID
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

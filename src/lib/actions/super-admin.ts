@@ -14,7 +14,7 @@ export async function activateGodMode(email: string, code: string) {
         }
 
         // Find user by email
-        const user = await prisma.users.findUnique({
+        const user = await prisma.User.findUnique({
             where: { email },
             include: { organization: true }
         })

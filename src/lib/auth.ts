@@ -119,7 +119,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
             // Fetch Permissions if role is present and not yet loaded
             if (token.role && !token.permissions) {
-                const rolePermissions = await prisma.role_permissions.findMany({
+                const rolePermissions = await prisma.RolePermission.findMany({
                     where: { role: token.role as string },
                     select: { permission_slug: true }
                 })

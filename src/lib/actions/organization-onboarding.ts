@@ -35,7 +35,7 @@ export async function createOrganization(formData: FormData) {
 
     try {
         // 3. Double Check if user already has an org (DB check via Prisma)
-        const userData = await prisma.users.findUnique({
+        const userData = await prisma.User.findUnique({
             where: { id: userId },
             select: { organization_id: true }
         })

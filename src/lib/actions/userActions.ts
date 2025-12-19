@@ -20,7 +20,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
 
     try {
         // Permission Check: Requester must be admin, owner, or cto
-        const requesterProfile = await prisma.users.findUnique({
+        const requesterProfile = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -41,7 +41,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
         }
 
         // Safety Check: Target user must be in same org
-        const targetProfile = await prisma.users.findUnique({
+        const targetProfile = await prisma.User.findUnique({
             where: { id: targetUserId },
             select: { organization_id: true }
         })
@@ -55,7 +55,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
         }
 
         // Execution - Update role
-        await prisma.users.update({
+        await prisma.User.update({
             where: { id: targetUserId },
             data: { role: newRole }
         })

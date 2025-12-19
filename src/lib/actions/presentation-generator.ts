@@ -9,7 +9,7 @@ async function getPresentationContext() {
     const user = await getCurrentUserWithRole()
     if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: user.id },
         select: { organization_id: true }
     })

@@ -16,7 +16,7 @@ export async function getOrganizationSubscription() {
     const session = await auth()
     if (!session?.user?.id) return null
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -56,7 +56,7 @@ export async function checkEmployeeLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, is_test_admin: true }
     })
@@ -121,7 +121,7 @@ export async function checkCustomerLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, is_test_admin: true }
     })
@@ -219,7 +219,7 @@ export async function createCheckoutSession(planId: string): Promise<{ url: stri
         return { url: null, error: 'No autenticado' }
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })
@@ -287,7 +287,7 @@ export async function createCustomerPortalSession(): Promise<{ url: string | nul
         return { url: null, error: 'No autenticado' }
     }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
