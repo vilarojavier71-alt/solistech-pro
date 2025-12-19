@@ -63,6 +63,13 @@ export async function getProjectsList(params: {
     sortBy?: string
     sortOrder?: 'asc' | 'desc'
 }): Promise<ProjectsListResult> {
+    console.log('[PROJECTS ACTION] getProjectsList called')
+    try {
+        console.log('[PROJECTS ACTION] Inspecting prisma.projects:', typeof prisma.projects)
+    } catch (e) {
+        console.error('[PROJECTS ACTION] Error inspecting prisma:', e)
+    }
+
     const user = await getCurrentUserWithRole()
     if (!user) {
         return { data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
@@ -143,7 +150,10 @@ export async function getProjectsList(params: {
 // ============================================================================
 
 export async function createProject(input: unknown) {
+    console.log('[PROJECTS ACTION] createProject called')
+    console.log('[PROJECTS ACTION] Input:', JSON.stringify(input))
     try {
+
         const validationResult = CreateProjectSchema.safeParse(input)
         if (!validationResult.success) {
             return { success: false, error: "Datos inválidos", details: validationResult.error.flatten().fieldErrors }
@@ -158,6 +168,13 @@ export async function createProject(input: unknown) {
             city: data.city || null,
             postal_code: data.postal_code || null,
         }
+
+
+        console.log('[PROJECTS ACTION] Creating project with data:', {
+            organization_id: user.organizationId,
+            client_id: data.customer_id || null,
+            name: data.name
+        })
 
         const newProject = await prisma.projects.create({
             data: {
