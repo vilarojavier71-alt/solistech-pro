@@ -59,21 +59,29 @@ export async function disconnectGmail() {
 }
 
 export async function getGmailStatus() {
+    console.log('[MAIL DEBUG] getGmailStatus called')
     const user = await getCurrentUserWithRole()
-    if (!user) return { isConnected: false }
+    if (!user) {
+        console.log('[MAIL DEBUG] No user found in session')
+        return { isConnected: false }
+    }
+    console.log('[MAIL DEBUG] User found:', user.id)
 
     try {
+        console.log('[MAIL DEBUG] Querying gmail_tokens for user:', user.id)
         const token = await prisma.gmail_tokens.findUnique({
             where: { user_id: user.id },
             select: { email: true, is_active: true, updated_at: true }
         })
+        console.log('[MAIL DEBUG] Token found?', !!token)
 
         return {
             isConnected: !!token,
             email: token?.email,
             lastSynced: token?.updated_at
         }
-    } catch {
+    } catch (e: any) {
+        console.error('[MAIL DEBUG] getGmailStatus error:', e)
         return { isConnected: false }
     }
 }

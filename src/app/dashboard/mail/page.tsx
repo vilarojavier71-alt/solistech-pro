@@ -7,7 +7,18 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Info } from 'lucide-react'
 
 export default async function MailPage({ searchParams }: { searchParams: { error?: string, success?: string } }) {
-    const { isConnected, email } = await getGmailStatus()
+    console.log('[MAIL DEBUG] Rendering MailPage')
+    let isConnected = false
+    let email: string | undefined
+
+    try {
+        const status = await getGmailStatus()
+        console.log('[MAIL DEBUG] getGmailStatus result:', status)
+        isConnected = status.isConnected
+        email = status.email
+    } catch (e: any) {
+        console.error('[MAIL DEBUG] CRITICAL: getGmailStatus threw error:', e)
+    }
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
