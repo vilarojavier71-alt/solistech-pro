@@ -29,6 +29,12 @@ export function InboxList() {
     const handleSelectThread = async (threadId: string) => {
         setLoadingThreadId(threadId)
         try {
+            const detail = await getThreadDetails(threadId)
+
+            if ('error' in detail) {
+                toast.error('Error al cargar el correo')
+                return
+            }
             // Use the last message (most recent) for display
             // detail is now inferred as success type
             const messages = (detail as any).messages || []
