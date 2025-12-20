@@ -1,4 +1,4 @@
-import { PageShell } from "@/components/ui/page-shell"
+﻿import { PageShell } from "@/components/ui/page-shell"
 import { TimeReportTable } from "@/components/time-tracking/time-report-table"
 import { getAdminTimeEntries } from "@/lib/actions/time-tracking"
 
@@ -11,7 +11,7 @@ export default async function TimeTrackingAdminPage(props: { searchParams: Promi
     return (
         <PageShell
             title="Reporte de Horas"
-            description="Vista administrativa de control horario y n�mina."
+            description="Vista administrativa de control horario y nómina."
         >
             <TimeReportTable entries={entries} currentMonth={currentMonth} />
         </PageShell>

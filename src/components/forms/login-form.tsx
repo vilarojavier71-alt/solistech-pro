@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
@@ -26,14 +26,14 @@ export function LoginForm() {
             })
 
             if (result?.error) {
-                toast.error(result.error || 'Error al iniciar sesión')
+                toast.error(result.error || 'Error al iniciar sesiÃ³n')
             } else {
-                toast.success('¡Bienvenido de nuevo!')
+                toast.success('Â¡Bienvenido de nuevo!')
                 router.push('/dashboard')
                 router.refresh()
             }
         } catch (error: any) {
-            toast.error(error.message || 'Error al iniciar sesión')
+            toast.error(error.message || 'Error al iniciar sesiÃ³n')
         } finally {
             setLoading(false)
         }
@@ -67,11 +67,11 @@ export function LoginForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="password">Contraseña</Label>
+                    <Label htmlFor="password">ContraseÃ±a</Label>
                     <Input
                         id="password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -80,7 +80,7 @@ export function LoginForm() {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+                    {loading ? 'Iniciando sesiÃ³n...' : 'Iniciar sesiÃ³n'}
                 </Button>
             </form>
 
@@ -90,7 +90,7 @@ export function LoginForm() {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                        O continúa con
+                        O continÃºa con
                     </span>
                 </div>
             </div>

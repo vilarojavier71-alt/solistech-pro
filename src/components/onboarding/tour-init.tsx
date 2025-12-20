@@ -1,16 +1,16 @@
-"use client"
+ï»¿"use client"
 
 import { useEffect } from "react"
-// ?? CORRECCIÓN: Importamos el hook del contexto, no del config
+// ðŸ‘‡ CORRECCIÃ“N: Importamos el hook del contexto, no del config
 import { useOnboarding } from "@/components/providers/onboarding-provider"
 
 export function OnboardingTourInit() {
     const { checkAndStartTour } = useOnboarding()
 
     useEffect(() => {
-        // Delegamos la lógica al Provider
+        // Delegamos la lÃ³gica al Provider
         checkAndStartTour()
     }, [checkAndStartTour])
 
-    return null // Este componente no renderiza nada visual, es solo lógico
+    return null // Este componente no renderiza nada visual, es solo lÃ³gico
 }

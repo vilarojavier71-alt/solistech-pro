@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -50,7 +50,7 @@ interface ClientEditSheetProps {
 
 const clientSchema = z.object({
     full_name: z.string().min(1, 'El nombre es obligatorio'),
-    email: z.string().email('Email inv·lido').optional().or(z.literal('')),
+    email: z.string().email('Email inv√°lido').optional().or(z.literal('')),
     phone: z.string().optional(),
     nif: z.string().optional(),
     address: z.string().optional(),
@@ -80,7 +80,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
             city: client?.city || '',
             postal_code: client?.postal_code || '',
             province: client?.province || '',
-            country: client?.country || 'EspaÒa',
+            country: client?.country || 'Espa√±a',
             notes: client?.notes || '',
         },
     })
@@ -88,7 +88,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
     const onSubmit = async (data: ClientFormData) => {
         setLoading(true)
 
-        // Combinar campos est·ndar + custom
+        // Combinar campos est√°ndar + custom
         const allData = {
             ...data,
             ...customFields,
@@ -127,17 +127,17 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
                     </SheetTitle>
                     <SheetDescription className="text-slate-400">
                         {client
-                            ? 'Modifica los datos del cliente. Los cambios se guardar·n autom·ticamente.'
+                            ? 'Modifica los datos del cliente. Los cambios se guardar√°n autom√°ticamente.'
                             : 'Completa los datos del nuevo cliente.'}
                     </SheetDescription>
                 </SheetHeader>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
-                        {/* Campos SQL Est·ndar */}
+                        {/* Campos SQL Est√°ndar */}
                         <div className="space-y-4">
                             <h3 className="text-sm font-mono uppercase tracking-wider text-slate-500">
-                                InformaciÛn B·sica
+                                Informaci√≥n B√°sica
                             </h3>
 
                             <FormField
@@ -150,7 +150,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
                                             <Input
                                                 {...field}
                                                 className="bg-slate-950 border-slate-700"
-                                                placeholder="Juan P√©rez Garc√≠a"
+                                                placeholder="Juan P√É¬©rez Garc√É¬≠a"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -183,7 +183,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
                                     name="phone"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel className="text-slate-300">TelÈfono</FormLabel>
+                                            <FormLabel className="text-slate-300">Tel√©fono</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
@@ -220,7 +220,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
                                 name="address"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-slate-300">DirecciÛn</FormLabel>
+                                        <FormLabel className="text-slate-300">Direcci√≥n</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}

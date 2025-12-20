@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -50,16 +50,16 @@ export function CreateUserDialog({ onSuccess }: { onSuccess?: () => void }) {
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Usuario</DialogTitle>
                     <DialogDescription>
-                        Ficha de alta para empleados o clientes. Se generar� una contrase�a temporal.
+                        Ficha de alta para empleados o clientes. Se generará una contraseña temporal.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                     <div className="grid gap-2">
                         <Label htmlFor="fullName">Nombre Completo</Label>
-                        <Input id="fullName" name="fullName" placeholder="Ej. Juan Pérez" required />
+                        <Input id="fullName" name="fullName" placeholder="Ej. Juan PÃ©rez" required />
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Correo Electrónico</Label>
+                        <Label htmlFor="email">Correo ElectrÃ³nico</Label>
                         <Input id="email" name="email" type="email" placeholder="juan@empresa.com" required />
                     </div>
                     <div className="grid gap-2">
@@ -77,8 +77,8 @@ export function CreateUserDialog({ onSuccess }: { onSuccess?: () => void }) {
                         </Select>
                     </div>
                     <div className="grid gap-2">
-                        <Label htmlFor="password">Contrase�a Provisional</Label>
-                        <Input id="password" name="password" type="text" placeholder="Mínimo 6 caracteres" minLength={6} required />
+                        <Label htmlFor="password">Contraseña Provisional</Label>
+                        <Input id="password" name="password" type="text" placeholder="MÃ­nimo 6 caracteres" minLength={6} required />
                     </div>
 
                     <div className="flex justify-end gap-3 mt-4">

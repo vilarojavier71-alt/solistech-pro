@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import React from 'react'
 import { ErrorBoundary as GlobalErrorBoundary } from '@/components/ui/error-boundary'
@@ -8,10 +8,10 @@ import { Toaster } from 'sonner'
 /**
  * LayoutWrapper
  * 
- * Envoltorio maestro para las p·ginas del dashboard.
+ * Envoltorio maestro para las p√°ginas del dashboard.
  * - ErrorBoundary: Captura errores de renderizado.
- * - Animations: Transiciones suaves entre p·ginas.
- * - Toaster: Notificaciones globales (si no est·n ya en RootLayout, pero aquÌ seguro).
+ * - Animations: Transiciones suaves entre p√°ginas.
+ * - Toaster: Notificaciones globales (si no est√°n ya en RootLayout, pero aqu√≠ seguro).
  */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     return (

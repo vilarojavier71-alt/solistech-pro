@@ -1,4 +1,4 @@
-"use client"
+ï»¿"use client"
 
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -43,7 +43,7 @@ export function MobileMenu({ userRole }: MobileMenuProps) {
                 </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-72 bg-zinc-950 border-r-0" aria-describedby={undefined}>
-                <SheetTitle className="sr-only">Menú de Navegación</SheetTitle>
+                <SheetTitle className="sr-only">MenÃº de NavegaciÃ³n</SheetTitle>
                 <Sidebar userRole={userRole} />
             </SheetContent>
         </Sheet>

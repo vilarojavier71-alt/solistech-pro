@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Sale } from '@/types/portal'
@@ -46,7 +46,7 @@ export function SalesTable({ data: initialData }: SalesTableProps) {
     }
 
     const getPaymentBadge = (sale: Sale) => {
-        // Lógica simplificada visualizar estado global
+        // LÃ³gica simplificada visualizar estado global
         if (sale.payment_final_status === 'received') return <Badge className="bg-green-600">Pagado 100%</Badge>
         if (sale.payment_60_status === 'received') return <Badge className="bg-lime-600">Pagado 60%</Badge>
         if (sale.payment_20_status === 'received') return <Badge className="bg-sky-600">Pagado 20%</Badge>
@@ -59,14 +59,14 @@ export function SalesTable({ data: initialData }: SalesTableProps) {
                 <div className="relative w-72">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="Buscar por cliente, DNI o Nº..."
+                        placeholder="Buscar por cliente, DNI o NÂº..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-8"
                     />
                 </div>
                 <div className="flex gap-2">
-                    {/* Filtros futuros aquí */}
+                    {/* Filtros futuros aquÃ­ */}
                 </div>
             </div>
 
@@ -79,7 +79,7 @@ export function SalesTable({ data: initialData }: SalesTableProps) {
                             <TableHead>Fecha</TableHead>
                             <TableHead>Importe</TableHead>
                             <TableHead>Estado Pago</TableHead>
-                            <TableHead>Instalación</TableHead>
+                            <TableHead>InstalaciÃ³n</TableHead>
                             <TableHead className="text-right">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -125,7 +125,7 @@ export function SalesTable({ data: initialData }: SalesTableProps) {
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <span className="sr-only">Abrir menú</span>
+                                                    <span className="sr-only">Abrir menÃº</span>
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>

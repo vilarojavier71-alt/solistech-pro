@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -49,7 +49,7 @@ export default function QuotesPage() {
                             <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3">Número</th>
+                                        <th scope="col" className="px-6 py-3">NÃºmero</th>
                                         <th scope="col" className="px-6 py-3">Cliente / Lead</th>
                                         <th scope="col" className="px-6 py-3">Fecha</th>
                                         <th scope="col" className="px-6 py-3">Importe</th>
@@ -70,7 +70,7 @@ export default function QuotesPage() {
                                                 {new Date(quote.created_at).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 font-medium text-slate-900">
-                                                {quote.total?.toLocaleString()} €
+                                                {quote.total?.toLocaleString()} â‚¬
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold

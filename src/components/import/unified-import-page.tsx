@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,9 +42,9 @@ export function UnifiedImportPage() {
             {/* Entity Type Selector */}
             <Card>
                 <CardHeader>
-                    <CardTitle>¿Qué tipo de datos deseas importar?</CardTitle>
+                    <CardTitle>Â¿QuÃ© tipo de datos deseas importar?</CardTitle>
                     <CardDescription>
-                        Selecciona el tipo de información que contiene tu archivo
+                        Selecciona el tipo de informaciÃ³n que contiene tu archivo
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -88,9 +88,9 @@ export function UnifiedImportPage() {
                         >
                             <Calculator className={`h-8 w-8 mb-3 ${entityType === 'calculations' ? 'text-cyan-600' : 'text-muted-foreground'
                                 }`} />
-                            <div className="font-semibold mb-1">Cálculos</div>
+                            <div className="font-semibold mb-1">CÃ¡lculos</div>
                             <div className="text-sm text-muted-foreground">
-                                Importar cálculos solares y estimaciones
+                                Importar cÃ¡lculos solares y estimaciones
                             </div>
                         </button>
 
@@ -105,7 +105,7 @@ export function UnifiedImportPage() {
                                 }`} />
                             <div className="font-semibold mb-1">Ventas</div>
                             <div className="text-sm text-muted-foreground">
-                                Importar ventas históricas con importes y estados
+                                Importar ventas histÃ³ricas con importes y estados
                             </div>
                         </button>
 
@@ -148,12 +148,12 @@ export function UnifiedImportPage() {
                     <Info className="h-4 w-4" />
                     <AlertDescription>
                         <div className="space-y-2">
-                            <div className="font-semibold">Sistema de Importación Inteligente</div>
+                            <div className="font-semibold">Sistema de ImportaciÃ³n Inteligente</div>
                             <ul className="text-sm space-y-1 ml-4">
-                                <li>? <strong>Mapeo automático:</strong> Detectamos las columnas de tu archivo automáticamente</li>
-                                <li>? <strong>Campos personalizados:</strong> Los datos que no encajan en campos estándar se guardan como campos personalizados</li>
-                                <li>? <strong>Validación:</strong> Verificamos emails, teléfonos, NIFs y otros datos antes de importar</li>
-                                <li>? <strong>Plantillas:</strong> Guarda el mapeo para reutilizarlo en futuras importaciones</li>
+                                <li>âœ… <strong>Mapeo automÃ¡tico:</strong> Detectamos las columnas de tu archivo automÃ¡ticamente</li>
+                                <li>âœ… <strong>Campos personalizados:</strong> Los datos que no encajan en campos estÃ¡ndar se guardan como campos personalizados</li>
+                                <li>âœ… <strong>ValidaciÃ³n:</strong> Verificamos emails, telÃ©fonos, NIFs y otros datos antes de importar</li>
+                                <li>âœ… <strong>Plantillas:</strong> Guarda el mapeo para reutilizarlo en futuras importaciones</li>
                             </ul>
                         </div>
                     </AlertDescription>
@@ -169,13 +169,13 @@ export function UnifiedImportPage() {
             {!entityType && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>¿Necesitas ayuda?</CardTitle>
+                        <CardTitle>Â¿Necesitas ayuda?</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <div className="font-semibold mb-2">Formatos soportados</div>
                             <div className="text-sm text-muted-foreground">
-                                • CSV (.csv)
+                                â€¢ CSV (.csv)
                             </div>
                         </div>
                     </CardContent>
@@ -196,8 +196,8 @@ function ImportArea({ entityType, onComplete }: { entityType: string, onComplete
                 { label: 'Nombre Completo', value: 'full_name', required: true },
                 { label: 'DNI / NIF', value: 'dni', required: true },
                 { label: 'Email', value: 'email' },
-                { label: 'Teléfono', value: 'phone' },
-                { label: 'Dirección', value: 'address' },
+                { label: 'TelÃ©fono', value: 'phone' },
+                { label: 'DirecciÃ³n', value: 'address' },
                 { label: 'Ciudad', value: 'city' }
             ]
         },
@@ -205,15 +205,15 @@ function ImportArea({ entityType, onComplete }: { entityType: string, onComplete
             tableName: 'projects',
             options: [
                 { label: 'Nombre Proyecto', value: 'name', required: true },
-                { label: 'Código', value: 'code' },
-                { label: 'Dirección', value: 'address' },
+                { label: 'CÃ³digo', value: 'code' },
+                { label: 'DirecciÃ³n', value: 'address' },
                 { label: 'Estado', value: 'status' }
             ]
         },
         'sales': {
             tableName: 'sales',
             options: [
-                { label: 'Número Venta', value: 'sale_number', required: true },
+                { label: 'NÃºmero Venta', value: 'sale_number', required: true },
                 { label: 'Importe', value: 'amount', required: true },
                 { label: 'Nombre Cliente', value: 'customer_name' },
                 { label: 'Fecha', value: 'sale_date' }
@@ -222,10 +222,10 @@ function ImportArea({ entityType, onComplete }: { entityType: string, onComplete
         'visitas': {
             tableName: 'appointments',
             options: [
-                { label: 'Título / Asunto', value: 'title', required: true },
+                { label: 'TÃ­tulo / Asunto', value: 'title', required: true },
                 { label: 'Fecha Inicio', value: 'start_time', required: true },
                 { label: 'Fecha Fin', value: 'end_time' },
-                { label: 'Dirección', value: 'address' },
+                { label: 'DirecciÃ³n', value: 'address' },
                 { label: 'Estado', value: 'status' }
             ]
         }
@@ -238,7 +238,7 @@ function ImportArea({ entityType, onComplete }: { entityType: string, onComplete
             <Alert variant="destructive">
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                    Importación no disponible para {entityType} en este momento.
+                    ImportaciÃ³n no disponible para {entityType} en este momento.
                 </AlertDescription>
             </Alert>
         )

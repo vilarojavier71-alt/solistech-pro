@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+﻿import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { TeamTable } from '@/components/dashboard/team-table'
 import { Info, Users } from 'lucide-react'
@@ -8,7 +8,7 @@ export default async function TeamPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.user.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })
@@ -16,7 +16,7 @@ export default async function TeamPage() {
     if (!profile?.organization_id) return null
 
     // Get all organization members
-    const teamMembers = await prisma.user.findMany({
+    const teamMembers = await prisma.User.findMany({
         where: { organization_id: profile.organization_id },
         orderBy: { created_at: 'asc' }
     })
@@ -29,7 +29,7 @@ export default async function TeamPage() {
                     Equipo
                 </h1>
                 <p className="text-muted-foreground">
-                    Gestiona los miembros de tu organizaci�n y asigna permisos.
+                    Gestiona los miembros de tu organización y asigna permisos.
                 </p>
             </div>
 

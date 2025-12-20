@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { getPortalDashboardData } from '@/lib/actions/portal'
 import { useEffect, useState } from 'react'
@@ -67,7 +67,7 @@ export function ClientDashboard() {
             {
                 id: 1,
                 title: 'Venta Registrada',
-                description: `Tu proyecto comenzÛ el ${new Date(sale.sale_date).toLocaleDateString('es-ES')}`,
+                description: `Tu proyecto comenz√≥ el ${new Date(sale.sale_date).toLocaleDateString('es-ES')}`,
                 status: 'completed',
                 date: sale.sale_date,
                 icon: 'check',
@@ -76,8 +76,8 @@ export function ClientDashboard() {
                 id: 2,
                 title: 'Pago Inicial',
                 description: sale.payment_status === 'confirmed'
-                    ? `Pago de Ä${sale.amount.toLocaleString('es-ES')} recibido correctamente`
-                    : 'Esperando confirmaciÛn de pago',
+                    ? `Pago de ‚Ç¨${sale.amount.toLocaleString('es-ES')} recibido correctamente`
+                    : 'Esperando confirmaci√≥n de pago',
                 status: sale.payment_status === 'confirmed' ? 'completed' :
                     sale.payment_status === 'rejected' ? 'rejected' : 'in_progress',
                 date: sale.payment_date,
@@ -85,7 +85,7 @@ export function ClientDashboard() {
             },
             {
                 id: 3,
-                title: 'DocumentaciÛn',
+                title: 'Documentaci√≥n',
                 description: getDocumentationDescription(sale.documentation_status),
                 status: sale.documentation_status === 'approved' ? 'completed' :
                     sale.documentation_status === 'rejected' ? 'rejected' :
@@ -97,7 +97,7 @@ export function ClientDashboard() {
             },
             {
                 id: 4,
-                title: 'IngenierÌa',
+                title: 'Ingenier√≠a',
                 description: getEngineeringDescription(sale.engineering_status),
                 status: sale.engineering_status === 'approved' ? 'completed' :
                     sale.engineering_status === 'rejected' ? 'rejected' :
@@ -116,7 +116,7 @@ export function ClientDashboard() {
             },
             {
                 id: 6,
-                title: 'InstalaciÛn',
+                title: 'Instalaci√≥n',
                 description: getInstallationDescription(sale.installation_status, sale.installation_date),
                 status: sale.installation_status === 'completed' ? 'completed' :
                     sale.installation_status === 'in_progress' || sale.installation_status === 'scheduled' ? 'in_progress' : 'pending',
@@ -138,7 +138,7 @@ export function ClientDashboard() {
                 <div className="relative">
                     <div className="h-16 w-16 rounded-full border-4 border-sky-100 border-t-sky-600 animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xl">‚òÄÔ∏è</span>
+                        <span className="text-xl">√¢Àú‚Ç¨√Ø¬∏¬è</span>
                     </div>
                 </div>
                 <p className="mt-4 text-sky-800 font-medium animate-pulse">Cargando tu proyecto...</p>
@@ -169,10 +169,10 @@ export function ClientDashboard() {
                         Expediente: {sale.sale_number}
                     </Badge>
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-                        Hola, {sale.customer_name.split(' ')[0]} ??
+                        Hola, {sale.customer_name.split(' ')[0]} üëã
                     </h1>
                     <p className="text-slate-600 text-lg">
-                        AquÌ tienes el estado actual de tu instalaciÛn solar.
+                        Aqu√≠ tienes el estado actual de tu instalaci√≥n solar.
                     </p>
                 </div>
 
@@ -222,9 +222,9 @@ export function ClientDashboard() {
                             <CardHeader className="bg-gradient-to-r from-slate-50 to-white border-b border-slate-100">
                                 <CardTitle className="text-xl text-slate-800 flex items-center gap-2">
                                     <Clock className="text-sky-500 h-5 w-5" />
-                                    LÌnea de Tiempo
+                                    L√≠nea de Tiempo
                                 </CardTitle>
-                                <CardDescription>Tu camino hacia la energÌa solar</CardDescription>
+                                <CardDescription>Tu camino hacia la energ√≠a solar</CardDescription>
                             </CardHeader>
                             <CardContent className="pt-8">
                                 <div className="relative pl-4">
@@ -256,14 +256,14 @@ export function ClientDashboard() {
                             <CardHeader className="relative">
                                 <CardTitle className="text-lg font-medium text-sky-100">Resumen del Proyecto</CardTitle>
                                 <div className="text-3xl font-bold mt-2">
-                                    Ä{sale.amount.toLocaleString('es-ES')}
+                                    ‚Ç¨{sale.amount.toLocaleString('es-ES')}
                                 </div>
-                                <p className="text-sky-200 text-sm">InversiÛn Total</p>
+                                <p className="text-sky-200 text-sm">Inversi√≥n Total</p>
                             </CardHeader>
                             <CardContent className="relative space-y-4 pt-0">
                                 <div className="bg-white/10 rounded-xl p-3 backdrop-blur-md">
                                     <p className="text-xs text-sky-200 uppercase tracking-wide font-semibold mb-1">Material</p>
-                                    <p className="font-medium">{sale.material || 'ConfiguraciÛn est·ndar'}</p>
+                                    <p className="font-medium">{sale.material || 'Configuraci√≥n est√°ndar'}</p>
                                 </div>
                                 <div className="bg-white/10 rounded-xl p-3 backdrop-blur-md">
                                     <p className="text-xs text-sky-200 uppercase tracking-wide font-semibold mb-1">Email Registrado</p>
@@ -276,11 +276,11 @@ export function ClientDashboard() {
                         <Card className="border-0 shadow-lg shadow-slate-200/40 rounded-3xl bg-white">
                             <CardContent className="p-6 text-center space-y-4">
                                 <div className="h-12 w-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
-                                    <span className="text-2xl">??</span>
+                                    <span className="text-2xl">üí¨</span>
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-slate-900">øTienes dudas?</h3>
-                                    <p className="text-sm text-slate-500 mt-1">Nuestro equipo est· aquÌ para ayudarte en cada paso.</p>
+                                    <h3 className="font-semibold text-slate-900">¬øTienes dudas?</h3>
+                                    <p className="text-sm text-slate-500 mt-1">Nuestro equipo est√° aqu√≠ para ayudarte en cada paso.</p>
                                 </div>
                                 <Button variant="outline" className="w-full rounded-xl border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
                                     Contactar Soporte
@@ -355,19 +355,19 @@ function TimelineItem({ step, isLast }: { step: TimelineStep; isLast: boolean })
 
 function getDocumentationDescription(status: string): string {
     switch (status) {
-        case 'approved': return 'DocumentaciÛn verificada y correcta. °Buen trabajo!'
-        case 'rejected': return 'Hay un problema con algunos documentos. Por favor, revÌsalos.'
-        case 'uploaded': return 'Hemos recibido tus archivos. Nuestro equipo los revisar· pronto.'
-        default: return 'Necesitamos tu confirmaciÛn de identidad y facturas para avanzar.'
+        case 'approved': return 'Documentaci√≥n verificada y correcta. ¬°Buen trabajo!'
+        case 'rejected': return 'Hay un problema con algunos documentos. Por favor, rev√≠salos.'
+        case 'uploaded': return 'Hemos recibido tus archivos. Nuestro equipo los revisar√° pronto.'
+        default: return 'Necesitamos tu confirmaci√≥n de identidad y facturas para avanzar.'
     }
 }
 
 function getEngineeringDescription(status: string): string {
     switch (status) {
-        case 'approved': return 'IngenierÌa ha dado el visto bueno a tu proyecto tÈcnico.'
-        case 'rejected': return 'Hay detalles tÈcnicos que ajustar antes de proceder.'
-        case 'in_review': return 'Nuestro ingeniero est· analizando la viabilidad y diseÒo.'
-        default: return 'El equipo tÈcnico preparar· tu dossier personalizado.'
+        case 'approved': return 'Ingenier√≠a ha dado el visto bueno a tu proyecto t√©cnico.'
+        case 'rejected': return 'Hay detalles t√©cnicos que ajustar antes de proceder.'
+        case 'in_review': return 'Nuestro ingeniero est√° analizando la viabilidad y dise√±o.'
+        default: return 'El equipo t√©cnico preparar√° tu dossier personalizado.'
     }
 }
 
@@ -375,16 +375,16 @@ function getProcessDescription(status: string): string {
     switch (status) {
         case 'completed': return 'Todos los permisos han sido concedidos.'
         case 'in_progress': return 'Estamos gestionando los permisos con el ayuntamiento.'
-        case 'presented': return 'Solicitudes presentadas a la administraciÛn p˙blica.'
+        case 'presented': return 'Solicitudes presentadas a la administraci√≥n p√∫blica.'
         default: return 'Gestionaremos todas las licencias necesarias por ti.'
     }
 }
 
 function getInstallationDescription(status: string, date: string | null): string {
     switch (status) {
-        case 'completed': return '°InstalaciÛn finalizada y funcionando! ??'
-        case 'in_progress': return 'Nuestros tÈcnicos est·n instalando tus paneles ahora.'
-        case 'scheduled': return date ? `°Fecha confirmada! Instalaremos el ${new Date(date).toLocaleDateString('es-ES')}` : 'Pronto te llamaremos para agendar la instalaciÛn.'
-        default: return 'El ˙ltimo paso para disfrutar de tu propia energÌa.'
+        case 'completed': return '¬°Instalaci√≥n finalizada y funcionando! ‚òÄÔ∏è'
+        case 'in_progress': return 'Nuestros t√©cnicos est√°n instalando tus paneles ahora.'
+        case 'scheduled': return date ? `¬°Fecha confirmada! Instalaremos el ${new Date(date).toLocaleDateString('es-ES')}` : 'Pronto te llamaremos para agendar la instalaci√≥n.'
+        default: return 'El √∫ltimo paso para disfrutar de tu propia energ√≠a.'
     }
 }

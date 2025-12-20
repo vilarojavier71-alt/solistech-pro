@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState, useTransition } from 'react'
 import { MapPin, Loader2, CheckCircle } from 'lucide-react'
@@ -21,7 +21,7 @@ export function CadastralLocator({ projectId, lat, lng, onSuccess, disabled }: C
 
     const handleSearch = () => {
         if (!lat || !lng) {
-            toast.error("Se requieren coordenadas v·lidas")
+            toast.error("Se requieren coordenadas v√°lidas")
             return
         }
 
@@ -68,7 +68,7 @@ export function CadastralLocator({ projectId, lat, lng, onSuccess, disabled }: C
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Buscar referencia catastral autom·ticamente por coordenadas</p>
+                    <p>Buscar referencia catastral autom√°ticamente por coordenadas</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

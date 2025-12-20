@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -52,7 +52,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                 ...formData
             })
 
-            toast.success('? Expediente creado (TODO: implementar server action)')
+            toast.success('âœ… Expediente creado (TODO: implementar server action)')
             setOpen(false)
             setFormData({
                 customerId: '',
@@ -81,7 +81,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Nuevo Expediente de Subvención</DialogTitle>
+                    <DialogTitle>Nuevo Expediente de SubvenciÃ³n</DialogTitle>
                     <DialogDescription>
                         Crea un nuevo expediente para tramitar ayudas fotovoltaicas
                     </DialogDescription>
@@ -108,41 +108,41 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                         </Select>
                     </div>
 
-                    {/* Región */}
+                    {/* RegiÃ³n */}
                     <div className="space-y-2">
-                        <Label htmlFor="region">Comunidad Autónoma *</Label>
+                        <Label htmlFor="region">Comunidad AutÃ³noma *</Label>
                         <Select
                             value={formData.region}
                             onValueChange={(value) => setFormData({ ...formData, region: value })}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Selecciona la región" />
+                                <SelectValue placeholder="Selecciona la regiÃ³n" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Andalucía">Andalucía</SelectItem>
-                                <SelectItem value="Aragón">Aragón</SelectItem>
+                                <SelectItem value="AndalucÃ­a">AndalucÃ­a</SelectItem>
+                                <SelectItem value="AragÃ³n">AragÃ³n</SelectItem>
                                 <SelectItem value="Asturias">Asturias</SelectItem>
                                 <SelectItem value="Baleares">Baleares</SelectItem>
                                 <SelectItem value="Canarias">Canarias</SelectItem>
                                 <SelectItem value="Cantabria">Cantabria</SelectItem>
                                 <SelectItem value="Castilla-La Mancha">Castilla-La Mancha</SelectItem>
-                                <SelectItem value="Castilla y León">Castilla y León</SelectItem>
-                                <SelectItem value="Cataluña">Cataluña</SelectItem>
+                                <SelectItem value="Castilla y LeÃ³n">Castilla y LeÃ³n</SelectItem>
+                                <SelectItem value="CataluÃ±a">CataluÃ±a</SelectItem>
                                 <SelectItem value="Extremadura">Extremadura</SelectItem>
                                 <SelectItem value="Galicia">Galicia</SelectItem>
                                 <SelectItem value="La Rioja">La Rioja</SelectItem>
                                 <SelectItem value="Madrid">Madrid</SelectItem>
                                 <SelectItem value="Murcia">Murcia</SelectItem>
                                 <SelectItem value="Navarra">Navarra</SelectItem>
-                                <SelectItem value="País Vasco">País Vasco</SelectItem>
+                                <SelectItem value="PaÃ­s Vasco">PaÃ­s Vasco</SelectItem>
                                 <SelectItem value="Valencia">Valencia</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    {/* Tipo de Subvención */}
+                    {/* Tipo de SubvenciÃ³n */}
                     <div className="space-y-2">
-                        <Label htmlFor="subsidyType">Tipo de Subvención *</Label>
+                        <Label htmlFor="subsidyType">Tipo de SubvenciÃ³n *</Label>
                         <Select
                             value={formData.subsidyType}
                             onValueChange={(value) => setFormData({ ...formData, subsidyType: value })}
@@ -153,7 +153,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                             <SelectContent>
                                 <SelectItem value="ibi_icio">IBI + ICIO (Municipal)</SelectItem>
                                 <SelectItem value="irpf">IRPF (Estatal)</SelectItem>
-                                <SelectItem value="autonomica">Autonómica</SelectItem>
+                                <SelectItem value="autonomica">AutonÃ³mica</SelectItem>
                                 <SelectItem value="europea">Fondos Europeos</SelectItem>
                                 <SelectItem value="otra">Otra</SelectItem>
                             </SelectContent>
@@ -162,7 +162,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
 
                     {/* Importe Estimado */}
                     <div className="space-y-2">
-                        <Label htmlFor="estimatedAmount">Importe Estimado (€)</Label>
+                        <Label htmlFor="estimatedAmount">Importe Estimado (â‚¬)</Label>
                         <Input
                             id="estimatedAmount"
                             type="number"
@@ -173,9 +173,9 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                         />
                     </div>
 
-                    {/* Fecha Límite */}
+                    {/* Fecha LÃ­mite */}
                     <div className="space-y-2">
-                        <Label htmlFor="deadline">Fecha Límite de Presentación</Label>
+                        <Label htmlFor="deadline">Fecha LÃ­mite de PresentaciÃ³n</Label>
                         <Input
                             id="deadline"
                             type="date"
@@ -189,7 +189,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                         <Label htmlFor="notes">Notas</Label>
                         <Textarea
                             id="notes"
-                            placeholder="Información adicional sobre el expediente..."
+                            placeholder="InformaciÃ³n adicional sobre el expediente..."
                             rows={3}
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

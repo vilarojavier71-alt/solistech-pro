@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -52,7 +52,7 @@ export function CreatePresentationForm({ customers, projects }: { customers: Cus
         }
 
         if (!photoFile) {
-            toast.error('Sube una foto de la instalación')
+            toast.error('Sube una foto de la instalaciÃ³n')
             return
         }
 
@@ -72,15 +72,15 @@ export function CreatePresentationForm({ customers, projects }: { customers: Cus
             })
 
             if (!response.ok) {
-                throw new Error('Error al crear presentación')
+                throw new Error('Error al crear presentaciÃ³n')
             }
 
             const result = await response.json()
 
-            toast.success('? Presentación generada correctamente')
+            toast.success('âœ… PresentaciÃ³n generada correctamente')
             router.push(`/dashboard/presentations/${result.id}`)
         } catch (error: any) {
-            toast.error(error.message || 'Error al generar presentación')
+            toast.error(error.message || 'Error al generar presentaciÃ³n')
         } finally {
             setLoading(false)
         }
@@ -91,7 +91,7 @@ export function CreatePresentationForm({ customers, projects }: { customers: Cus
             <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                    Asegúrate de tener configurada tu API key de IA en <strong>Settings ? Integraciones</strong> para generar la simulación visual.
+                    AsegÃºrate de tener configurada tu API key de IA en <strong>Settings â†’ Integraciones</strong> para generar la simulaciÃ³n visual.
                 </AlertDescription>
             </Alert>
 
@@ -130,21 +130,21 @@ export function CreatePresentationForm({ customers, projects }: { customers: Cus
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="fiscalType">Tipo de Deducción Fiscal IRPF</Label>
+                <Label htmlFor="fiscalType">Tipo de DeducciÃ³n Fiscal IRPF</Label>
                 <Select value={fiscalType} onValueChange={(value: any) => setFiscalType(value)}>
                     <SelectTrigger>
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="20">20% - Reducción demanda =7% (max. 5.000€)</SelectItem>
-                        <SelectItem value="40">40% - Reducción consumo =30% (max. 7.500€)</SelectItem>
-                        <SelectItem value="60">60% - Rehabilitación integral (max. 15.000€)</SelectItem>
+                        <SelectItem value="20">20% - ReducciÃ³n demanda â‰¥7% (max. 5.000â‚¬)</SelectItem>
+                        <SelectItem value="40">40% - ReducciÃ³n consumo â‰¥30% (max. 7.500â‚¬)</SelectItem>
+                        <SelectItem value="60">60% - RehabilitaciÃ³n integral (max. 15.000â‚¬)</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="photo">Foto de la Instalación / Tejado</Label>
+                <Label htmlFor="photo">Foto de la InstalaciÃ³n / Tejado</Label>
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                     {photoPreview ? (
                         <div className="space-y-4">
@@ -191,12 +191,12 @@ export function CreatePresentationForm({ customers, projects }: { customers: Cus
                 {loading ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generando presentación con IA...
+                        Generando presentaciÃ³n con IA...
                     </>
                 ) : (
                     <>
                         <FileText className="mr-2 h-4 w-4" />
-                        Generar Presentación PowerPoint
+                        Generar PresentaciÃ³n PowerPoint
                     </>
                 )}
             </Button>

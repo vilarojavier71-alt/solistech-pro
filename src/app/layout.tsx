@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+锘縤mport type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
@@ -15,8 +15,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MotorGap - Gesti髇 Integral de Talleres",
-  description: "Plataforma completa para talleres de automoci髇. CRM, facturaci髇, gesti髇 de clientes y m醩.",
+  title: "MotorGap - Gesti贸n Integral de Talleres",
+  description: "Plataforma completa para talleres de automoci贸n. CRM, facturaci贸n, gesti贸n de clientes y m谩s.",
   manifest: "/manifest.json",
   metadataBase: new URL('https://motorgap.es'),
   appleWebApp: {
@@ -30,13 +30,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "MotorGap",
-    title: "MotorGap - Gesti髇 Integral de Talleres",
-    description: "Plataforma completa para talleres de automoci髇",
+    title: "MotorGap - Gesti贸n Integral de Talleres",
+    description: "Plataforma completa para talleres de automoci贸n",
   },
   twitter: {
     card: "summary",
     title: "MotorGap",
-    description: "Plataforma completa para talleres de automoci髇",
+    description: "Plataforma completa para talleres de automoci贸n",
   },
 };
 

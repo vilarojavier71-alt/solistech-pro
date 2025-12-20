@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -54,8 +54,8 @@ export function TicketDeflectionForm({ categories, onClose }: DeflectionFormProp
         <div className="w-full max-w-2xl mx-auto bg-white dark:bg-zinc-900 rounded-xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800">
             {/* Header */}
             <div className="bg-zinc-50 dark:bg-zinc-900/50 p-6 border-b border-zinc-200 dark:border-zinc-800">
-                <h2 className="text-xl font-bold">¿Cómo podemos ayudarte?</h2>
-                <p className="text-zinc-500 text-sm">Nuestro asistente intentará resolver tu duda al instante.</p>
+                <h2 className="text-xl font-bold">Â¿CÃ³mo podemos ayudarte?</h2>
+                <p className="text-zinc-500 text-sm">Nuestro asistente intentarÃ¡ resolver tu duda al instante.</p>
             </div>
 
             <div className="p-6">
@@ -70,7 +70,7 @@ export function TicketDeflectionForm({ categories, onClose }: DeflectionFormProp
                             className="space-y-4"
                         >
                             <div>
-                                <label className="block text-sm font-medium mb-1">Categoría</label>
+                                <label className="block text-sm font-medium mb-1">CategorÃ­a</label>
                                 <select
                                     className="w-full p-2 rounded-md border bg-transparent"
                                     value={category}
@@ -140,7 +140,7 @@ export function TicketDeflectionForm({ categories, onClose }: DeflectionFormProp
                                     className="flex-1 bg-green-600 hover:bg-green-700 text-white p-2 rounded-md flex items-center justify-center gap-2"
                                 >
                                     <CheckCircle className="h-4 w-4" />
-                                    ¡Me sirvió!
+                                    Â¡Me sirviÃ³!
                                 </button>
                                 <button
                                     onClick={() => setStep(3)} // Failed deflection
@@ -198,7 +198,7 @@ export function TicketDeflectionForm({ categories, onClose }: DeflectionFormProp
 
                             {!ticketState.success && (
                                 <button onClick={() => setStep(step - 1)} className="w-full text-zinc-500 text-sm hover:underline mt-2">
-                                    Atrás
+                                    AtrÃ¡s
                                 </button>
                             )}
                         </motion.div>

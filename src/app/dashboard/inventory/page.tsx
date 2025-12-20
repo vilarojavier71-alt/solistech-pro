@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -30,15 +30,15 @@ export default function InventoryPage() {
     }
 
     const handleUpdateStock = async () => {
-        toast.error('Inventario no disponible - tablas pendientes de migración')
+        toast.error('Inventario no disponible - tablas pendientes de migraciÃ³n')
     }
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Inventario & Logística</h1>
-                    <p className="text-muted-foreground">Control de stock, aprovisionamiento y almacén</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Inventario & LogÃ­stica</h1>
+                    <p className="text-muted-foreground">Control de stock, aprovisionamiento y almacÃ©n</p>
                 </div>
             </div>
 
@@ -52,7 +52,7 @@ export default function InventoryPage() {
                 <TabsContent value="stock" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Artículos en Almacén</CardTitle>
+                            <CardTitle>ArtÃ­culos en AlmacÃ©n</CardTitle>
                             <div className="flex gap-2">
                                 <Input placeholder="Buscar por modelo..." className="max-w-sm" />
                                 {/* New Item Button logic would go here */}
@@ -90,9 +90,9 @@ export default function InventoryPage() {
                                                     </span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="text-right">{item.cost_price || 0} €</TableCell>
+                                            <TableCell className="text-right">{item.cost_price || 0} â‚¬</TableCell>
                                             <TableCell className="text-right font-medium">
-                                                {((item.stock_quantity || 0) * (item.cost_price || 0)).toLocaleString()} €
+                                                {((item.stock_quantity || 0) * (item.cost_price || 0)).toLocaleString()} â‚¬
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-1">
@@ -131,7 +131,7 @@ export default function InventoryPage() {
                                         <TableHead>Nombre</TableHead>
                                         <TableHead>Contacto</TableHead>
                                         <TableHead>Email</TableHead>
-                                        <TableHead>Teléfono</TableHead>
+                                        <TableHead>TelÃ©fono</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -192,7 +192,7 @@ export default function InventoryPage() {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            {stockModal.type === 'in' ? 'Añadir Stock (Entrada)' : 'Retirar Stock (Salida)'}
+                            {stockModal.type === 'in' ? 'AÃ±adir Stock (Entrada)' : 'Retirar Stock (Salida)'}
                         </DialogTitle>
                         <CardDescription>{stockModal.item?.manufacturer} {stockModal.item?.model}</CardDescription>
                     </DialogHeader>
@@ -204,7 +204,7 @@ export default function InventoryPage() {
                         <div className="space-y-2">
                             <Label>Motivo / Referencia</Label>
                             <Input
-                                placeholder={stockModal.type === 'in' ? 'Nº Albarán / Factura' : 'Nº Proyecto / Merma'}
+                                placeholder={stockModal.type === 'in' ? 'NÂº AlbarÃ¡n / Factura' : 'NÂº Proyecto / Merma'}
                                 value={reason}
                                 onChange={e => setReason(e.target.value)}
                             />

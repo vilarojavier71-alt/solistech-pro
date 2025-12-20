@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/alt-text */
+ï»¿/* eslint-disable jsx-a11y/alt-text */
 import React from 'react'
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer'
 
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
         color: '#0ea5e9'
     },
 
-    // Estilos para Sección de Subvenciones (FASE 9)
+    // Estilos para SecciÃ³n de Subvenciones (FASE 9)
     subsidiesSection: {
         marginTop: 20,
         marginBottom: 20,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
 })
 
 const formatCurrency = (num: number) => {
-    return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
+    return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' â‚¬'
 }
 
 export const QuotePDF = ({ data }: { data: QuoteData }) => (
@@ -274,7 +274,7 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
                 <View style={styles.invoiceDetails}>
                     <Text style={styles.mainTitle}>PRESUPUESTO</Text>
                     <View style={styles.detailRow}>
-                        <Text style={styles.label}>Nº:</Text>
+                        <Text style={styles.label}>NÂº:</Text>
                         <Text style={styles.value}>{data.quote_number}</Text>
                     </View>
                     <View style={styles.detailRow}>
@@ -282,7 +282,7 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
                         <Text style={styles.value}>{data.created_at}</Text>
                     </View>
                     <View style={styles.detailRow}>
-                        <Text style={styles.label}>Válido hasta:</Text>
+                        <Text style={styles.label}>VÃ¡lido hasta:</Text>
                         <Text style={styles.value}>{data.valid_until}</Text>
                     </View>
                 </View>
@@ -299,7 +299,7 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
             {/* Table */}
             <View style={styles.table}>
                 <View style={styles.tableHeader}>
-                    <Text style={[styles.colDesc, styles.headerText]}>DESCRIPCIÓN</Text>
+                    <Text style={[styles.colDesc, styles.headerText]}>DESCRIPCIÃ“N</Text>
                     <Text style={[styles.colQty, styles.headerText]}>CANT.</Text>
                     <Text style={[styles.colPrice, styles.headerText]}>PRECIO U.</Text>
                     <Text style={[styles.colTotal, styles.headerText]}>TOTAL</Text>
@@ -332,31 +332,31 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
                 </View>
             </View>
 
-            {/* Sección de Subvenciones (FASE 9) - Solo si hay datos */}
+            {/* SecciÃ³n de Subvenciones (FASE 9) - Solo si hay datos */}
             {data.subsidies && (
                 <View style={styles.subsidiesSection}>
                     <Text style={styles.subsidiesTitle}>
-                        ?? AYUDAS Y SUBVENCIONES APLICABLES ({data.subsidies.region})
+                        ðŸ’° AYUDAS Y SUBVENCIONES APLICABLES ({data.subsidies.region})
                     </Text>
                     <Text style={styles.subsidiesDisclaimer}>
-                        * Estimación orientativa. Sujeto a disponibilidad presupuestaria y cumplimiento de requisitos.
+                        * EstimaciÃ³n orientativa. Sujeto a disponibilidad presupuestaria y cumplimiento de requisitos.
                     </Text>
 
                     <View style={styles.subsidiesRow}>
-                        <Text style={styles.subsidiesLabel}>Inversión Total (con IVA):</Text>
+                        <Text style={styles.subsidiesLabel}>InversiÃ³n Total (con IVA):</Text>
                         <Text style={styles.subsidiesValue}>{formatCurrency(data.total)}</Text>
                     </View>
 
                     {data.subsidies.direct_grant > 0 && (
                         <View style={styles.subsidiesRow}>
-                            <Text style={styles.subsidiesLabel}>Subvención Directa (Next Generation EU):</Text>
+                            <Text style={styles.subsidiesLabel}>SubvenciÃ³n Directa (Next Generation EU):</Text>
                             <Text style={styles.subsidiesValue}>-{formatCurrency(data.subsidies.direct_grant)}</Text>
                         </View>
                     )}
 
                     {data.subsidies.irpf_deduction > 0 && (
                         <View style={styles.subsidiesRow}>
-                            <Text style={styles.subsidiesLabel}>Deducción IRPF (tramo autonómico):</Text>
+                            <Text style={styles.subsidiesLabel}>DeducciÃ³n IRPF (tramo autonÃ³mico):</Text>
                             <Text style={styles.subsidiesValue}>-{formatCurrency(data.subsidies.irpf_deduction)}</Text>
                         </View>
                     )}
@@ -367,7 +367,7 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
                     </View>
 
                     <Text style={{ fontSize: 8, color: '#64748b', marginTop: 8, textAlign: 'center' }}>
-                        El ahorro real puede reducir su inversión entre un 40% y 70% según su comunidad autónoma.
+                        El ahorro real puede reducir su inversiÃ³n entre un 40% y 70% segÃºn su comunidad autÃ³noma.
                     </Text>
                 </View>
             )}
@@ -383,7 +383,7 @@ export const QuotePDF = ({ data }: { data: QuoteData }) => (
 
                 {data.terms && (
                     <View>
-                        <Text style={{ fontWeight: 'bold', fontSize: 9, marginBottom: 2 }}>Términos y Condiciones:</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 9, marginBottom: 2 }}>TÃ©rminos y Condiciones:</Text>
                         <Text style={styles.notes}>{data.terms}</Text>
                     </View>
                 )}

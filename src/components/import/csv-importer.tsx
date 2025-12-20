@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -42,7 +42,7 @@ export function CSVImporter({ type }: CSVImporterProps) {
             skipEmptyLines: true,
             complete: (results) => {
                 if (results.data.length === 0) {
-                    toast.error('El archivo CSV est· vacÌo')
+                    toast.error('El archivo CSV est√° vac√≠o')
                     setStatus('error')
                     return
                 }
@@ -105,7 +105,7 @@ export function CSVImporter({ type }: CSVImporterProps) {
             }
         } catch (error) {
             setStatus('error')
-            toast.error('Error durante la importaciÛn')
+            toast.error('Error durante la importaci√≥n')
         }
     }
 
@@ -120,7 +120,7 @@ export function CSVImporter({ type }: CSVImporterProps) {
                             Selecciona un archivo CSV
                         </div>
                         <p className="text-sm text-muted-foreground mb-4">
-                            o arrastra y suelta aquÌ
+                            o arrastra y suelta aqu√≠
                         </p>
                         <Button type="button" variant="outline" className="pointer-events-none">
                             Examinar archivos
@@ -231,7 +231,7 @@ export function CSVImporter({ type }: CSVImporterProps) {
                         <CheckCircle2 className="h-8 w-8 text-green-600" />
                         <div className="flex-1">
                             <div className="font-semibold text-green-900">
-                                ImportaciÛn completada
+                                Importaci√≥n completada
                             </div>
                             <div className="text-sm text-green-700">
                                 {result.success} registros importados correctamente
@@ -262,10 +262,10 @@ export function CSVImporter({ type }: CSVImporterProps) {
                     <AlertCircle className="h-8 w-8 text-red-600" />
                     <div className="flex-1">
                         <div className="font-semibold text-red-900">
-                            Error en la importaciÛn
+                            Error en la importaci√≥n
                         </div>
                         <div className="text-sm text-red-700">
-                            Por favor verifica el formato del archivo e intÈntalo de nuevo
+                            Por favor verifica el formato del archivo e int√©ntalo de nuevo
                         </div>
                     </div>
                 </div>

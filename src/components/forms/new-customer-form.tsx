@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -27,7 +27,7 @@ export function NewCustomerForm() {
         city: '',
         state: '',
         postal_code: '',
-        country: 'Espa�a',
+        country: 'España',
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +58,7 @@ export function NewCustomerForm() {
                     <Label htmlFor="name">Nombre *</Label>
                     <Input
                         id="name"
-                        placeholder="Juan Pérez"
+                        placeholder="Juan PÃ©rez"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -79,7 +79,7 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono</Label>
+                    <Label htmlFor="phone">TelÃ©fono</Label>
                     <Input
                         id="phone"
                         type="tel"
@@ -113,7 +113,7 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Direcci�n</h3>
+                    <h3 className="text-sm font-medium mb-3">Dirección</h3>
                 </div>
 
                 <div className="col-span-2 space-y-2">
@@ -139,7 +139,7 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="postal_code">C�digo Postal</Label>
+                    <Label htmlFor="postal_code">Código Postal</Label>
                     <Input
                         id="postal_code"
                         placeholder="28001"
@@ -161,10 +161,10 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="country">País</Label>
+                    <Label htmlFor="country">PaÃ­s</Label>
                     <Input
                         id="country"
-                        placeholder="Espa�a"
+                        placeholder="España"
                         value={formData.country}
                         onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                         disabled={isPending}

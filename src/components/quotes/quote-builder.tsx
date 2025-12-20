@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -35,12 +35,12 @@ export function QuoteBuilder() {
 
     // Items
     const [items, setItems] = useState<QuoteItem[]>([
-        { description: 'InstalaciÛn Fotovoltaica Llave en Mano', quantity: 1, unit_price: 3500, total: 3500 }
+        { description: 'Instalaci√≥n Fotovoltaica Llave en Mano', quantity: 1, unit_price: 3500, total: 3500 }
     ])
 
     // Meta
     const [notes, setNotes] = useState('')
-    const [terms, setTerms] = useState('Forma de pago: 50% a la aceptaciÛn, 50% al finalizar.')
+    const [terms, setTerms] = useState('Forma de pago: 50% a la aceptaci√≥n, 50% al finalizar.')
 
     useEffect(() => {
         loadData()
@@ -241,11 +241,11 @@ export function QuoteBuilder() {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>N˙mero de Presupuesto</Label>
+                                <Label>N√∫mero de Presupuesto</Label>
                                 <Input value={quoteNumber} onChange={e => setQuoteNumber(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label>V·lido hasta</Label>
+                                <Label>V√°lido hasta</Label>
                                 <Input type="date" value={validUntil} onChange={e => setValidUntil(e.target.value)} />
                             </div>
                         </div>
@@ -256,7 +256,7 @@ export function QuoteBuilder() {
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle>Conceptos</CardTitle>
                         <Button size="sm" variant="outline" onClick={addItem}>
-                            <Plus className="h-4 w-4 mr-2" /> AÒadir Õtem
+                            <Plus className="h-4 w-4 mr-2" /> A√±adir √çtem
                         </Button>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -264,7 +264,7 @@ export function QuoteBuilder() {
                             <div key={index} className="flex gap-2 items-start">
                                 <div className="flex-1">
                                     <Input
-                                        placeholder="DescripciÛn"
+                                        placeholder="Descripci√≥n"
                                         value={item.description}
                                         onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                                     />
@@ -286,7 +286,7 @@ export function QuoteBuilder() {
                                     />
                                 </div>
                                 <div className="w-28 pt-2 text-right font-medium text-slate-600">
-                                    {item.total.toLocaleString()}Ä
+                                    {item.total.toLocaleString()}‚Ç¨
                                 </div>
                                 <Button
                                     size="icon"
@@ -303,15 +303,15 @@ export function QuoteBuilder() {
                             <div className="w-64 space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span>Subtotal:</span>
-                                    <span>{subtotal.toLocaleString()} Ä</span>
+                                    <span>{subtotal.toLocaleString()} ‚Ç¨</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span>IVA (21%):</span>
-                                    <span>{taxAmount.toLocaleString()} Ä</span>
+                                    <span>{taxAmount.toLocaleString()} ‚Ç¨</span>
                                 </div>
                                 <div className="flex justify-between font-bold text-lg pt-2 border-t text-sky-600">
                                     <span>Total:</span>
-                                    <span>{total.toLocaleString()} Ä</span>
+                                    <span>{total.toLocaleString()} ‚Ç¨</span>
                                 </div>
                             </div>
                         </div>
@@ -319,14 +319,14 @@ export function QuoteBuilder() {
                 </Card>
 
                 <Card>
-                    <CardHeader><CardTitle>Notas y TÈrminos</CardTitle></CardHeader>
+                    <CardHeader><CardTitle>Notas y T√©rminos</CardTitle></CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label>Notas (Visibles en PDF)</Label>
-                            <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ej. InstalaciÛn sujeta a subvenciones..." />
+                            <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Ej. Instalaci√≥n sujeta a subvenciones..." />
                         </div>
                         <div className="space-y-2">
-                            <Label>TÈrminos y Condiciones</Label>
+                            <Label>T√©rminos y Condiciones</Label>
                             <Textarea value={terms} onChange={e => setTerms(e.target.value)} className="h-24" />
                         </div>
                     </CardContent>
@@ -343,7 +343,7 @@ export function QuoteBuilder() {
                     <CardContent className="space-y-3">
                         <div className="p-3 bg-slate-50 rounded-lg border text-center mb-4">
                             <p className="text-xs text-slate-500 mb-1">Total Presupuesto</p>
-                            <p className="text-2xl font-bold text-sky-700">{total.toLocaleString()} Ä</p>
+                            <p className="text-2xl font-bold text-sky-700">{total.toLocaleString()} ‚Ç¨</p>
                         </div>
 
                         <Button className="w-full bg-slate-900 hover:bg-slate-800" onClick={handleSave} disabled={loading}>

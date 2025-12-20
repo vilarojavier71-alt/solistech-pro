@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -68,7 +68,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
                     </h2>
 
                     <p className="text-slate-600 dark:text-slate-300 mb-6">
-                        Desbloquea la Calculadora Solar profesional con datos de radiaciÛn satelital, an·lisis de ROI avanzado y generaciÛn de memorias tÈcnicas.
+                        Desbloquea la Calculadora Solar profesional con datos de radiaci√≥n satelital, an√°lisis de ROI avanzado y generaci√≥n de memorias t√©cnicas.
                     </p>
 
                     <Button
@@ -101,7 +101,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
     const [consumption, setConsumption] = useState<number>(4000)
     const [installationType, setInstallationType] = useState<string>('residential')
     const [location, setLocation] = useState<{ lat: number; lng: number }>({ lat: 40.4168, lng: -3.7038 })
-    const [locationName, setLocationName] = useState<string>('Madrid, EspaÒa')
+    const [locationName, setLocationName] = useState<string>('Madrid, Espa√±a')
     const [roofOrientation, setRoofOrientation] = useState<string>('south')
     const [roofTilt, setRoofTilt] = useState<number>(30)
     const [availableArea, setAvailableArea] = useState<number>(0)
@@ -169,7 +169,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
                 })
             })
 
-            if (!response.ok) throw new Error('Error en el c·lculo')
+            if (!response.ok) throw new Error('Error en el c√°lculo')
 
             const data = await response.json()
             setResult(data)
@@ -220,7 +220,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
                 }
             }
 
-            toast.success('C·lculo completado y guardado')
+            toast.success('C√°lculo completado y guardado')
         } catch (error: any) {
             console.error('Error:', error)
             toast.error(error.message || 'Error al calcular')
@@ -255,7 +255,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
 
     const handleGeneratePDF = async () => {
         if (!savedCalculationId) {
-            toast.error('Primero debes calcular una instalaciÛn')
+            toast.error('Primero debes calcular una instalaci√≥n')
             return
         }
 
@@ -284,7 +284,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Settings className="h-5 w-5 text-primary" />
-                        ConfiguraciÛn de la InstalaciÛn
+                        Configuraci√≥n de la Instalaci√≥n
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -294,9 +294,9 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
                             <div className="flex items-center gap-2">
                                 <Label>Consumo Anual (kWh)</Label>
                                 <TooltipInfo
-                                    title="? Consumo Anual"
-                                    content="EnergÌa elÈctrica que consumes al aÒo.
-EncuÈntralo en tu factura de luz o calcula: consumo mensual x 12"
+                                    title="‚ö° Consumo Anual"
+                                    content="Energ√≠a el√©ctrica que consumes al a√±o.
+Encu√©ntralo en tu factura de luz o calcula: consumo mensual x 12"
                                 />
                             </div>
                             <Input
@@ -307,7 +307,7 @@ EncuÈntralo en tu factura de luz o calcula: consumo mensual x 12"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label>Tipo de InstalaciÛn</Label>
+                            <Label>Tipo de Instalaci√≥n</Label>
                             <Select value={installationType} onValueChange={setInstallationType}>
                                 <SelectTrigger className="input-premium">
                                     <SelectValue />
@@ -321,11 +321,11 @@ EncuÈntralo en tu factura de luz o calcula: consumo mensual x 12"
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label>¡rea Disponible (m≤)</Label>
+                                <Label>√Årea Disponible (m¬≤)</Label>
                                 <TooltipInfo
-                                    title="?? ¡rea Disponible"
-                                    content="Espacio ˙til en tu tejado para instalar paneles.
-Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
+                                    title="üìè √Årea Disponible"
+                                    content="Espacio √∫til en tu tejado para instalar paneles.
+Cada panel ocupa ~2 m¬≤. Ejemplo: 10 paneles = 20 m¬≤"
                                 />
                             </div>
                             <Input
@@ -341,7 +341,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                     {/* Location Selector */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Label className="text-base font-semibold">UbicaciÛn</Label>
+                            <Label className="text-base font-semibold">Ubicaci√≥n</Label>
                             <div className="flex items-center gap-2">
                                 <Label className="text-sm">Coordenadas manuales</Label>
                                 <Switch
@@ -417,7 +417,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label>OrientaciÛn del Tejado</Label>
+                                <Label>Orientaci√≥n del Tejado</Label>
                                 {CommonTooltips.orientacion}
                             </div>
                             <Select value={roofOrientation} onValueChange={setRoofOrientation}>
@@ -425,7 +425,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="south">Sur (”ptima)</SelectItem>
+                                    <SelectItem value="south">Sur (√ìptima)</SelectItem>
                                     <SelectItem value="southeast">Sureste</SelectItem>
                                     <SelectItem value="southwest">Suroeste</SelectItem>
                                     <SelectItem value="east">Este</SelectItem>
@@ -436,7 +436,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Label>InclinaciÛn del Tejado: {roofTilt}∞</Label>
+                                <Label>Inclinaci√≥n del Tejado: {roofTilt}¬∞</Label>
                                 {CommonTooltips.inclinacion}
                             </div>
                             <Slider
@@ -465,22 +465,22 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="AndalucÌa">AndalucÌa</SelectItem>
-                                    <SelectItem value="AragÛn">AragÛn</SelectItem>
+                                    <SelectItem value="Andaluc√≠a">Andaluc√≠a</SelectItem>
+                                    <SelectItem value="Arag√≥n">Arag√≥n</SelectItem>
                                     <SelectItem value="Asturias">Asturias</SelectItem>
                                     <SelectItem value="Islas Baleares">Islas Baleares</SelectItem>
                                     <SelectItem value="Canarias">Canarias</SelectItem>
                                     <SelectItem value="Cantabria">Cantabria</SelectItem>
-                                    <SelectItem value="Castilla y LeÛn">Castilla y LeÛn</SelectItem>
+                                    <SelectItem value="Castilla y Le√≥n">Castilla y Le√≥n</SelectItem>
                                     <SelectItem value="Castilla-La Mancha">Castilla-La Mancha</SelectItem>
-                                    <SelectItem value="CataluÒa">CataluÒa</SelectItem>
+                                    <SelectItem value="Catalu√±a">Catalu√±a</SelectItem>
                                     <SelectItem value="Comunidad Valenciana">Comunidad Valenciana</SelectItem>
                                     <SelectItem value="Extremadura">Extremadura</SelectItem>
                                     <SelectItem value="Galicia">Galicia</SelectItem>
                                     <SelectItem value="Madrid">Madrid</SelectItem>
                                     <SelectItem value="Murcia">Murcia</SelectItem>
                                     <SelectItem value="Navarra">Navarra</SelectItem>
-                                    <SelectItem value="PaÌs Vasco">PaÌs Vasco</SelectItem>
+                                    <SelectItem value="Pa√≠s Vasco">Pa√≠s Vasco</SelectItem>
                                     <SelectItem value="La Rioja">La Rioja</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -490,8 +490,8 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                     {/* Calculate Button */}
                     <OptimisticAction
                         onAction={handleCalculate}
-                        successMessage="C·lculo completado"
-                        loadingMessage="Calculando instalaciÛn Ûptima..."
+                        successMessage="C√°lculo completado"
+                        loadingMessage="Calculando instalaci√≥n √≥ptima..."
                     >
                         <Button
                             size="lg"
@@ -506,7 +506,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                             disabled={loading}
                         >
                             <Zap className="mr-2 h-5 w-5" />
-                            {loading ? 'Calculando...' : 'Calcular InstalaciÛn'}
+                            {loading ? 'Calculando...' : 'Calcular Instalaci√≥n'}
                         </Button>
                     </OptimisticAction>
                 </CardContent>
@@ -517,8 +517,8 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                 <LoadingStatePremium
                     type="narrative"
                     steps={[
-                        { label: "Consultando datos de irradiaciÛn solar" },
-                        { label: "Calculando producciÛn Ûptima" },
+                        { label: "Consultando datos de irradiaci√≥n solar" },
+                        { label: "Calculando producci√≥n √≥ptima" },
                         { label: "Analizando ROI y subvenciones" },
                         { label: "Generando resultados" }
                     ]}
@@ -545,32 +545,32 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                             icon={<TrendingUp />}
                             label="ROI Anual"
                             value={`${fullCalculation?.roi_with_subsidies || result.roi}%`}
-                            subtitle="Retorno de inversiÛn"
+                            subtitle="Retorno de inversi√≥n"
                             variant="gold"
                         />
 
                         <KPICardPremium
                             icon={<Calendar />}
                             label="Payback"
-                            value={`${fullCalculation?.payback_with_subsidies || result.payback} aÒos`}
-                            subtitle="AmortizaciÛn"
+                            value={`${fullCalculation?.payback_with_subsidies || result.payback} a√±os`}
+                            subtitle="Amortizaci√≥n"
                             variant="premium"
                         />
 
                         <KPICardPremium
                             icon={<DollarSign />}
                             label="Ahorro Anual"
-                            value={`Ä${result.savings?.toLocaleString()}`}
-                            subtitle="En factura elÈctrica"
-                            trend={{ value: "+Ä450", direction: "up" }}
+                            value={`‚Ç¨${result.savings?.toLocaleString()}`}
+                            subtitle="En factura el√©ctrica"
+                            trend={{ value: "+‚Ç¨450", direction: "up" }}
                             variant="gold"
                         />
 
                         <KPICardPremium
                             icon={<Battery />}
-                            label="ProducciÛn"
+                            label="Producci√≥n"
                             value={`${result.production?.toLocaleString()} kWh`}
-                            subtitle="EnergÌa anual"
+                            subtitle="Energ√≠a anual"
                             sparkline={result.monthlyProduction?.slice(0, 12)}
                             variant="teal"
                         />
@@ -582,59 +582,59 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                         items={[
                             {
                                 id: 'system',
-                                title: 'ConfiguraciÛn del Sistema',
+                                title: 'Configuraci√≥n del Sistema',
                                 icon: <Wrench />,
-                                badge: 'Detalles tÈcnicos',
+                                badge: 'Detalles t√©cnicos',
                                 defaultOpen: true,
                                 content: (
                                     <AccordionGrid cols={3}>
                                         <AccordionField label="Paneles" value={`${result.panels} x 450W`} />
                                         <AccordionField label="Potencia Total" value={`${result.systemSize} kWp`} />
-                                        <AccordionField label="¡rea Requerida" value={`${result.requiredArea || (result.panels * 2)} m≤`} />
-                                        <AccordionField label="OrientaciÛn" value={roofOrientation === 'south' ? 'Sur (”ptima)' : roofOrientation} />
-                                        <AccordionField label="InclinaciÛn" value={`${roofTilt}∞`} />
-                                        <AccordionField label="UbicaciÛn" value={locationName} />
+                                        <AccordionField label="√Årea Requerida" value={`${result.requiredArea || (result.panels * 2)} m¬≤`} />
+                                        <AccordionField label="Orientaci√≥n" value={roofOrientation === 'south' ? 'Sur (√ìptima)' : roofOrientation} />
+                                        <AccordionField label="Inclinaci√≥n" value={`${roofTilt}¬∞`} />
+                                        <AccordionField label="Ubicaci√≥n" value={locationName} />
                                         <AccordionField label="Tipo" value={installationType === 'residential' ? 'Residencial' : installationType} />
                                         <AccordionField label="Consumo Anual" value={`${consumption.toLocaleString()} kWh`} />
-                                        <AccordionField label="ProducciÛn Anual" value={`${result.production?.toLocaleString()} kWh`} />
+                                        <AccordionField label="Producci√≥n Anual" value={`${result.production?.toLocaleString()} kWh`} />
                                     </AccordionGrid>
                                 )
                             },
                             {
                                 id: 'financial',
-                                title: 'An·lisis Financiero',
+                                title: 'An√°lisis Financiero',
                                 icon: <DollarSign />,
                                 badge: showSubsidies ? 'Con subvenciones' : 'Sin subvenciones',
                                 content: (
                                     <div className="space-y-6">
                                         <AccordionGrid cols={2}>
                                             <AccordionField
-                                                label="InversiÛn Bruta"
-                                                value={`Ä${fullCalculation?.gross_cost?.toLocaleString() || '18,500'}`}
+                                                label="Inversi√≥n Bruta"
+                                                value={`‚Ç¨${fullCalculation?.gross_cost?.toLocaleString() || '18,500'}`}
                                             />
                                             {showSubsidies && subsidiesBreakdown && (
                                                 <>
                                                     <AccordionField
                                                         label="Subvenciones Directas"
-                                                        value={`Ä${subsidiesBreakdown.direct.toLocaleString()}`}
+                                                        value={`‚Ç¨${subsidiesBreakdown.direct.toLocaleString()}`}
                                                     />
                                                     <AccordionField
-                                                        label="DeducciÛn IRPF"
-                                                        value={`Ä${subsidiesBreakdown.irpf.toLocaleString()}`}
+                                                        label="Deducci√≥n IRPF"
+                                                        value={`‚Ç¨${subsidiesBreakdown.irpf.toLocaleString()}`}
                                                     />
                                                     <AccordionField
                                                         label="Total Subvenciones"
-                                                        value={`Ä${subsidiesBreakdown.total.toLocaleString()}`}
+                                                        value={`‚Ç¨${subsidiesBreakdown.total.toLocaleString()}`}
                                                     />
                                                 </>
                                             )}
                                             <AccordionField
                                                 label="Coste Neto"
-                                                value={`Ä${fullCalculation?.net_cost?.toLocaleString() || '14,300'}`}
+                                                value={`‚Ç¨${fullCalculation?.net_cost?.toLocaleString() || '14,300'}`}
                                             />
                                             <AccordionField
                                                 label="Ahorro Anual"
-                                                value={`Ä${result.savings?.toLocaleString()}`}
+                                                value={`‚Ç¨${result.savings?.toLocaleString()}`}
                                             />
                                             <AccordionField
                                                 label="ROI"
@@ -642,7 +642,7 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                                             />
                                             <AccordionField
                                                 label="Payback"
-                                                value={`${fullCalculation?.payback_with_subsidies || result.payback} aÒos`}
+                                                value={`${fullCalculation?.payback_with_subsidies || result.payback} a√±os`}
                                             />
                                         </AccordionGrid>
 
@@ -654,14 +654,14 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                             },
                             {
                                 id: 'production',
-                                title: 'ProducciÛn y Consumo',
+                                title: 'Producci√≥n y Consumo',
                                 icon: <BarChart3 />,
                                 badge: '12 meses',
                                 content: (
                                     <div className="space-y-6">
                                         <AccordionGrid cols={3}>
                                             <AccordionField
-                                                label="ProducciÛn Anual"
+                                                label="Producci√≥n Anual"
                                                 value={`${result.production?.toLocaleString()} kWh`}
                                             />
                                             <AccordionField
@@ -691,21 +691,21 @@ Cada panel ocupa ~2 m≤. Ejemplo: 10 paneles = 20 m≤"
                             disabled={!savedCalculationId}
                         >
                             <FileText className="mr-2 h-4 w-4" />
-                            Generar Memoria TÈcnica PDF
+                            Generar Memoria T√©cnica PDF
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => toast.info('PrÛximamente: Guardar como proyecto')}
+                            onClick={() => toast.info('Pr√≥ximamente: Guardar como proyecto')}
                         >
                             <Save className="mr-2 h-4 w-4" />
                             Guardar como Proyecto
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => toast.info('PrÛximamente: Crear presentaciÛn IA')}
+                            onClick={() => toast.info('Pr√≥ximamente: Crear presentaci√≥n IA')}
                         >
                             <Sparkles className="mr-2 h-4 w-4" />
-                            Crear PresentaciÛn IA
+                            Crear Presentaci√≥n IA
                         </Button>
                     </div>
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from "react"
 import { toast } from "sonner"
@@ -59,7 +59,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                 toast.error("Error", { description: result.message })
             }
         } catch {
-            toast.error("Error de conexi�n")
+            toast.error("Error de conexión")
         } finally {
             setSeeding(false)
         }
@@ -86,7 +86,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                 setUsers(oldUsers) // Revert
             }
         } catch (error) {
-            toast.error("Error de conexi�n")
+            toast.error("Error de conexión")
             setUsers(oldUsers) // Revert
         } finally {
             setUpdatingId(null)
@@ -98,7 +98,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
             case 'owner': return 'Propietario'
             case 'admin': return 'Administrador'
             case 'commercial': return 'Comercial'
-            case 'technician': return 'Técnico'
+            case 'technician': return 'TÃ©cnico'
             case 'canvasser': return 'Captador'
             case 'installer': return 'Instalador'
             case 'engineer': return 'Ingeniero'
@@ -135,10 +135,10 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                     <div>
                         <CardTitle className="flex items-center gap-2">
                             <Users className="h-5 w-5 text-indigo-600" />
-                            Gesti�n de Equipo
+                            Gestión de Equipo
                         </CardTitle>
                         <CardDescription>
-                            Administra los roles y permisos de los miembros de tu organizaci�n.
+                            Administra los roles y permisos de los miembros de tu organización.
                         </CardDescription>
                     </div>
                     <div className="flex items-center gap-2 w-full md:w-auto">
@@ -209,11 +209,11 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                                                         <SelectItem value="admin">Administrador</SelectItem>
                                                         <SelectItem value="commercial">Comercial</SelectItem>
                                                         <SelectItem value="engineer">Ingeniero</SelectItem>
-                                                        <SelectItem value="technician">Técnico</SelectItem>
+                                                        <SelectItem value="technician">TÃ©cnico</SelectItem>
                                                         <SelectItem value="canvasser">Captador</SelectItem>
                                                         <SelectItem value="installer">Instalador</SelectItem>
                                                         <SelectItem value="viewer">Solo Lectura</SelectItem>
-                                                        <SelectItem value="user">Usuario B�sico</SelectItem>
+                                                        <SelectItem value="user">Usuario Básico</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>

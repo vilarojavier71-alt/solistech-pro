@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+Ôªøimport { Metadata } from 'next'
 import { ExcelImporter } from '@/components/import/excel-importer'
 import { importStock } from '@/lib/actions/import'
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const STOCK_FIELDS = [
     { name: 'manufacturer', label: 'Fabricante / Marca', required: false },
     { name: 'model', label: 'Modelo / Nombre', required: true },
-    { name: 'type', label: 'CategorÌa (Panel, Inversor...)', required: false },
+    { name: 'type', label: 'Categor√≠a (Panel, Inversor...)', required: false },
     { name: 'price', label: 'Coste Unitario', required: false },
     { name: 'stock_quantity', label: 'Stock Inicial', required: false },
     { name: 'supplier', label: 'Proveedor', required: false },
@@ -23,7 +23,7 @@ export default function ImportStockPage() {
                 <h1 className="text-3xl font-bold tracking-tight">Importar Inventario</h1>
                 <p className="text-muted-foreground">
                     Sube tu listado de productos y stock.
-                    El sistema crear· nuevos productos o actualizar· el stock de los existentes bas·ndose en el "Modelo".
+                    El sistema crear√° nuevos productos o actualizar√° el stock de los existentes bas√°ndose en el "Modelo".
                 </p>
             </div>
 
@@ -31,9 +31,9 @@ export default function ImportStockPage() {
                 <p className="font-semibold mb-2">Instrucciones:</p>
                 <ul className="list-disc pl-5 space-y-1">
                     <li><strong>Modelo / Nombre</strong>: Campo clave para identificar el producto (Requerido).</li>
-                    <li><strong>Stock Inicial</strong>: Cantidad actual en almacÈn.</li>
-                    <li><strong>CategorÌa</strong>: Panel, Inversor, BaterÌa, Estructura...</li>
-                    <li>Si el producto ya existe (mismo Modelo), se actualizar· su stock.</li>
+                    <li><strong>Stock Inicial</strong>: Cantidad actual en almac√©n.</li>
+                    <li><strong>Categor√≠a</strong>: Panel, Inversor, Bater√≠a, Estructura...</li>
+                    <li>Si el producto ya existe (mismo Modelo), se actualizar√° su stock.</li>
                 </ul>
             </div>
 

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Line } from 'react-chartjs-2'
 import {
@@ -35,7 +35,7 @@ export function ProductionChart({ monthlyProduction }: ProductionChartProps) {
         labels: MONTHS,
         datasets: [
             {
-                label: 'Producción Solar (kWh)',
+                label: 'ProducciÃ³n Solar (kWh)',
                 data: monthlyProduction,
                 borderColor: 'rgb(34, 197, 94)',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',

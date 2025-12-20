@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -44,7 +44,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
         }
 
         if (file.size > 2 * 1024 * 1024) {
-            toast.error('La imagen no puede pesar más de 2MB')
+            toast.error('La imagen no puede pesar mÃ¡s de 2MB')
             return
         }
 
@@ -76,9 +76,9 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
                 address,
                 logoUrl
             })
-            toast.success('Organización actualizada correctamente')
+            toast.success('OrganizaciÃ³n actualizada correctamente')
         } catch (error) {
-            toast.error('Error al actualizar la organización')
+            toast.error('Error al actualizar la organizaciÃ³n')
         } finally {
             setLoading(false)
         }
@@ -114,14 +114,14 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
                         />
                     </Label>
                     <p className="text-xs text-muted-foreground mt-2">
-                        Logo de la empresa. Máximo 2MB.
+                        Logo de la empresa. MÃ¡ximo 2MB.
                     </p>
                 </div>
             </div>
 
             {/* Organization Name */}
             <div className="space-y-2">
-                <Label htmlFor="orgName">Nombre de la Organización</Label>
+                <Label htmlFor="orgName">Nombre de la OrganizaciÃ³n</Label>
                 <Input
                     id="orgName"
                     value={name}
@@ -144,7 +144,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
             {/* Contact Info */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <Label htmlFor="phone">Teléfono</Label>
+                    <Label htmlFor="phone">TelÃ©fono</Label>
                     <Input
                         id="phone"
                         value={phone}
@@ -166,7 +166,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
 
             {/* Address */}
             <div className="space-y-2">
-                <Label htmlFor="address">Dirección</Label>
+                <Label htmlFor="address">DirecciÃ³n</Label>
                 <Textarea
                     id="address"
                     value={address}
@@ -178,7 +178,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
 
             {/* Secret Code Section */}
             <div className="pt-4 border-t">
-                <Label htmlFor="promoCode" className="text-xs text-muted-foreground uppercase tracking-wider">Código de Activación</Label>
+                <Label htmlFor="promoCode" className="text-xs text-muted-foreground uppercase tracking-wider">CÃ³digo de ActivaciÃ³n</Label>
                 <div className="flex gap-2 mt-1 max-w-sm">
                     <Input
                         id="promoCode"
@@ -207,7 +207,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
                                             toast.error(result.error)
                                         }
                                     } catch (err) {
-                                        toast.error('Error procesando código')
+                                        toast.error('Error procesando cÃ³digo')
                                     } finally {
                                         setLoading(false)
                                     }

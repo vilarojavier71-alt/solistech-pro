@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -60,7 +60,7 @@ export function ExcelImporter({ fields, onImport, entityName, preserveUnmappedCo
         ]
 
         if (!validTypes.includes(selectedFile.type) && !selectedFile.name.match(/\.(xlsx|xls|csv)$/)) {
-            toast.error('Formato de archivo no v·lido. Use .xlsx, .xls o .csv')
+            toast.error('Formato de archivo no v√°lido. Use .xlsx, .xls o .csv')
             return
         }
 
@@ -195,7 +195,7 @@ export function ExcelImporter({ fields, onImport, entityName, preserveUnmappedCo
                     <CardHeader>
                         <CardTitle>2. Mapear Columnas</CardTitle>
                         <CardDescription>
-                            Indica quÈ columna de tu Excel corresponde a cada campo
+                            Indica qu√© columna de tu Excel corresponde a cada campo
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -271,7 +271,7 @@ export function ExcelImporter({ fields, onImport, entityName, preserveUnmappedCo
                     {/* Auto-mapping status */}
                     {Object.keys(mappings).length === 0 && (
                         <div className="bg-yellow-50 text-yellow-800 p-4 rounded-md border border-yellow-200">
-                            <strong>AtenciÛn:</strong> No se han detectado columnas compatibles autom·ticamente.
+                            <strong>Atenci√≥n:</strong> No se han detectado columnas compatibles autom√°ticamente.
                             Por favor mapea las columnas de tu archivo (Paso 2) manualmente.
                         </div>
                     )}
@@ -310,7 +310,7 @@ export function ExcelImporter({ fields, onImport, entityName, preserveUnmappedCo
             {result && (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Resultado de la ImportaciÛn</CardTitle>
+                        <CardTitle>Resultado de la Importaci√≥n</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -328,7 +328,7 @@ export function ExcelImporter({ fields, onImport, entityName, preserveUnmappedCo
                                     <div className="max-h-40 overflow-y-auto space-y-1">
                                         {result.errors.map((error, idx) => (
                                             <div key={idx} className="text-sm text-muted-foreground">
-                                                ï {error}
+                                                ‚Ä¢ {error}
                                             </div>
                                         ))}
                                     </div>

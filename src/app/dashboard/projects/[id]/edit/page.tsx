@@ -15,7 +15,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
     const session = await auth()
     if (!session?.user) redirect('/auth/login')
 
-    const profile = await prisma.user.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

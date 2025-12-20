@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+锘縤mport { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getOrganizationMembers, getOrganizationRoles } from '@/lib/actions/team-management'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,13 +18,13 @@ export default async function TeamSettingsPage() {
     if (!session?.user) return null
 
     // Get Org ID
-    const profile = await prisma.user.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
     const orgId = profile?.organization_id
 
-    if (!orgId) return <div>Error: Sin organizaci髇</div>
+    if (!orgId) return <div>Error: Sin organizaci贸n</div>
 
     // Parallel fetch
     const [members, roles] = await Promise.all([
@@ -36,7 +36,7 @@ export default async function TeamSettingsPage() {
     if (!roles || roles.length === 0) {
         return (
             <div className="space-y-6">
-                <h1 className="text-3xl font-bold tracking-tight">Gesti髇 de Equipo</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Gesti贸n de Equipo</h1>
                 <InitializeRolesButton organizationId={orgId} />
             </div>
         )
@@ -46,9 +46,9 @@ export default async function TeamSettingsPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Gesti髇 de Equipo</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Gesti贸n de Equipo</h1>
                     <p className="text-muted-foreground mt-1">
-                        Administra roles y permisos granulares de tu organizaci髇.
+                        Administra roles y permisos granulares de tu organizaci贸n.
                     </p>
                 </div>
                 <AdvancedMemberModal roles={roles || []} organizationId={orgId} />

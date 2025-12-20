@@ -119,14 +119,13 @@ export async function searchMessages(userId: string, query: string, maxResults =
                         metadataHeaders: ['Subject', 'From', 'Date']
                     })
                     const headers = detail.data.payload?.headers || []
-                    const getHeader = (name: string) => headers.find((h: any) => h.name === name)?.value
                     return {
                         id: msg.id,
                         threadId: msg.threadId,
                         snippet: detail.data.snippet,
-                        subject: getHeader('Subject') || '(Sin asunto)',
-                        from: getHeader('From') || 'Desconocido',
-                        date: getHeader('Date'),
+                        subject: headers.find((h: { name?: string; value?: string }) => h.name === 'Subject')?.value || '(Sin asunto)',
+                        from: headers.find((h: { name?: string; value?: string }) => h.name === 'From')?.value || 'Desconocido',
+                        date: headers.find((h: { name?: string; value?: string }) => h.name === 'Date')?.value,
                         labelIds: detail.data.labelIds
                     }
                 } catch {
@@ -194,39 +193,4 @@ export async function getEmailStats(userId: string) {
  */
 export async function searchRelatedEmails(userId: string, searchTerm: string, maxResults = 5) {
     return searchMessages(userId, searchTerm, maxResults)
-}
-
-// ============================================================================
-// UTILITIES
-// ============================================================================
-
-export function extractEmailBody(payload: any): string {
-    if (!payload) return ''
-
-    let body = ''
-
-    // 1. If body has data directly
-    if (payload.body && payload.body.data) {
-        body = Buffer.from(payload.body.data, 'base64').toString('utf-8')
-    }
-    // 2. If it has parts (multipart/alternative or mixed)
-    else if (payload.parts) {
-        // Prefer HTML part
-        const htmlPart = payload.parts.find((p: any) => p.mimeType === 'text/html')
-        const textPart = payload.parts.find((p: any) => p.mimeType === 'text/plain')
-
-        if (htmlPart && htmlPart.body && htmlPart.body.data) {
-            body = Buffer.from(htmlPart.body.data, 'base64').toString('utf-8')
-        } else if (textPart && textPart.body && textPart.body.data) {
-            body = Buffer.from(textPart.body.data, 'base64').toString('utf-8')
-        } else {
-            // Recursive for nested parts
-            for (const part of payload.parts) {
-                const res = extractEmailBody(part)
-                if (res) return res
-            }
-        }
-    }
-
-    return body
 }

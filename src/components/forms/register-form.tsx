@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -31,7 +31,7 @@ export function RegisterForm() {
             if (result.error) {
                 toast.error(result.error)
             } else {
-                toast.success('Â¡Cuenta creada! Redirigiendo al login...')
+                toast.success('Ã‚Â¡Cuenta creada! Redirigiendo al login...')
                 router.push('/auth/login')
             }
         } catch (error: any) {
@@ -49,7 +49,7 @@ export function RegisterForm() {
                 <Input
                     id="fullName"
                     type="text"
-                    placeholder="Juan Pérez"
+                    placeholder="Juan PÃ©rez"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
@@ -84,11 +84,11 @@ export function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">ContraseÃ±a</Label>
                 <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -96,7 +96,7 @@ export function RegisterForm() {
                     disabled={loading}
                 />
                 <p className="text-xs text-muted-foreground">
-                    Mínimo 6 caracteres
+                    MÃ­nimo 6 caracteres
                 </p>
             </div>
 
@@ -105,9 +105,9 @@ export function RegisterForm() {
             </Button>
 
             <p className="text-xs text-center text-muted-foreground">
-                Al registrarte, aceptas nuestros términos de servicio y política de privacidad.
+                Al registrarte, aceptas nuestros tÃ©rminos de servicio y polÃ­tica de privacidad.
                 <br />
-                <strong>14 días de prueba gratis</strong> - No se requiere tarjeta de crédito.
+                <strong>14 dÃ­as de prueba gratis</strong> - No se requiere tarjeta de crÃ©dito.
             </p>
         </form>
     )

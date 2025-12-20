@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,7 +35,7 @@ export default function SwitchingPage() {
         setIsAnalyzing(true)
         toast.info('Analizando factura con IA...')
 
-        // SIMULACI”N: En producciÛn usarÌamos un lector PDF real
+        // SIMULACI√ìN: En producci√≥n usar√≠amos un lector PDF real
         setTimeout(() => {
             // Texto hardcodeado simula el contenido de un PDF
             const mockPdfText = "Factura Luz. CUPS: ES0021000000000000AA. Potencia P1: 5,5 kW"
@@ -44,7 +44,7 @@ export default function SwitchingPage() {
             setExtractedData(data)
             setIsAnalyzing(false)
             setStep(2)
-            toast.success('Datos extraÌdos correctamente')
+            toast.success('Datos extra√≠dos correctamente')
         }, 2000)
     }
 
@@ -64,7 +64,7 @@ export default function SwitchingPage() {
                 <div className="h-px w-8 bg-border" />
                 <div className={`flex items-center gap-2 ${step >= 2 ? 'text-primary' : ''}`}>
                     <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-current">2</div>
-                    An·lisis
+                    An√°lisis
                 </div>
                 <div className="h-px w-8 bg-border" />
                 <div className={`flex items-center gap-2 ${step >= 3 ? 'text-primary' : ''}`}>
@@ -79,7 +79,7 @@ export default function SwitchingPage() {
                     <CardHeader>
                         <CardTitle>Tu Factura Actual</CardTitle>
                         <CardDescription>
-                            Sube el PDF para que extraigamos los datos autom·ticamente
+                            Sube el PDF para que extraigamos los datos autom√°ticamente
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -87,7 +87,7 @@ export default function SwitchingPage() {
                             <div className="border-2 border-dashed rounded-lg p-12 text-center hover:bg-muted/50 transition-colors">
                                 <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                                 <Label htmlFor="invoice-upload" className="cursor-pointer">
-                                    <span className="text-primary font-semibold hover:underline">Haz clic para subir</span> o arrastra aquÌ
+                                    <span className="text-primary font-semibold hover:underline">Haz clic para subir</span> o arrastra aqu√≠
                                     <Input
                                         id="invoice-upload"
                                         type="file"
@@ -133,17 +133,17 @@ export default function SwitchingPage() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="h-48 flex items-end justify-center gap-8 pb-4">
-                                {/* Gr·fico Simplificado CSS */}
+                                {/* Gr√°fico Simplificado CSS */}
                                 <div className="flex flex-col items-center gap-2">
                                     <span className="text-sm font-medium">Actual</span>
                                     <div className="w-16 bg-red-500/80 rounded-t-lg h-32 relative group">
-                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 font-bold">120Ä</div>
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 font-bold">120‚Ç¨</div>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-center gap-2">
                                     <span className="text-sm font-medium text-green-400">Recomendada</span>
                                     <div className="w-16 bg-green-500 rounded-t-lg h-24 relative group animate-pulse-slow">
-                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 font-bold text-green-400">85Ä</div>
+                                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 font-bold text-green-400">85‚Ç¨</div>
                                     </div>
                                 </div>
                             </div>
@@ -151,11 +151,11 @@ export default function SwitchingPage() {
                             <div className="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
                                 <div className="flex justify-between items-center mb-2">
                                     <span className="text-sm opacity-80">Ahorro anual estimado</span>
-                                    <span className="text-2xl font-bold text-green-400">420Ä</span>
+                                    <span className="text-2xl font-bold text-green-400">420‚Ç¨</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="opacity-60">CompaÒÌa recomendada</span>
-                                    <span className="font-semibold">EnergÌa Verde SL</span>
+                                    <span className="opacity-60">Compa√±√≠a recomendada</span>
+                                    <span className="font-semibold">Energ√≠a Verde SL</span>
                                 </div>
                             </div>
 
@@ -168,7 +168,7 @@ export default function SwitchingPage() {
                                     p2: extractedData?.powers.p2 || 0
                                 }}
                                 tariff={{
-                                    company: 'EnergÌa Verde SL',
+                                    company: 'Energ√≠a Verde SL',
                                     planName: 'Tarifa Ahorro Total',
                                     priceEnergy: 0.12,
                                     priceP1: 30.20

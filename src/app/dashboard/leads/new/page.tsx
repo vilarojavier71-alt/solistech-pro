@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+ï»¿import { Metadata } from 'next'
 import { NewLeadForm } from '@/components/forms/new-lead-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -13,13 +13,13 @@ export default function NewLeadPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Nuevo Lead</h1>
                 <p className="text-muted-foreground">
-                    Añade una nueva oportunidad de venta
+                    AÃ±ade una nueva oportunidad de venta
                 </p>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Información del Lead</CardTitle>
+                    <CardTitle>InformaciÃ³n del Lead</CardTitle>
                     <CardDescription>
                         Completa los datos del contacto y la oportunidad
                     </CardDescription>

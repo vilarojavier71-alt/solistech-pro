@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Empty State: No Projects
  * 
- * Pantalla vacía cuando el usuario no tiene proyectos.
- * Guía visual para crear el primer estudio solar.
+ * Pantalla vacÃ­a cuando el usuario no tiene proyectos.
+ * GuÃ­a visual para crear el primer estudio solar.
  * 
  * @author @FRONTEND_DISENOUI
  * @version 1.0.0
@@ -40,15 +40,15 @@ export function EmptyProjects() {
                 <Sparkles className="size-24 text-cyan-500 relative" />
             </div>
 
-            {/* Título */}
+            {/* TÃ­tulo */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
                 Inicia tu Primer Estudio Solar
             </h3>
 
-            {/* Descripci�n */}
+            {/* Descripción */}
             <p className="text-slate-400 max-w-md mb-10 text-lg">
-                Crea un proyecto en segundos. Solo necesitas la direcci�n del cliente
-                y la IA calcular� autom�ticamente la producci�n solar, el ahorro y el ROI.
+                Crea un proyecto en segundos. Solo necesitas la dirección del cliente
+                y la IA calculará automáticamente la producción solar, el ahorro y el ROI.
             </p>
 
             {/* CTA Principal */}
@@ -66,32 +66,32 @@ export function EmptyProjects() {
             {/* Ayuda secundaria */}
             <div className="mt-8 flex items-center gap-6 text-sm">
                 <p className="text-slate-500">
-                    ¿Tienes clientes en Excel?
+                    Â¿Tienes clientes en Excel?
                 </p>
                 <Button asChild variant="ghost" size="sm">
                     <Link href="/dashboard/import" className="text-cyan-500 hover:text-cyan-400">
                         <Upload className="mr-2 size-4" />
-                        Imp�rtalos aqu�
+                        Impórtalos aquí
                     </Link>
                 </Button>
             </div>
 
-            {/* Características rápidas */}
+            {/* CaracterÃ­sticas rÃ¡pidas */}
             <div className="mt-12 grid grid-cols-3 gap-6 max-w-2xl">
                 <div className="text-center">
-                    <div className="text-3xl mb-2">⚡</div>
-                    <p className="text-sm font-medium text-slate-300">C�lculo Autom�tico</p>
-                    <p className="text-xs text-slate-500">Producci�n y ROI en segundos</p>
+                    <div className="text-3xl mb-2">âš¡</div>
+                    <p className="text-sm font-medium text-slate-300">Cálculo Automático</p>
+                    <p className="text-xs text-slate-500">Producción y ROI en segundos</p>
                 </div>
                 <div className="text-center">
-                    <div className="text-3xl mb-2">🤖</div>
+                    <div className="text-3xl mb-2">ðŸ¤–</div>
                     <p className="text-sm font-medium text-slate-300">IA Integrada</p>
                     <p className="text-xs text-slate-500">Presentaciones profesionales</p>
                 </div>
                 <div className="text-center">
-                    <div className="text-3xl mb-2">📊</div>
+                    <div className="text-3xl mb-2">ðŸ“Š</div>
                     <p className="text-sm font-medium text-slate-300">Subvenciones</p>
-                    <p className="text-xs text-slate-500">C�lculo autom�tico por CCAA</p>
+                    <p className="text-xs text-slate-500">Cálculo automático por CCAA</p>
                 </div>
             </div>
         </motion.div>

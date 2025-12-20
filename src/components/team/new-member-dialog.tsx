@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -36,7 +36,7 @@ export function TeamMemberDialog({ roles, organizationId }: { roles: Role[], org
             if (result.error) {
                 toast.error(result.error)
             } else if (result.success && result.data) {
-                toast.success('Miembro añadido exitosamente')
+                toast.success('Miembro aÃ±adido exitosamente')
                 setCreatedCreds({
                     email: result.data.email,
                     pass: result.data.password || ''
@@ -58,14 +58,14 @@ export function TeamMemberDialog({ roles, organizationId }: { roles: Role[], org
             <DialogTrigger asChild>
                 <Button>
                     <UserPlus className="mr-2 h-4 w-4" />
-                    Añadir Miembro
+                    AÃ±adir Miembro
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Nuevo Miembro del Equipo</DialogTitle>
                     <DialogDescription>
-                        Da de alta a un empleado y asígnale un rol específico.
+                        Da de alta a un empleado y asÃ­gnale un rol especÃ­fico.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -73,9 +73,9 @@ export function TeamMemberDialog({ roles, organizationId }: { roles: Role[], org
                     <div className="space-y-4 py-4">
                         <Alert className="bg-green-50 border-green-200 text-green-800">
                             <Key className="h-4 w-4" />
-                            <AlertTitle>¡Usuario Creado!</AlertTitle>
+                            <AlertTitle>Â¡Usuario Creado!</AlertTitle>
                             <AlertDescription>
-                                Copia estas credenciales temporales. No se volverán a mostrar.
+                                Copia estas credenciales temporales. No se volverÃ¡n a mostrar.
                             </AlertDescription>
                         </Alert>
 
@@ -98,7 +98,7 @@ export function TeamMemberDialog({ roles, organizationId }: { roles: Role[], org
                     <form onSubmit={handleSubmit} className="grid gap-4 py-4">
                         <div className="grid gap-2">
                             <Label htmlFor="fullName">Nombre Completo</Label>
-                            <Input id="fullName" name="fullName" placeholder="Ej. Ana García" required />
+                            <Input id="fullName" name="fullName" placeholder="Ej. Ana GarcÃ­a" required />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="email">Correo Corporativo</Label>

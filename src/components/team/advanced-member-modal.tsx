@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -23,7 +23,7 @@ export function AdvancedMemberModal({ roles }: AdvancedMemberModalProps) {
     const workZones = [
         { id: "1", name: "Zona Norte" },
         { id: "2", name: "Zona Centro/Madrid" },
-        { id: "3", name: "Zona Sur/Andaluc�a" },
+        { id: "3", name: "Zona Sur/Andalucía" },
         { id: "4", name: "Levante" },
     ]
 

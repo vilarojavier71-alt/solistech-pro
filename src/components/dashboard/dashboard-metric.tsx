@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+﻿import { cn } from "@/lib/utils"
 import { LucideIcon } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -61,13 +61,13 @@ export function DashboardMetric({
                         )}
                     </div>
 
-                    {/* 3. Título (Label) */}
+                    {/* 3. TÃ­tulo (Label) */}
                     <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                         {label}
                     </p>
                 </div>
 
-                {/* 4. Métrica Secundaria */}
+                {/* 4. MÃ©trica Secundaria */}
                 {secondary && (
                     <div className="pt-2 mt-auto border-t border-border/50 w-full">
                         <p className="text-xs text-muted-foreground/80 truncate">

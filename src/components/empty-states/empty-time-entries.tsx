@@ -1,8 +1,8 @@
-/**
+Ôªø/**
  * Empty State: No Time Entries
  * 
- * Pantalla vac√≠a cuando el usuario no ha fichado.
- * Instrucciones claras sobre cÛmo usar el sistema de fichajes.
+ * Pantalla vac√É¬≠a cuando el usuario no ha fichado.
+ * Instrucciones claras sobre c√≥mo usar el sistema de fichajes.
  * 
  * @author @FRONTEND_DISENOUI
  * @version 1.0.0
@@ -38,24 +38,24 @@ export function EmptyTimeEntries() {
                 <Clock className="size-24 text-teal-500 relative" />
             </div>
 
-            {/* T√≠tulo */}
+            {/* T√É¬≠tulo */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
-                A√∫n no has fichado hoy
+                A√É¬∫n no has fichado hoy
             </h3>
 
-            {/* DescripciÛn */}
+            {/* Descripci√≥n */}
             <p className="text-slate-400 max-w-md mb-8 text-lg">
-                Desliza el botÛn naranja para fichar tu entrada.
-                El sistema validar· tu ubicaciÛn GPS autom·ticamente.
+                Desliza el bot√≥n naranja para fichar tu entrada.
+                El sistema validar√° tu ubicaci√≥n GPS autom√°ticamente.
             </p>
 
-            {/* Caracter√≠sticas */}
+            {/* Caracter√É¬≠sticas */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-lg">
                 <div className="flex items-start gap-3 text-left bg-slate-900/50 border border-slate-700 rounded-lg p-4">
                     <MapPin className="size-6 text-teal-500 flex-shrink-0 mt-0.5" />
                     <div>
-                        <p className="text-sm font-medium text-slate-300 mb-1">GPS Autom·tico</p>
-                        <p className="text-xs text-slate-500">Valida que est·s en la obra (500m de radio)</p>
+                        <p className="text-sm font-medium text-slate-300 mb-1">GPS Autom√°tico</p>
+                        <p className="text-xs text-slate-500">Valida que est√°s en la obra (500m de radio)</p>
                     </div>
                 </div>
                 <div className="flex items-start gap-3 text-left bg-slate-900/50 border border-slate-700 rounded-lg p-4">
@@ -67,15 +67,15 @@ export function EmptyTimeEntries() {
                 </div>
             </div>
 
-            {/* InstrucciÛn visual */}
+            {/* Instrucci√≥n visual */}
             <div className="bg-gradient-to-r from-teal-900/30 to-emerald-900/30 border border-teal-700/50 rounded-lg p-6 max-w-md">
                 <p className="text-sm text-slate-300 mb-2">
-                    ?? <strong>CÛmo fichar:</strong>
+                    üí° <strong>C√≥mo fichar:</strong>
                 </p>
                 <ol className="text-sm text-slate-400 text-left space-y-2">
-                    <li>1. Desliza el botÛn hasta el final (previene fichajes accidentales)</li>
-                    <li>2. El mÛvil vibrar· al confirmar</li>
-                    <li>3. Ver·s el cronÛmetro en verde cuando estÈs fichado</li>
+                    <li>1. Desliza el bot√≥n hasta el final (previene fichajes accidentales)</li>
+                    <li>2. El m√≥vil vibrar√° al confirmar</li>
+                    <li>3. Ver√°s el cron√≥metro en verde cuando est√©s fichado</li>
                 </ol>
             </div>
         </motion.div>

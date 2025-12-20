@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { Button } from '@/components/ui/button'
 import { PlayCircle } from 'lucide-react'
@@ -6,7 +6,7 @@ import { PlayCircle } from 'lucide-react'
 export function TourButton() {
     const handleStartTour = () => {
         if (typeof window !== 'undefined') {
-            // Importar dinámicamente para evitar SSR
+            // Importar dinÃ¡micamente para evitar SSR
             import('@/lib/onboarding/tour-config').then(({ restartOnboardingTour }) => {
                 restartOnboardingTour()
             })
@@ -18,7 +18,7 @@ export function TourButton() {
             <div className="flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-semibold text-slate-100 mb-1">
-                        ¿Primera vez en la plataforma?
+                        Â¿Primera vez en la plataforma?
                     </h3>
                     <p className="text-sm text-slate-400">
                         Realiza el tour guiado de 2 minutos para conocer las funciones principales

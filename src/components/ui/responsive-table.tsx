@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import * as React from 'react'
 import { useIsMobile } from '@/hooks/useMediaQuery'
@@ -28,7 +28,7 @@ interface ResponsiveTableProps<T> {
 }
 
 /**
- * Tabla responsiva que se convierte en lista de cards en m�vil
+ * Tabla responsiva que se convierte en lista de cards en móvil
  * Estilo Holded/Linear - Clean ERP
  */
 export function ResponsiveTable<T>({

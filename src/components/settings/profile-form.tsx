@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -31,9 +31,9 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
             return
         }
 
-        // Validar tamaño (máx 2MB)
+        // Validar tamaÃ±o (mÃ¡x 2MB)
         if (file.size > 2 * 1024 * 1024) {
-            toast.error('La imagen no puede pesar más de 2MB')
+            toast.error('La imagen no puede pesar mÃ¡s de 2MB')
             return
         }
 
@@ -100,7 +100,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                         />
                     </Label>
                     <p className="text-xs text-muted-foreground mt-2">
-                        JPG, PNG o GIF. Máximo 2MB.
+                        JPG, PNG o GIF. MÃ¡ximo 2MB.
                     </p>
                 </div>
             </div>
@@ -112,7 +112,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                     id="fullName"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Juan Pérez"
+                    placeholder="Juan PÃ©rez"
                 />
             </div>
 
@@ -127,7 +127,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                     placeholder="juan@solistech.es"
                 />
                 <p className="text-xs text-muted-foreground">
-                    Cambiar tu email requiere verificación
+                    Cambiar tu email requiere verificaciÃ³n
                 </p>
             </div>
 

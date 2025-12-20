@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import React from 'react'
 import { Info } from 'lucide-react'
@@ -21,7 +21,7 @@ interface TooltipInfoProps {
 
 /**
  * Componente de tooltip contextual con estilo Dark Premium
- * Muestra información de ayuda al pasar el mouse sobre el icono (i)
+ * Muestra informaciÃ³n de ayuda al pasar el mouse sobre el icono (i)
  */
 export function TooltipInfo({
     title,
@@ -56,7 +56,7 @@ export function TooltipInfo({
                             'focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-full',
                             className
                         )}
-                        aria-label="Más información"
+                        aria-label="MÃ¡s informaciÃ³n"
                         onClick={(e) => e.preventDefault()}
                     >
                         {icon || <Info className="h-4 w-4" />}
@@ -90,110 +90,110 @@ export function TooltipInfo({
 export const TooltipInfoMap: Record<string, { title?: string, content: string }> = {
     // Technical Data
     'system_size_kwp': {
-        title: '? Potencia Pico del Sistema',
-        content: "Potencia máxima que genera la instalación en condiciones ideales (STC). Es la suma de la potencia de todos los paneles."
+        title: 'âš¡ Potencia Pico del Sistema',
+        content: "Potencia mÃ¡xima que genera la instalaciÃ³n en condiciones ideales (STC). Es la suma de la potencia de todos los paneles."
     },
     'estimated_production_kwh': {
-        title: '?? Producción Estimada',
-        content: "Energía solar que producirá tu sistema en un año. Calculada según la radiación solar de tu ubicación y la orientación."
+        title: 'â˜€ï¸ ProducciÃ³n Estimada',
+        content: "EnergÃ­a solar que producirÃ¡ tu sistema en un aÃ±o. Calculada segÃºn la radiaciÃ³n solar de tu ubicaciÃ³n y la orientaciÃ³n."
     },
     'performance_ratio': {
-        title: '?? Rendimiento (PR)',
-        content: "Porcentaje de energía que realmente aprovechas vs. la teórica. Un PR del 80% es excelente. Incluye pérdidas por temperatura, cableado, etc."
+        title: 'âš™ï¸ Rendimiento (PR)',
+        content: "Porcentaje de energÃ­a que realmente aprovechas vs. la teÃ³rica. Un PR del 80% es excelente. Incluye pÃ©rdidas por temperatura, cableado, etc."
     },
     'azimuth': {
-        title: '?? Orientación del Tejado',
-        content: "Dirección hacia la que mira el tejado. Óptima: Sur (máxima producción). Aceptable: Sureste/Suroeste (95% producción)."
+        title: 'ğŸ§­ OrientaciÃ³n del Tejado',
+        content: "DirecciÃ³n hacia la que mira el tejado. Ã“ptima: Sur (mÃ¡xima producciÃ³n). Aceptable: Sureste/Suroeste (95% producciÃ³n)."
     },
     'tilt': {
-        title: '?? Inclinación del Tejado',
-        content: "Ángulo del tejado respecto al suelo. Óptima España: 30-35°. Plano (0°): -10% producción."
+        title: 'ğŸ“ InclinaciÃ³n del Tejado',
+        content: "Ãngulo del tejado respecto al suelo. Ã“ptima EspaÃ±a: 30-35Â°. Plano (0Â°): -10% producciÃ³n."
     },
     'roi_years': {
-        title: '?? Retorno de Inversión',
-        content: "Años que tardas en recuperar la inversión inicial con los ahorros generados. Bueno: 5-7 años. Excelente: < 5 años."
+        title: 'ğŸ“ˆ Retorno de InversiÃ³n',
+        content: "AÃ±os que tardas en recuperar la inversiÃ³n inicial con los ahorros generados. Bueno: 5-7 aÃ±os. Excelente: < 5 aÃ±os."
     },
     'payback_period': {
-        title: '?? Periodo de Amortización',
-        content: "Tiempo hasta recuperar el coste de la instalación mediante ahorro en factura y venta de excedentes."
+        title: 'ğŸ’° Periodo de AmortizaciÃ³n',
+        content: "Tiempo hasta recuperar el coste de la instalaciÃ³n mediante ahorro en factura y venta de excedentes."
     },
     'custom_attributes': {
-        title: '?? Atributos Personalizados',
-        content: "Campos extra de tu Excel que no encajan en columnas estándar. Se guardan en formato flexible para búsquedas futuras."
+        title: 'ğŸ“Š Atributos Personalizados',
+        content: "Campos extra de tu Excel que no encajan en columnas estÃ¡ndar. Se guardan en formato flexible para bÃºsquedas futuras."
     },
 
     // Financial Data
     'annual_consumption': {
-        title: '? Consumo Eléctrico Anual',
-        content: "Energía que consumes al año. Encuéntralo en tu factura eléctrica (apartado 'Consumo anual'). Valor típico vivienda: 3.000-5.000 kWh/año."
+        title: 'âš¡ Consumo ElÃ©ctrico Anual',
+        content: "EnergÃ­a que consumes al aÃ±o. EncuÃ©ntralo en tu factura elÃ©ctrica (apartado 'Consumo anual'). Valor tÃ­pico vivienda: 3.000-5.000 kWh/aÃ±o."
     },
     'cadastral_reference': {
-        title: '?? Referencia Catastral',
-        content: "Código único de tu propiedad (20 caracteres). Necesario para bonificaciones IBI. Encuéntralo en el recibo del IBI o en la Sede Electrónica del Catastro."
+        title: 'ğŸ  Referencia Catastral',
+        content: "CÃ³digo Ãºnico de tu propiedad (20 caracteres). Necesario para bonificaciones IBI. EncuÃ©ntralo en el recibo del IBI o en la Sede ElectrÃ³nica del Catastro."
     },
     'roof_angle': {
-        title: '?? Ángulo del Tejado',
-        content: "Inclinación de tu tejado respecto al suelo. Óptima en España: 30-35°. Tejado plano (0°): -10% producción. Consulta con el instalador si no lo conoces."
+        title: 'ğŸ“ Ãngulo del Tejado',
+        content: "InclinaciÃ³n de tu tejado respecto al suelo. Ã“ptima en EspaÃ±a: 30-35Â°. Tejado plano (0Â°): -10% producciÃ³n. Consulta con el instalador si no lo conoces."
     },
     'base_investment': {
-        title: '?? Inversión Base',
-        content: "Precio de la instalación sin IVA (21%). Necesario para calcular subvenciones y ROI."
+        title: 'ğŸ’° InversiÃ³n Base',
+        content: "Precio de la instalaciÃ³n sin IVA (21%). Necesario para calcular subvenciones y ROI."
     },
 
     // Engineering & Solar
     'solar_irradiance': {
-        title: '?? Energía Solar Disponible',
-        content: "Cantidad de luz solar que recibe tu ubicación (kWh/m²/año). Cuanto mayor, más energía producirán tus paneles. España: 1.400-1.900 kWh/m²/año."
+        title: 'â˜€ï¸ EnergÃ­a Solar Disponible',
+        content: "Cantidad de luz solar que recibe tu ubicaciÃ³n (kWh/mÂ²/aÃ±o). Cuanto mayor, mÃ¡s energÃ­a producirÃ¡n tus paneles. EspaÃ±a: 1.400-1.900 kWh/mÂ²/aÃ±o."
     },
     'panel_efficiency': {
-        title: '?? Eficiencia del Panel',
+        title: 'ğŸ”‹ Eficiencia del Panel',
         content: "Porcentaje de luz solar que el panel convierte en electricidad. Paneles modernos: 20-22%."
     },
     'performance_ratio_detail': {
-        title: '?? Performance Ratio (PR)',
-        content: "Porcentaje de energía que realmente aprovechas vs. la teórica. Un PR del 80% es excelente."
+        title: 'âš™ï¸ Performance Ratio (PR)',
+        content: "Porcentaje de energÃ­a que realmente aprovechas vs. la teÃ³rica. Un PR del 80% es excelente."
     },
     'azimuth_detail': {
-        title: '?? Orientación del Tejado',
-        content: "Ángulo respecto al Sur (0° = Sur perfecto). Sur: máxima producción. Este/Oeste: -15% producción."
+        title: 'ğŸ§­ OrientaciÃ³n del Tejado',
+        content: "Ãngulo respecto al Sur (0Â° = Sur perfecto). Sur: mÃ¡xima producciÃ³n. Este/Oeste: -15% producciÃ³n."
     },
 
     // Subsidies & Tax
     'tax_deduction': {
-        title: '?? Ahorro en la Declaración',
-        content: "Porcentaje del coste de instalación que te devuelve Hacienda (hasta 60%). Varía según CCAA y tipo de instalación."
+        title: 'ğŸ’° Ahorro en la DeclaraciÃ³n',
+        content: "Porcentaje del coste de instalaciÃ³n que te devuelve Hacienda (hasta 60%). VarÃ­a segÃºn CCAA y tipo de instalaciÃ³n."
     },
     'ibi_bonus': {
-        title: '?? Bonificación IBI',
-        content: "Descuento en el Impuesto de Bienes Inmuebles que ofrecen muchos ayuntamientos por instalar placas solares. Ejemplo: 50% durante 3 años."
+        title: 'ğŸ  BonificaciÃ³n IBI',
+        content: "Descuento en el Impuesto de Bienes Inmuebles que ofrecen muchos ayuntamientos por instalar placas solares. Ejemplo: 50% durante 3 aÃ±os."
     },
     'next_gen_funds': {
-        title: '???? Fondos Next Generation',
-        content: "Ayudas europeas directas al coste de la instalación. Pueden cubrir hasta el 40-50% de la inversión."
+        title: 'ğŸ‡ªğŸ‡º Fondos Next Generation',
+        content: "Ayudas europeas directas al coste de la instalaciÃ³n. Pueden cubrir hasta el 40-50% de la inversiÃ³n."
     },
     'loss_coefficient': {
-        title: '?? Coeficiente de Pérdidas',
-        content: "Reducción de rendimiento por sombras, suciedad, temperatura. Valor recomendado: 0.80-0.85 (20-15% de pérdidas)"
+        title: 'âš™ï¸ Coeficiente de PÃ©rdidas',
+        content: "ReducciÃ³n de rendimiento por sombras, suciedad, temperatura. Valor recomendado: 0.80-0.85 (20-15% de pÃ©rdidas)"
     },
     'irpf_deduction': {
-        title: '?? Deducción IRPF',
-        content: "Porcentaje que te devuelven en la declaración de la renta.\n• 20%: hasta 12.450€ (máx. 2.490€)\n• 40%: hasta 24.900€ (máx. 9.960€)\n• 60%: hasta 37.350€ (máx. 22.410€)"
+        title: 'ğŸ’° DeducciÃ³n IRPF',
+        content: "Porcentaje que te devuelven en la declaraciÃ³n de la renta.\nâ€¢ 20%: hasta 12.450â‚¬ (mÃ¡x. 2.490â‚¬)\nâ€¢ 40%: hasta 24.900â‚¬ (mÃ¡x. 9.960â‚¬)\nâ€¢ 60%: hasta 37.350â‚¬ (mÃ¡x. 22.410â‚¬)"
     },
 
     // Fichajes
     'geofence': {
-        title: "?? Cerco Digital de Seguridad",
-        content: "Área virtual de 500m alrededor de la obra. Si fichas fuera, el sistema lo detecta y marca como 'ubicación sospechosa' para auditoría."
+        title: "ğŸ“ Cerco Digital de Seguridad",
+        content: "Ãrea virtual de 500m alrededor de la obra. Si fichas fuera, el sistema lo detecta y marca como 'ubicaciÃ³n sospechosa' para auditorÃ­a."
     },
 
     'modoOffline': {
-        title: "?? Funciona Sin Cobertura",
-        content: "Tus fichajes se guardan en el móvil si no hay internet. Al recuperar conexión, se sincronizan automáticamente.\nIdeal para tejados remotos."
+        title: "ğŸ“¡ Funciona Sin Cobertura",
+        content: "Tus fichajes se guardan en el mÃ³vil si no hay internet. Al recuperar conexiÃ³n, se sincronizan automÃ¡ticamente.\nIdeal para tejados remotos."
     }
 }
 
 /**
- * Tooltips predefinidos para compatibilidad con código antiguo
+ * Tooltips predefinidos para compatibilidad con cÃ³digo antiguo
  */
 export const CommonTooltips = {
     irradiancia: <TooltipInfo id="solar_irradiance" content="" />,

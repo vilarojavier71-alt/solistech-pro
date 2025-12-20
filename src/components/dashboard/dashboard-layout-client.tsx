@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { SidebarProvider, useSidebar } from "@/components/providers/sidebar-provider"
 import { OnboardingProvider } from "@/components/providers/onboarding-provider"

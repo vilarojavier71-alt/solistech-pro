@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState, useEffect } from 'react'
 // TODO: Replace with server actions
@@ -101,7 +101,7 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="dni">DNI / NIE</SelectItem>
-                            <SelectItem value="factura_electrica">Factura Eléctrica</SelectItem>
+                            <SelectItem value="factura_electrica">Factura ElÃ©ctrica</SelectItem>
                             <SelectItem value="catastro">Referencia Catastral</SelectItem>
                             <SelectItem value="escrituras">Escrituras / Nota Simple</SelectItem>
                             <SelectItem value="instalaciones">Cert. Instalaciones (CIE)</SelectItem>
@@ -122,7 +122,7 @@ export function DocumentsManager({ sale, isClientView = false }: DocumentsManage
             <div className="grid gap-3">
                 <h3 className="font-semibold text-lg text-slate-800">Documentos del Expediente</h3>
                 {documents.length === 0 ? (
-                    <p className="text-muted-foreground italic text-sm">No hay documentos subidos aún.</p>
+                    <p className="text-muted-foreground italic text-sm">No hay documentos subidos aÃºn.</p>
                 ) : (
                     documents.map((doc) => (
                         <Card key={doc.id} className="overflow-hidden">

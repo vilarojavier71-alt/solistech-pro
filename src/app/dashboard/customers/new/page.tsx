@@ -14,13 +14,13 @@ export default function NewCustomerPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Nuevo Cliente</h1>
                 <p className="text-muted-foreground">
-                    A�ade un nuevo cliente a tu cartera
+                    Añade un nuevo cliente a tu cartera
                 </p>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Informaci�n del Cliente</CardTitle>
+                    <CardTitle>Información del Cliente</CardTitle>
                     <CardDescription>
                         Completa los datos del cliente
                     </CardDescription>

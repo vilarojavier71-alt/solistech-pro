@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -95,7 +95,7 @@ export function NewVisitForm() {
         <Card className="max-w-2xl mx-auto">
             <CardHeader>
                 <CardTitle>Agendar Nueva Visita</CardTitle>
-                <CardDescription>Asigna una visita técnica o comercial a un compañero.</CardDescription>
+                <CardDescription>Asigna una visita tÃ©cnica o comercial a un compaÃ±ero.</CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -156,9 +156,9 @@ export function NewVisitForm() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Ubicación / Dirección</Label>
+                        <Label>UbicaciÃ³n / DirecciÃ³n</Label>
                         <Input
-                            placeholder="Dirección de la visita..."
+                            placeholder="DirecciÃ³n de la visita..."
                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         />
                     </div>
@@ -166,7 +166,7 @@ export function NewVisitForm() {
                     <div className="space-y-2">
                         <Label>Notas para el Comercial</Label>
                         <Textarea
-                            placeholder="Detalles sobre el interés del cliente, perro peligroso, etc..."
+                            placeholder="Detalles sobre el interÃ©s del cliente, perro peligroso, etc..."
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>

@@ -1,4 +1,4 @@
-import { PageShell } from "@/components/ui/page-shell"
+﻿import { PageShell } from "@/components/ui/page-shell"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Loading() {

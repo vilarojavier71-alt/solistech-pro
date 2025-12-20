@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import {
@@ -45,7 +45,7 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = {
     quote: 'Presupuesto',
     approved: 'Aprobado',
-    installation: 'Instalación',
+    installation: 'InstalaciÃ³n',
     completed: 'Completado',
 }
 
@@ -74,7 +74,7 @@ export function ProjectsTable() {
     })
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de eliminar este proyecto?')) return
+        if (!confirm('Â¿EstÃ¡s seguro de eliminar este proyecto?')) return
 
         const result = await deleteProject(id)
         if (result.success) {
@@ -180,7 +180,7 @@ export function ProjectsTable() {
                             <SelectItem value="all">Todos</SelectItem>
                             <SelectItem value="quote">Presupuesto</SelectItem>
                             <SelectItem value="approved">Aprobado</SelectItem>
-                            <SelectItem value="installation">Instalación</SelectItem>
+                            <SelectItem value="installation">InstalaciÃ³n</SelectItem>
                             <SelectItem value="completed">Completado</SelectItem>
                         </SelectContent>
                     </Select>

@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Empty State: No Customers
  * 
- * Pantalla vacía cuando no hay clientes.
+ * Pantalla vacÃ­a cuando no hay clientes.
  * Opciones claras: importar o crear manualmente.
  * 
  * @author @FRONTEND_DISENOUI
@@ -40,15 +40,15 @@ export function EmptyCustomers() {
                 <UserPlus className="size-24 text-amber-500 relative" />
             </div>
 
-            {/* Título */}
+            {/* TÃ­tulo */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
-                A�ade tus Primeros Clientes
+                Añade tus Primeros Clientes
             </h3>
 
-            {/* Descripci�n */}
+            {/* Descripción */}
             <p className="text-slate-400 max-w-md mb-10 text-lg">
                 Importa tu base de datos desde Excel o crea clientes manualmente.
-                Podr�s vincularlos a proyectos y hacer seguimiento del pipeline de ventas.
+                Podrás vincularlos a proyectos y hacer seguimiento del pipeline de ventas.
             </p>
 
             {/* Opciones */}
@@ -72,25 +72,25 @@ export function EmptyCustomers() {
                 </Button>
             </div>
 
-            {/* Caracter�sticas de importaci�n */}
+            {/* Características de importación */}
             <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-6 max-w-lg">
                 <div className="flex items-center gap-2 mb-4">
                     <FileSpreadsheet className="size-5 text-amber-500" />
-                    <p className="text-sm font-medium text-slate-300">Importaci�n Inteligente</p>
+                    <p className="text-sm font-medium text-slate-300">Importación Inteligente</p>
                 </div>
                 <ul className="text-xs text-slate-400 text-left space-y-2">
-                    <li>✅ Formatos soportados: .xlsx, .xls, .csv</li>
-                    <li>? Detecci�n autom�tica de columnas</li>
-                    <li>? M�ximo 10.000 filas por archivo</li>
-                    <li>⚠️ Asegúrate de que la primera fila tiene los nombres de columnas</li>
+                    <li>âœ… Formatos soportados: .xlsx, .xls, .csv</li>
+                    <li>✅ Detección automática de columnas</li>
+                    <li>✅ Máximo 10.000 filas por archivo</li>
+                    <li>âš ï¸ AsegÃºrate de que la primera fila tiene los nombres de columnas</li>
                 </ul>
             </div>
 
             {/* Ayuda */}
             <p className="text-xs text-slate-500 mt-6">
-                �Necesitas ayuda con la importaci�n?{' '}
+                ¿Necesitas ayuda con la importación?{' '}
                 <Link href="/dashboard/help" className="text-cyan-500 hover:underline">
-                    Ver guía paso a paso
+                    Ver guÃ­a paso a paso
                 </Link>
             </p>
         </motion.div>

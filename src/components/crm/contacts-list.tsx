@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -73,7 +73,7 @@ export function ContactsList({ contacts, customerId }: { contacts: any[], custom
                     <DialogTrigger asChild>
                         <Button variant="outline" size="sm" className="border-zinc-700 text-zinc-300">
                             <Plus className="h-4 w-4 mr-2" />
-                            A�adir Contacto
+                            Añadir Contacto
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="bg-zinc-900 border-zinc-800 text-white">
@@ -96,12 +96,12 @@ export function ContactsList({ contacts, customerId }: { contacts: any[], custom
                                 <Input name="email" type="email" className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Teléfono</Label>
+                                <Label>TelÃ©fono</Label>
                                 <Input name="phone" className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Cargo / Rol</Label>
-                                <Input name="role" placeholder="Ej. CEO, Técnico..." className="bg-zinc-950 border-zinc-800" />
+                                <Input name="role" placeholder="Ej. CEO, TÃ©cnico..." className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
                                 {loading ? 'Guardando...' : 'Guardar Contacto'}

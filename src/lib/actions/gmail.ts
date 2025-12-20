@@ -93,25 +93,6 @@ export async function getGmailThreads() {
     return await listThreads(user.id)
 }
 
-export async function getThreadDetails(threadId: string) {
-    const user = await getCurrentUserWithRole()
-    if (!user) return { error: 'Not authenticated' }
-
-    const { getThread, extractEmailBody } = await import('@/lib/google/gmail')
-    const { thread, error } = await getThread(user.id, threadId)
-
-    if (error || !thread) return { error: error || 'Thread not found' }
-
-    // Decode body for the last message in thread (usually the one we want to read first)
-    // Or return all. For now, let's attach query to the messages.
-    const messages = thread.messages?.map((msg: any) => ({
-        ...msg,
-        bodyDecoded: extractEmailBody(msg.payload)
-    }))
-
-    return { ...thread, messages }
-}
-
 export async function searchGmailMessages(query: string, maxResults = 20) {
     const user = await getCurrentUserWithRole()
     if (!user) return { error: 'Not authenticated' }

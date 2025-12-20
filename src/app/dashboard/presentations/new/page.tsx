@@ -1,12 +1,12 @@
-import { Metadata } from 'next'
+锘縤mport { Metadata } from 'next'
 import { NewPresentationForm } from '@/components/presentations/new-presentation-form'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma as db } from '@/lib/db'
 
 export const metadata: Metadata = {
-    title: 'Nueva Presentaci髇 | SolisTech PRO',
-    description: 'Crear presentaci髇 PowerPoint con IA',
+    title: 'Nueva Presentaci贸n | SolisTech PRO',
+    description: 'Crear presentaci贸n PowerPoint con IA',
 }
 
 export default async function NewPresentationPage() {
@@ -40,9 +40,9 @@ export default async function NewPresentationPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Nueva Presentaci髇</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Nueva Presentaci贸n</h1>
                 <p className="text-muted-foreground">
-                    Genera una presentaci髇 PowerPoint personalizada con datos t閏nicos y fiscales
+                    Genera una presentaci贸n PowerPoint personalizada con datos t茅cnicos y fiscales
                 </p>
             </div>
 

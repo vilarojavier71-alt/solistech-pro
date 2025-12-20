@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import * as React from "react"
 import {
@@ -21,8 +21,8 @@ import { DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
 
 import { cn } from "@/lib/utils"
-// import { Dialog, DialogContent } from "@/components/ui/dialog" // Usaremos el wrapper directo de cmdk si es necesario para estilos custom, o la implementaci�n shadcn si existiera.
-// Para esta implementaci�n "Glass", usaremos estilos directos sobre CommandPrimitive para m�ximo control visual.
+// import { Dialog, DialogContent } from "@/components/ui/dialog" // Usaremos el wrapper directo de cmdk si es necesario para estilos custom, o la implementación shadcn si existiera.
+// Para esta implementación "Glass", usaremos estilos directos sobre CommandPrimitive para máximo control visual.
 
 export function CommandMenu() {
     const [open, setOpen] = React.useState(false)
@@ -61,7 +61,7 @@ export function CommandMenu() {
                     <CommandPrimitive.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2">
                         <CommandPrimitive.Empty className="py-6 text-center text-sm text-zinc-500">Sin resultados.</CommandPrimitive.Empty>
 
-                        <CommandPrimitive.Group heading="Navegaci�n R�pida" className="text-xs font-medium text-zinc-400 px-2 py-1.5">
+                        <CommandPrimitive.Group heading="Navegación Rápida" className="text-xs font-medium text-zinc-400 px-2 py-1.5">
                             <CommandItem onSelect={() => runCommand(() => router.push('/dashboard'))}>
                                 <LayoutDashboard className="mr-2 h-4 w-4" />
                                 <span>Dashboard</span>
@@ -76,13 +76,13 @@ export function CommandMenu() {
                             </CommandItem>
                             <CommandItem onSelect={() => runCommand(() => router.push('/dashboard/switching'))}>
                                 <Zap className="mr-2 h-4 w-4" />
-                                <span>Switching Eléctrico</span>
+                                <span>Switching ElÃ©ctrico</span>
                             </CommandItem>
                         </CommandPrimitive.Group>
 
                         <CommandPrimitive.Separator className="my-1 h-px bg-white/5" />
 
-                        <CommandPrimitive.Group heading="Configuraci�n" className="text-xs font-medium text-zinc-400 px-2 py-1.5">
+                        <CommandPrimitive.Group heading="Configuración" className="text-xs font-medium text-zinc-400 px-2 py-1.5">
                             <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
                                 <Sun className="mr-2 h-4 w-4" />
                                 <span>Modo Claro</span>
@@ -106,7 +106,7 @@ function CommandItem({ children, onSelect }: { children: React.ReactNode, onSele
             className="group relative flex cursor-default select-none items-center rounded-md px-2 py-2 text-sm outline-none data-[selected=true]:bg-white/10 data-[selected=true]:text-white transition-colors"
         >
             {children}
-            <span className="ml-auto text-xs tracking-widest text-zinc-500 group-data-[selected=true]:text-zinc-400">↵</span>
+            <span className="ml-auto text-xs tracking-widest text-zinc-500 group-data-[selected=true]:text-zinc-400">â†µ</span>
         </CommandPrimitive.Item>
     )
 }

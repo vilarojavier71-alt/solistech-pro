@@ -1,4 +1,4 @@
-'use client'
+Ôªø'use client'
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -14,12 +14,11 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { ClientSelector } from '@/components/forms/client-selector'
 
 interface Customer {
     id: string
     name: string
-    email: string | null
+    company?: string | null
 }
 
 export function NewProjectForm({ customers }: { customers: Customer[] }) {
@@ -41,8 +40,6 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
         city: '',
         postal_code: '',
         notes: '',
-        start_date: '',
-        end_date: '',
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -50,7 +47,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
         setLoading(true)
 
         try {
-            // Import din·mico para evitar error si el archivo no existe en tiempo de compilaciÛn inicial
+            // Import din√°mico para evitar error si el archivo no existe en tiempo de compilaci√≥n inicial
             const { createProject } = await import('@/lib/actions/projects')
 
             const result = await createProject({
@@ -65,8 +62,6 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                 city: formData.city,
                 postal_code: formData.postal_code,
                 notes: formData.notes,
-                start_date: formData.start_date || null,
-                end_date: formData.end_date || null,
             })
 
             if (!result.success) {
@@ -96,7 +91,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                     <Label htmlFor="name">Nombre del Proyecto *</Label>
                     <Input
                         id="name"
-                        placeholder="InstalaciÛn Solar Residencial"
+                        placeholder="Instalaci√≥n Solar Residencial"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -106,17 +101,27 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
 
                 <div className="col-span-2 space-y-2">
                     <Label htmlFor="customer_id">Cliente *</Label>
-                    <ClientSelector
+                    <Select
                         value={formData.customer_id}
-                        onChange={(value) => setFormData({ ...formData, customer_id: value })}
+                        onValueChange={(value) => setFormData({ ...formData, customer_id: value })}
                         disabled={loading}
-                        placeholder="Buscar cliente por nombre, email o NIF..."
-                        initialCustomers={customers}
-                    />
+                        required
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Selecciona un cliente" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {customers.map((customer) => (
+                                <SelectItem key={customer.id} value={customer.id}>
+                                    {customer.name} {customer.company && `(${customer.company})`}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="installation_type">Tipo de InstalaciÛn</Label>
+                    <Label htmlFor="installation_type">Tipo de Instalaci√≥n</Label>
                     <Select
                         value={formData.installation_type}
                         onValueChange={(value) => setFormData({ ...formData, installation_type: value })}
@@ -146,14 +151,14 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                         <SelectContent>
                             <SelectItem value="quote">Presupuesto</SelectItem>
                             <SelectItem value="approved">Aprobado</SelectItem>
-                            <SelectItem value="installation">InstalaciÛn</SelectItem>
+                            <SelectItem value="installation">Instalaci√≥n</SelectItem>
                             <SelectItem value="completed">Completado</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Datos TÈcnicos</h3>
+                    <h3 className="text-sm font-medium mb-3">Datos T√©cnicos</h3>
                 </div>
 
                 <div className="space-y-2">
@@ -170,7 +175,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="estimated_production_kwh">ProducciÛn Estimada (kWh/aÒo)</Label>
+                    <Label htmlFor="estimated_production_kwh">Producci√≥n Estimada (kWh/a√±o)</Label>
                     <Input
                         id="estimated_production_kwh"
                         type="number"
@@ -182,7 +187,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                 </div>
 
                 <div className="col-span-2 space-y-2">
-                    <Label htmlFor="estimated_savings">Ahorro Estimado (Ä/aÒo)</Label>
+                    <Label htmlFor="estimated_savings">Ahorro Estimado (‚Ç¨/a√±o)</Label>
                     <Input
                         id="estimated_savings"
                         type="number"
@@ -194,37 +199,11 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Fechas del Proyecto</h3>
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="start_date">Fecha de Inicio</Label>
-                    <Input
-                        id="start_date"
-                        type="date"
-                        value={formData.start_date}
-                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                        disabled={loading}
-                    />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="end_date">Fecha de Fin</Label>
-                    <Input
-                        id="end_date"
-                        type="date"
-                        value={formData.end_date}
-                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                        disabled={loading}
-                    />
-                </div>
-
-                <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">UbicaciÛn</h3>
+                    <h3 className="text-sm font-medium mb-3">Ubicaci√≥n</h3>
                 </div>
 
                 <div className="col-span-2 space-y-2">
-                    <Label htmlFor="street">DirecciÛn</Label>
+                    <Label htmlFor="street">Direcci√≥n</Label>
                     <Input
                         id="street"
                         placeholder="Calle Principal, 123"
@@ -246,7 +225,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="postal_code">CÛdigo Postal</Label>
+                    <Label htmlFor="postal_code">C√≥digo Postal</Label>
                     <Input
                         id="postal_code"
                         placeholder="28001"
@@ -260,7 +239,7 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
                     <Label htmlFor="notes">Notas</Label>
                     <Textarea
                         id="notes"
-                        placeholder="InformaciÛn adicional sobre el proyecto..."
+                        placeholder="Informaci√≥n adicional sobre el proyecto..."
                         rows={4}
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

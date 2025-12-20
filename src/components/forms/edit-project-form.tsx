@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 
@@ -100,7 +100,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                     <Label htmlFor="name">Nombre del Proyecto *</Label>
                     <Input
                         id="name"
-                        placeholder="Instalación Solar Residencial"
+                        placeholder="InstalaciÃ³n Solar Residencial"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -130,7 +130,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="installation_type">Tipo de Instalación</Label>
+                    <Label htmlFor="installation_type">Tipo de InstalaciÃ³n</Label>
                     <Select
                         value={formData.installation_type}
                         onValueChange={(value) => setFormData({ ...formData, installation_type: value })}
@@ -160,14 +160,14 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                         <SelectContent>
                             <SelectItem value="quote">Presupuesto</SelectItem>
                             <SelectItem value="approved">Aprobado</SelectItem>
-                            <SelectItem value="installation">Instalación</SelectItem>
+                            <SelectItem value="installation">InstalaciÃ³n</SelectItem>
                             <SelectItem value="completed">Completado</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Datos TÃ©cnicos</h3>
+                    <h3 className="text-sm font-medium mb-3">Datos TÃƒÂ©cnicos</h3>
                 </div>
 
                 <div className="space-y-2">
@@ -184,7 +184,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="estimated_production_kwh">Producción Estimada (kWh/año)</Label>
+                    <Label htmlFor="estimated_production_kwh">ProducciÃ³n Estimada (kWh/aÃ±o)</Label>
                     <Input
                         id="estimated_production_kwh"
                         type="number"
@@ -196,7 +196,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="col-span-2 space-y-2">
-                    <Label htmlFor="estimated_savings">Ahorro Estimado (€/año)</Label>
+                    <Label htmlFor="estimated_savings">Ahorro Estimado (â‚¬/aÃ±o)</Label>
                     <Input
                         id="estimated_savings"
                         type="number"
@@ -208,11 +208,11 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Ubicación</h3>
+                    <h3 className="text-sm font-medium mb-3">UbicaciÃ³n</h3>
                 </div>
 
                 <div className="col-span-2 space-y-2">
-                    <Label htmlFor="street">Dirección</Label>
+                    <Label htmlFor="street">DirecciÃ³n</Label>
                     <Input
                         id="street"
                         placeholder="Calle Principal, 123"
@@ -234,7 +234,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="postal_code">Código Postal</Label>
+                    <Label htmlFor="postal_code">CÃ³digo Postal</Label>
                     <Input
                         id="postal_code"
                         placeholder="28001"
@@ -248,7 +248,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                     <Label htmlFor="notes">Notas</Label>
                     <Textarea
                         id="notes"
-                        placeholder="Información adicional sobre el proyecto..."
+                        placeholder="InformaciÃ³n adicional sobre el proyecto..."
                         rows={4}
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
