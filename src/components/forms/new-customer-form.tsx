@@ -35,7 +35,21 @@ export function NewCustomerForm() {
 
         startTransition(async () => {
             try {
-                const result = await addNewClient(formData)
+                // Mapear campos del formulario a los nombres esperados por el schema del servidor
+                const dataToSend = {
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    nif: formData.tax_id, // tax_id -> nif
+                    address: formData.street, // street -> address
+                    city: formData.city,
+                    postal_code: formData.postal_code,
+                    province: formData.state, // state -> province
+                    country: formData.country,
+                    notes: formData.company ? `Empresa: ${formData.company}` : '', // company -> notes
+                }
+
+                const result = await addNewClient(dataToSend)
 
                 if (result.success) {
                     toast.success('Cliente creado correctamente')
