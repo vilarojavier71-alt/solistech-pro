@@ -1,10 +1,10 @@
-import { Metadata } from "next"
+ï»¿import { Metadata } from "next"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CRMNavigation } from "@/components/crm/crm-nav"
 
 export const metadata: Metadata = {
     title: "CRM | SolisTech Pro",
-    description: "Gestión de clientes y oportunidades",
+    description: "GestiÃ³n de clientes y oportunidades",
 }
 
 export default function CRMLayout({
@@ -18,7 +18,7 @@ export default function CRMLayout({
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight text-white">CRM</h2>
-                        <p className="text-zinc-400">Gestión integral de clientes y oportunidades de venta</p>
+                        <p className="text-zinc-400">GestiÃ³n integral de clientes y oportunidades de venta</p>
                     </div>
                 </div>
 

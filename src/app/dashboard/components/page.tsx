@@ -1,10 +1,10 @@
-import { Metadata } from 'next'
+Ôªøimport { Metadata } from 'next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Package } from 'lucide-react'
 
 export const metadata: Metadata = {
     title: 'Componentes | SolisTech PRO',
-    description: 'Cat·logo de componentes solares',
+    description: 'Cat√°logo de componentes solares',
 }
 
 export default function ComponentsPage() {
@@ -13,24 +13,24 @@ export default function ComponentsPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Componentes</h1>
                 <p className="text-muted-foreground">
-                    Cat·logo de paneles, inversores, baterÌas y m·s
+                    Cat√°logo de paneles, inversores, bater√≠as y m√°s
                 </p>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Cat·logo de Componentes</CardTitle>
+                    <CardTitle>Cat√°logo de Componentes</CardTitle>
                     <CardDescription>
-                        Gestiona el cat·logo de productos para tus instalaciones
+                        Gestiona el cat√°logo de productos para tus instalaciones
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center justify-center p-12 text-center border border-dashed rounded-lg">
                         <div>
                             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold">Cat·logo en desarrollo</h3>
+                            <h3 className="text-lg font-semibold">Cat√°logo en desarrollo</h3>
                             <p className="text-sm text-muted-foreground mt-2">
-                                Esta funcionalidad estar· disponible prÛximamente
+                                Esta funcionalidad estar√° disponible pr√≥ximamente
                             </p>
                         </div>
                     </div>

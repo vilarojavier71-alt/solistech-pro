@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth'
+ï»¿import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,7 +12,7 @@ export default async function CalendarPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.user.findUnique({
+    const profile = await prisma.User.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true }
     })
@@ -26,7 +26,7 @@ export default async function CalendarPage() {
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900">Agenda Comercial</h1>
-                    <p className="text-slate-500">Próximas visitas y citas programadas.</p>
+                    <p className="text-slate-500">PrÃ³ximas visitas y citas programadas.</p>
                 </div>
                 <Button asChild className="bg-sky-600 hover:bg-sky-700">
                     <Link href="/dashboard/calendar/new">
@@ -89,8 +89,8 @@ export default async function CalendarPage() {
                 ) : (
                     <div className="text-center py-12 border-2 border-dashed rounded-xl">
                         <CalendarDays className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                        <h3 className="text-lg font-medium text-slate-900">Agenda vacía</h3>
-                        <p className="text-slate-500 mb-6">No hay visitas programadas próximamente.</p>
+                        <h3 className="text-lg font-medium text-slate-900">Agenda vacÃ­a</h3>
+                        <p className="text-slate-500 mb-6">No hay visitas programadas prÃ³ximamente.</p>
                         <Button variant="outline" asChild>
                             <Link href="/dashboard/calendar/new">Crear primera visita</Link>
                         </Button>

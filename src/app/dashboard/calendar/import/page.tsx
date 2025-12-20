@@ -1,9 +1,9 @@
-import { redirect } from 'next/navigation'
+﻿import { redirect } from 'next/navigation'
 
 /**
- * REDIRECT: Visits Import ? Universal Importer
+ * REDIRECT: Visits Import → Universal Importer
  * 
- * Esta p�gina redirige autom�ticamente al Importador Universal
+ * Esta página redirige automáticamente al Importador Universal
  * con el tipo "visits" preseleccionado
  */
 export default function VisitsImportRedirect() {
