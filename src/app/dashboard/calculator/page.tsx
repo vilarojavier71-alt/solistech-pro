@@ -1,9 +1,9 @@
-import { Metadata } from 'next'
+ï»¿import { Metadata } from 'next'
 import { SolarCalculatorPremium } from '@/components/calculator/solar-calculator-premium'
 
 export const metadata: Metadata = {
     title: 'Calculadora Solar Premium | SolisTech PRO',
-    description: 'Calcula y dimensiona instalaciones fotovoltaicas con diseño premium',
+    description: 'Calcula y dimensiona instalaciones fotovoltaicas con diseÃ±o premium',
 }
 
 import { getCurrentUserWithRole } from '@/lib/session'
@@ -28,7 +28,7 @@ export default async function CalculatorPage() {
                     Calculadora Solar Premium
                 </h1>
                 <p className="text-body-lg text-slate-600 dark:text-slate-400 mt-2">
-                    Dimensiona instalaciones fotovoltaicas con datos reales y diseño de clase mundial
+                    Dimensiona instalaciones fotovoltaicas con datos reales y diseÃ±o de clase mundial
                 </p>
             </div>
 

@@ -1,4 +1,4 @@
-'use client'
+ï»¿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -27,18 +27,18 @@ export default function LoginPage() {
             })
 
             if (result?.error) {
-                toast.error('Credenciales inválidas')
+                toast.error('Credenciales invÃ¡lidas')
                 setLoading(false)
             } else if (result?.ok) {
-                toast.success('¡Bienvenido!')
+                toast.success('Â¡Bienvenido!')
                 window.location.href = '/dashboard'
             } else {
-                toast.error('Error al iniciar sesión')
+                toast.error('Error al iniciar sesiÃ³n')
                 setLoading(false)
             }
         } catch (error) {
             console.error('Login error:', error)
-            toast.error('Error al iniciar sesión')
+            toast.error('Error al iniciar sesiÃ³n')
             setLoading(false)
         }
     }
@@ -56,7 +56,7 @@ export default function LoginPage() {
                     </div>
                     <CardTitle className="text-2xl font-bold">MotorGap</CardTitle>
                     <CardDescription>
-                        Inicia sesión en tu cuenta
+                        Inicia sesiÃ³n en tu cuenta
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -77,7 +77,7 @@ export default function LoginPage() {
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
                             <span className="bg-background px-2 text-muted-foreground">
-                                O continúa con email
+                                O continÃºa con email
                             </span>
                         </div>
                     </div>
@@ -100,13 +100,13 @@ export default function LoginPage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Contraseña</Label>
+                            <Label htmlFor="password">ContraseÃ±a</Label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     id="password"
                                     type="password"
-                                    placeholder="••••••••"
+                                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="pl-10"
@@ -115,13 +115,13 @@ export default function LoginPage() {
                             </div>
                         </div>
                         <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                            {loading ? 'Iniciando sesiÃ³n...' : 'Iniciar SesiÃ³n'}
                         </Button>
                     </form>
                     <div className="text-center text-sm">
-                        ¿No tienes cuenta?{' '}
+                        Â¿No tienes cuenta?{' '}
                         <Link href="/auth/register" className="text-primary hover:underline">
-                            Regístrate
+                            RegÃ­strate
                         </Link>
                     </div>
                 </CardContent>
