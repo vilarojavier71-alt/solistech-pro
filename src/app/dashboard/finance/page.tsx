@@ -1,4 +1,4 @@
-import { PageShell } from "@/components/ui/page-shell";
+锘縤mport { PageShell } from "@/components/ui/page-shell";
 import { getFinancialSummary, getExpenseList } from "@/lib/actions/expenses";
 import { FinanceSummaryCards } from "@/components/finance/finance-summary-cards";
 import { ExpensesTable } from "@/components/finance/expenses-table";
@@ -25,7 +25,7 @@ export default async function FinancePage() {
     }
 
     return (
-        <PageShell title="Finanzas y Tesorer韆" description="Visi髇 global del estado econ髆ico de la empresa.">
+        <PageShell title="Finanzas y Tesorer铆a" description="Visi贸n global del estado econ贸mico de la empresa.">
             <div className="space-y-8">
 
                 {/* 1. TOP ACTIONS */}
@@ -47,8 +47,8 @@ export default async function FinancePage() {
                     {/* LEFT: EXPENSES LIST */}
                     <div className="md:col-span-2 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold">趌timos Gastos Operativos</h3>
-                            {dbError && <span className="text-xs text-red-500 bg-red-100 px-2 py-1 rounded">Error de DB: Ejecuta la migraci髇 SQL</span>}
+                            <h3 className="text-lg font-semibold">脷ltimos Gastos Operativos</h3>
+                            {dbError && <span className="text-xs text-red-500 bg-red-100 px-2 py-1 rounded">Error de DB: Ejecuta la migraci贸n SQL</span>}
                         </div>
                         <ExpensesTable expenses={expensesList} />
                     </div>
@@ -67,14 +67,14 @@ export default async function FinancePage() {
                                     <Button variant="ghost" className="w-full justify-start">Ver Presupuestos</Button>
                                 </Link>
                                 <Link href="/dashboard/settings">
-                                    <Button variant="ghost" className="w-full justify-start">Configuraci髇 Fiscal</Button>
+                                    <Button variant="ghost" className="w-full justify-start">Configuraci贸n Fiscal</Button>
                                 </Link>
                             </div>
                         </div>
 
                         {/* Tip Widget */}
                         <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-sm text-blue-800 dark:text-blue-300">
-                            <p className="font-semibold mb-1">?? Consejo Financiero</p>
+                            <p className="font-semibold mb-1">馃挕 Consejo Financiero</p>
                             Registra todos los gastos menores (tickets, parkings) para maximizar tus deducciones fiscales a final de trimestre.
                         </div>
                     </div>

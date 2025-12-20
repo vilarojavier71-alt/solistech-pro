@@ -1,4 +1,4 @@
-import { getCrmMetrics } from "@/lib/actions/crm"
+ï»¿import { getCrmMetrics } from "@/lib/actions/crm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, TrendingUp, Activity, CheckCircle } from "lucide-react"
 import { PageShell } from "@/components/ui/page-shell"
@@ -7,7 +7,7 @@ export default async function CRMDashboardPage() {
     const { success, data } = await getCrmMetrics()
 
     if (!success || !data) {
-        return <div className="text-red-500">Error cargando métricas</div>
+        return <div className="text-red-500">Error cargando mÃ©tricas</div>
     }
 
     const { totalPipelineValue, valueByStage, recentActivitiesCount } = data
@@ -16,7 +16,7 @@ export default async function CRMDashboardPage() {
     return (
         <PageShell
             title="Resumen Comercial"
-            description="Métricas clave y actividad reciente de tu equipo."
+            description="MÃ©tricas clave y actividad reciente de tu equipo."
         >
             <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -106,11 +106,11 @@ export default async function CRMDashboardPage() {
 
                     <Card className="col-span-3 bg-zinc-900 border-zinc-800">
                         <CardHeader>
-                            <CardTitle className="text-white">Acciones Rápidas</CardTitle>
+                            <CardTitle className="text-white">Acciones RÃ¡pidas</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             <div className="p-4 rounded border border-dashed border-zinc-700 text-center text-zinc-500">
-                                Próximamente: Crear Oportunidad, Registrar Llamada
+                                PrÃ³ximamente: Crear Oportunidad, Registrar Llamada
                             </div>
                         </CardContent>
                     </Card>

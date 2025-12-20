@@ -1,11 +1,11 @@
-import { Metadata } from 'next'
+﻿import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { UnifiedImportPage } from '@/components/import/unified-import-page'
 
 export const metadata: Metadata = {
     title: 'Importar Datos | SolisTech PRO',
-    description: 'Importa clientes, proyectos y c�lculos desde Excel o CSV',
+    description: 'Importa clientes, proyectos y cálculos desde Excel o CSV',
 }
 
 export default async function ImportPage() {
@@ -20,7 +20,7 @@ export default async function ImportPage() {
                     Importador Universal
                 </h1>
                 <p className="text-body-lg text-slate-600 dark:text-slate-400 mt-2">
-                    Importa clientes, proyectos o c�lculos desde archivos Excel o CSV con detecci�n inteligente en todos los m�dulos.
+                    Importa clientes, proyectos o cálculos desde archivos Excel o CSV con detección inteligente en todos los módulos.
                 </p>
             </div>
 
