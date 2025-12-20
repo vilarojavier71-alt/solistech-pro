@@ -1,4 +1,4 @@
-﻿import { deleteProject } from '@/lib/actions/projects'
+import { deleteProject } from '@/lib/actions/projects'
 
 import { Project } from '@/types'
 import {
@@ -35,7 +35,7 @@ const statusColors: Record<string, string> = {
 const statusLabels: Record<string, string> = {
     quote: 'Presupuesto',
     approved: 'Aprobado',
-    installation: 'Instalación',
+    installation: 'Instalaci�n',
     completed: 'Completado',
     cancelled: 'Cancelado',
 }
@@ -51,7 +51,7 @@ export function ProjectsTable({ projects }: { projects: any[] }) {
     // const supabase = createClient()
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este proyecto?')) return
+        if (!confirm('�Est�s seguro de que quieres eliminar este proyecto?')) return
 
         const result = await deleteProject(id)
 
@@ -89,7 +89,7 @@ export function ProjectsTable({ projects }: { projects: any[] }) {
                         <TableHead>Tipo</TableHead>
                         <TableHead>Potencia</TableHead>
                         <TableHead>Estado</TableHead>
-                        <TableHead>Producción Est.</TableHead>
+                        <TableHead>Producci�n Est.</TableHead>
                         <TableHead className="w-[70px]"></TableHead>
                     </TableRow>
                 </TableHeader>
@@ -111,7 +111,7 @@ export function ProjectsTable({ projects }: { projects: any[] }) {
                             </TableCell>
                             <TableCell>
                                 {project.estimated_production_kwh
-                                    ? `${project.estimated_production_kwh.toLocaleString()} kWh/año`
+                                    ? `${project.estimated_production_kwh.toLocaleString()} kWh/a�o`
                                     : '-'}
                             </TableCell>
                             <TableCell>

@@ -1,4 +1,4 @@
-Ôªø"use client"
+"use client"
 import React, { useRef, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,14 +13,14 @@ export function AddressAutocomplete({ onPlaceSelected, initialAddress = "", disa
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        // Verificar si la librer√≠a de Google Maps ya est√° cargada
+        // Verificar si la librerÌa de Google Maps ya est· cargada
         if (typeof (window as any).google === 'undefined' || !(window as any).google.maps || !(window as any).google.maps.places) {
             console.warn("Google Maps Places Library no cargada. Revisa la etiqueta <script> en tu layout.");
             return;
         }
 
         const autocomplete = new (window as any).google.maps.places.Autocomplete(inputRef.current!, {
-            componentRestrictions: { 'country': 'es' }, // Enfocado en Espa√±a
+            componentRestrictions: { 'country': 'es' }, // Enfocado en EspaÒa
             fields: ["geometry", "formatted_address"]
         });
 
@@ -43,7 +43,7 @@ export function AddressAutocomplete({ onPlaceSelected, initialAddress = "", disa
 
     return (
         <div className="space-y-2">
-            <Label htmlFor="address-input" className="text-zinc-400">Direcci√≥n Completa (Google Autocomplete)</Label>
+            <Label htmlFor="address-input" className="text-zinc-400">DirecciÛn Completa (Google Autocomplete)</Label>
             <Input
                 ref={inputRef}
                 id="address-input"

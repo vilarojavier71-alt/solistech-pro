@@ -1,4 +1,4 @@
-ï»¿"use client"
+"use client"
 
 import { useState } from "react"
 import Papa from "papaparse"
@@ -69,7 +69,7 @@ export function CsvImporter({ tableName, columnOptions, onSuccess }: Props) {
                     return;
                 }
                 if (!results.meta.fields || results.meta.fields.length === 0) {
-                    setUploadError("El archivo CSV no tiene cabeceras vÃ¡lidas.")
+                    setUploadError("El archivo CSV no tiene cabeceras válidas.")
                     return;
                 }
 
@@ -139,11 +139,11 @@ export function CsvImporter({ tableName, columnOptions, onSuccess }: Props) {
 
         if (result.success) {
             setStep("SUCCESS")
-            toast.success("ImportaciÃ³n completada")
+            toast.success("Importación completada")
             if (onSuccess) onSuccess()
         } else {
             setStep("MAPPING") // Go back to let them fix or retry
-            toast.error("Error en la importaciÃ³n", { description: result.message })
+            toast.error("Error en la importación", { description: result.message })
             if (result.errors) {
                 setUploadError(result.message || "Error desconocido")
             }
@@ -260,7 +260,7 @@ export function CsvImporter({ tableName, columnOptions, onSuccess }: Props) {
                                 </div>
                                 <div className="bg-blue-950/20 p-3 rounded text-xs text-blue-200 flex gap-2">
                                     <Check className="h-4 w-4 text-blue-400" />
-                                    <span>Se importarÃ¡n <strong>{parsedData.length}</strong> registros.</span>
+                                    <span>Se importarán <strong>{parsedData.length}</strong> registros.</span>
                                 </div>
                             </div>
                         </div>
@@ -280,8 +280,8 @@ export function CsvImporter({ tableName, columnOptions, onSuccess }: Props) {
                         <div className="bg-emerald-500/20 p-4 rounded-full mb-4">
                             <Check className="h-8 w-8 text-emerald-500" />
                         </div>
-                        <h3 className="text-xl font-bold text-emerald-400">Â¡ImportaciÃ³n Exitosa!</h3>
-                        <p className="text-zinc-400 mt-2">Los datos se han aÃ±adido correctamente a la tabla.</p>
+                        <h3 className="text-xl font-bold text-emerald-400">¡Importación Exitosa!</h3>
+                        <p className="text-zinc-400 mt-2">Los datos se han añadido correctamente a la tabla.</p>
                         <Button onClick={reset} variant="outline" className="mt-6">
                             Importar otro archivo
                         </Button>
@@ -297,7 +297,7 @@ export function CsvImporter({ tableName, columnOptions, onSuccess }: Props) {
                         className="bg-emerald-600 hover:bg-emerald-700"
                         disabled={columnOptions.filter(c => c.required).some(c => !mapping[c.value])}
                     >
-                        Confirmar ImportaciÃ³n <ArrowRight className="ml-2 h-4 w-4" />
+                        Confirmar Importación <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                 </CardFooter>
             )}

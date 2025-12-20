@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -29,8 +29,8 @@ import { useRouter } from 'next/navigation'
 
 const schema = z.object({
     full_name: z.string().min(2, 'El nombre es requerido'),
-    email: z.string().email('Email inv√°lido'),
-    password: z.string().min(8, 'M√≠nimo 8 caracteres'),
+    email: z.string().email('Email inv·lido'),
+    password: z.string().min(8, 'MÌnimo 8 caracteres'),
     role: z.enum(['user', 'ingeniero', 'comercial', 'captador_visitas', 'admin']),
 })
 
@@ -40,15 +40,15 @@ const roleLabels: Record<FormData['role'], string> = {
     ingeniero: 'Ingeniero',
     comercial: 'Comercial',
     captador_visitas: 'Captador de Visitas',
-    user: 'Usuario Est√°ndar',
+    user: 'Usuario Est·ndar',
     admin: 'Administrador',
 }
 
 const roleDescriptions: Record<FormData['role'], string> = {
-    ingeniero: 'Personal t√©cnico: acceso a instalaciones y fichajes',
+    ingeniero: 'Personal tÈcnico: acceso a instalaciones y fichajes',
     comercial: 'Ventas: acceso a CRM, calculadora y clientes',
-    captador_visitas: 'Generaci√≥n de leads: acceso limitado a captaci√≥n',
-    user: 'Acceso b√°sico a proyectos y fichajes',
+    captador_visitas: 'GeneraciÛn de leads: acceso limitado a captaciÛn',
+    user: 'Acceso b·sico a proyectos y fichajes',
     admin: 'Acceso completo a todas las funcionalidades',
 }
 
@@ -113,7 +113,7 @@ export function AddEmployeeDialog() {
                         <Input
                             id="full_name"
                             {...register('full_name')}
-                            placeholder="Juan P√©rez Garc√≠a"
+                            placeholder="Juan PÈrez GarcÌa"
                             autoComplete="name"
                         />
                         {errors.full_name && (
@@ -134,24 +134,24 @@ export function AddEmployeeDialog() {
                             <p className="text-sm text-destructive">{errors.email.message}</p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            Se usar√° como nombre de usuario para iniciar sesi√≥n
+                            Se usar· como nombre de usuario para iniciar sesiÛn
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="password">Contrase√±a Inicial *</Label>
+                        <Label htmlFor="password">ContraseÒa Inicial *</Label>
                         <Input
                             id="password"
                             type="password"
                             {...register('password')}
-                            placeholder="M√≠nimo 8 caracteres"
+                            placeholder="MÌnimo 8 caracteres"
                             autoComplete="new-password"
                         />
                         {errors.password && (
                             <p className="text-sm text-destructive">{errors.password.message}</p>
                         )}
                         <p className="text-xs text-muted-foreground">
-                            El empleado podr√° cambiarla despu√©s de su primer inicio de sesi√≥n
+                            El empleado podr· cambiarla despuÈs de su primer inicio de sesiÛn
                         </p>
                     </div>
 

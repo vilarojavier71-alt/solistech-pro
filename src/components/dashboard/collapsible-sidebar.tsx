@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -25,7 +25,7 @@ export function CollapsibleSidebar({ children }: { children: React.ReactNode }) 
         localStorage.setItem('sidebar-collapsed', JSON.stringify(newState))
     }
 
-    // Evitar flash durante hidrataciÃ³n
+    // Evitar flash durante hidratación
     if (!isMounted) {
         return (
             <aside className="w-64 border-r bg-card">
@@ -41,7 +41,7 @@ export function CollapsibleSidebar({ children }: { children: React.ReactNode }) 
                 isCollapsed ? "w-16" : "w-64"
             )}
         >
-            {/* BotÃ³n de colapso */}
+            {/* Botón de colapso */}
             <Button
                 variant="ghost"
                 size="icon"
@@ -67,10 +67,10 @@ export function CollapsibleSidebar({ children }: { children: React.ReactNode }) 
                 {children}
             </div>
 
-            {/* VersiÃ³n colapsada: solo iconos */}
+            {/* Versión colapsada: solo iconos */}
             {isCollapsed && (
                 <div className="p-4 space-y-2">
-                    {/* AquÃ­ se pueden aÃ±adir iconos si es necesario */}
+                    {/* Aquí se pueden añadir iconos si es necesario */}
                     <div className="text-xs text-muted-foreground text-center">
                         Menu
                     </div>

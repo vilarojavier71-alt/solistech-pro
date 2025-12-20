@@ -1,10 +1,10 @@
-ï»¿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { HelpCenter } from '@/components/help/help-center'
 import { TourButton } from '@/components/help/tour-button'
 
 export const metadata: Metadata = {
     title: 'Centro de Ayuda | SolisTech PRO',
-    description: 'GuÃ­as rÃ¡pidas y ayuda contextual',
+    description: 'Guías rápidas y ayuda contextual',
 }
 
 export default function HelpPage() {
@@ -14,7 +14,7 @@ export default function HelpPage() {
             <div className="space-y-2">
                 <h1 className="text-4xl font-bold tracking-tight">Centro de Ayuda</h1>
                 <p className="text-lg text-slate-400">
-                    GuÃ­as rÃ¡pidas para las tareas mÃ¡s comunes en MotorGap
+                    Guías rápidas para las tareas más comunes en MotorGap
                 </p>
             </div>
 
@@ -31,20 +31,20 @@ export default function HelpPage() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                        <p className="text-slate-300 font-medium mb-1">ðŸ“§ Soporte TÃ©cnico</p>
+                        <p className="text-slate-300 font-medium mb-1">?? Soporte Técnico</p>
                         <p className="text-slate-500">motorgapvilaro@gmail.com</p>
                     </div>
                     <div>
-                        <p className="text-slate-300 font-medium mb-1">ðŸ“š DocumentaciÃ³n</p>
+                        <p className="text-slate-300 font-medium mb-1">?? Documentación</p>
                         <p className="text-slate-500">motorgap.es/docs</p>
                     </div>
                     <div>
-                        <p className="text-slate-300 font-medium mb-1">ðŸ’¬ Chat en Vivo</p>
+                        <p className="text-slate-300 font-medium mb-1">?? Chat en Vivo</p>
                         <p className="text-slate-500">Disponible L-V 9:00-18:00</p>
                     </div>
                     <div>
-                        <p className="text-slate-300 font-medium mb-1">ðŸŽ“ Academia</p>
-                        <p className="text-slate-500">Cursos y tutoriales en vÃ­deo</p>
+                        <p className="text-slate-300 font-medium mb-1">?? Academia</p>
+                        <p className="text-slate-500">Cursos y tutoriales en vídeo</p>
                     </div>
                 </div>
             </div>

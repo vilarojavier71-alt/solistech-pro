@@ -1,9 +1,9 @@
-﻿import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
 /**
- * REDIRECT: Sales Import → Universal Importer
+ * REDIRECT: Sales Import ? Universal Importer
  * 
- * Esta página redirige automáticamente al Importador Universal
+ * Esta p�gina redirige autom�ticamente al Importador Universal
  * con el tipo "sales" preseleccionado
  */
 export default function SalesImportRedirect() {

@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -152,13 +152,13 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
             setImportResult(result)
 
             if (result.successfulRows > 0) {
-                toast.success(`‚úÖ ${result.successfulRows} registros importados`)
+                toast.success(`? ${result.successfulRows} registros importados`)
             }
             if (result.failedRows > 0) {
-                toast.error(`‚ùå ${result.failedRows} registros fallidos`)
+                toast.error(`? ${result.failedRows} registros fallidos`)
             }
             if (result.skippedRows > 0) {
-                toast.info(`‚ö†Ô∏è ${result.skippedRows} registros omitidos (duplicados)`)
+                toast.info(`?? ${result.skippedRows} registros omitidos (duplicados)`)
             }
         } catch (error: any) {
             toast.error(error.message)
@@ -206,7 +206,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                                 <span className="text-blue-600 hover:underline font-medium">
                                     Haz clic para subir
                                 </span>
-                                {' '}o arrastra un archivo aqu√≠
+                                {' '}o arrastra un archivo aquÌ
                             </Label>
                             <Input
                                 id="file-upload"
@@ -225,11 +225,11 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
                                 <div className="text-sm space-y-1">
-                                    <div><strong>L√≠mites de seguridad:</strong></div>
-                                    <div>‚Ä¢ Tama√±o m√°ximo: {IMPORT_LIMITS.MAX_FILE_SIZE / 1024 / 1024} MB</div>
-                                    <div>‚Ä¢ Filas m√°ximas: {IMPORT_LIMITS.MAX_ROWS.toLocaleString()}</div>
-                                    <div>‚Ä¢ Campos personalizados: {IMPORT_LIMITS.MAX_CUSTOM_FIELDS} m√°x</div>
-                                    <div>‚Ä¢ Importaciones por hora: {IMPORT_LIMITS.IMPORT_RATE_LIMIT}</div>
+                                    <div><strong>LÌmites de seguridad:</strong></div>
+                                    <div>ï TamaÒo m·ximo: {IMPORT_LIMITS.MAX_FILE_SIZE / 1024 / 1024} MB</div>
+                                    <div>ï Filas m·ximas: {IMPORT_LIMITS.MAX_ROWS.toLocaleString()}</div>
+                                    <div>ï Campos personalizados: {IMPORT_LIMITS.MAX_CUSTOM_FIELDS} m·x</div>
+                                    <div>ï Importaciones por hora: {IMPORT_LIMITS.IMPORT_RATE_LIMIT}</div>
                                 </div>
                             </AlertDescription>
                         </Alert>
@@ -241,7 +241,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                                 <AlertDescription>
                                     <div className="font-semibold mb-1">Advertencias:</div>
                                     {warnings.map((warning, i) => (
-                                        <div key={i} className="text-sm">‚Ä¢ {warning}</div>
+                                        <div key={i} className="text-sm">ï {warning}</div>
                                     ))}
                                 </AlertDescription>
                             </Alert>
@@ -261,13 +261,13 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                         <CardHeader>
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <CardTitle>Paso 2: Vista Previa e Inspecci√≥n</CardTitle>
+                                    <CardTitle>Paso 2: Vista Previa e InspecciÛn</CardTitle>
                                     <CardDescription>
                                         Detectamos {columns.length} columnas y {totalRows} filas. Puedes editar valores haciendo doble clean en las celdas.
                                     </CardDescription>
                                 </div>
                                 <Badge variant="secondary" className="text-xs">
-                                    Modo Edici√≥n Activo
+                                    Modo EdiciÛn Activo
                                 </Badge>
                             </div>
                         </CardHeader>
@@ -338,7 +338,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                     <CardHeader>
                         <CardTitle>Paso 3: Mapeo de Columnas</CardTitle>
                         <CardDescription>
-                            Confirma o ajusta el mapeo autom√°tico de columnas
+                            Confirma o ajusta el mapeo autom·tico de columnas
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -368,7 +368,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                                                     variant="ghost"
                                                     onClick={() => removeMappingColumn(col.originalName)}
                                                 >
-                                                    ‚úï
+                                                    ?
                                                 </Button>
                                             </div>
                                         ) : (
@@ -382,7 +382,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                         <Alert>
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                                Las columnas marcadas como "custom_attributes.*" se guardar√°n como campos personalizados
+                                Las columnas marcadas como "custom_attributes.*" se guardar·n como campos personalizados
                             </AlertDescription>
                         </Alert>
 
@@ -409,9 +409,9 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                 >
                     <Card>
                         <CardHeader>
-                            <CardTitle>Paso 4: Configuraci√≥n</CardTitle>
+                            <CardTitle>Paso 4: ConfiguraciÛn</CardTitle>
                             <CardDescription>
-                                Configura el comportamiento de la importaci√≥n
+                                Configura el comportamiento de la importaciÛn
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
@@ -445,7 +445,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                                     Volver
                                 </Button>
                                 <Button onClick={handleImport}>
-                                    Iniciar Importaci√≥n
+                                    Iniciar ImportaciÛn
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
@@ -463,7 +463,7 @@ export function ImportWizard({ entityType, onComplete }: ImportWizardProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle>
-                                {importing ? 'Procesando Importaci√≥n...' : 'Resultado de Importaci√≥n'}
+                                {importing ? 'Procesando ImportaciÛn...' : 'Resultado de ImportaciÛn'}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>

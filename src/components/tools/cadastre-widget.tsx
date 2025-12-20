@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState } from 'react'
 import { enrichProjectWithCadastre } from '@/lib/actions/projects'
@@ -42,7 +42,7 @@ export function CadastreWidget({ projectId, initialLat, initialLng }: CadastreWi
                 toast.success("Datos catastrales encontrados y guardados.")
             }
         } catch (error) {
-            toast.error("Error de conexiÃ³n con Catastro")
+            toast.error("Error de conexión con Catastro")
         } finally {
             setLoading(false)
         }
@@ -58,7 +58,7 @@ export function CadastreWidget({ projectId, initialLat, initialLng }: CadastreWi
             <GlowCard className="border-amber-500/30 bg-amber-500/5">
                 <div className="flex items-center gap-2 mb-4 text-amber-600 dark:text-amber-400">
                     <Building2 className="h-5 w-5" />
-                    <h3 className="font-semibold">ConexiÃ³n Sede Catastro</h3>
+                    <h3 className="font-semibold">Conexión Sede Catastro</h3>
                 </div>
 
                 {!result ? (
@@ -119,7 +119,7 @@ export function CadastreWidget({ projectId, initialLat, initialLng }: CadastreWi
                             <div className="border-t border-dashed border-muted-foreground/20 my-2"></div>
 
                             <div>
-                                <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">DirecciÃ³n Oficial</div>
+                                <div className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Dirección Oficial</div>
                                 <div className="text-sm leading-tight">{result.address}</div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@ export function CadastreWidget({ projectId, initialLat, initialLng }: CadastreWi
                             className="w-full text-xs h-7"
                             onClick={() => setResult(null)}
                         >
-                            Nueva bÃºsqueda
+                            Nueva búsqueda
                         </Button>
                     </div>
                 )}

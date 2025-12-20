@@ -1,4 +1,4 @@
-ï»¿import { deleteClient } from '@/lib/actions/customers' // Import action
+import { deleteClient } from '@/lib/actions/customers' // Import action
 
 import { Customer } from '@/types'
 import {
@@ -28,7 +28,7 @@ export function CustomersTable({ customers }: { customers: Customer[] }) {
     // const supabase = createClient()
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Â¿EstÃ¡s seguro de que quieres eliminar este cliente?')) return
+        if (!confirm('¿Estás seguro de que quieres eliminar este cliente?')) return
 
         const result = await deleteClient(id)
 
@@ -46,7 +46,7 @@ export function CustomersTable({ customers }: { customers: Customer[] }) {
             <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                 <h3 className="text-lg font-semibold">No hay clientes</h3>
                 <p className="text-sm text-muted-foreground mt-2">
-                    Comienza aÃ±adiendo tu primer cliente
+                    Comienza añadiendo tu primer cliente
                 </p>
                 <Button className="mt-4" onClick={() => router.push('/dashboard/customers/new')}>
                     Crear Cliente
@@ -63,7 +63,7 @@ export function CustomersTable({ customers }: { customers: Customer[] }) {
                         <TableHead>Nombre</TableHead>
                         <TableHead>Empresa</TableHead>
                         <TableHead>Contacto</TableHead>
-                        <TableHead>UbicaciÃ³n</TableHead>
+                        <TableHead>Ubicación</TableHead>
                         <TableHead>CIF/NIF</TableHead>
                         <TableHead className="w-[70px]"></TableHead>
                     </TableRow>

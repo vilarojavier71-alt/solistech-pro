@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import React, { useState, useEffect } from 'react'
 import { X, Sparkles, Settings, Plus } from 'lucide-react'
@@ -21,19 +21,19 @@ interface OnboardingStep {
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
     {
-        title: '¬°Bienvenido a Solistech Pro!',
-        description: 'Tu plataforma integral para gestionar proyectos fotovoltaicos. Vamos a hacer un recorrido r√°pido por las funciones principales.',
+        title: '°Bienvenido a Solistech Pro!',
+        description: 'Tu plataforma integral para gestionar proyectos fotovoltaicos. Vamos a hacer un recorrido r·pido por las funciones principales.',
         icon: <Sparkles className="h-8 w-8 text-teal-400" />
     },
     {
-        title: 'Configuraci√≥n Inicial',
-        description: 'Configura tus API Keys (OpenAI, Replicate) y personaliza tu logo empresarial desde el men√∫ de Configuraci√≥n. Esto te permitir√° generar presentaciones y documentos autom√°ticos.',
+        title: 'ConfiguraciÛn Inicial',
+        description: 'Configura tus API Keys (OpenAI, Replicate) y personaliza tu logo empresarial desde el men˙ de ConfiguraciÛn. Esto te permitir· generar presentaciones y documentos autom·ticos.',
         icon: <Settings className="h-8 w-8 text-teal-400" />,
         highlightSelector: '[data-onboarding="settings-menu"]'
     },
     {
         title: 'Crea tu Primera Venta',
-        description: 'Haz clic en "Nueva Venta" para comenzar. Podr√°s importar datos desde Excel, calcular ROI, gestionar subvenciones y generar presentaciones profesionales.',
+        description: 'Haz clic en "Nueva Venta" para comenzar. Podr·s importar datos desde Excel, calcular ROI, gestionar subvenciones y generar presentaciones profesionales.',
         icon: <Plus className="h-8 w-8 text-teal-400" />,
         highlightSelector: '[data-onboarding="new-sale-button"]'
     }
@@ -42,7 +42,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
 /**
  * @FRONTEND_COORD - Componente de Onboarding Tour
  * Muestra un tour guiado para usuarios nuevos (sin proyectos)
- * L√≥gica: Se activa si user.projects.length === 0 y no se ha completado antes
+ * LÛgica: Se activa si user.projects.length === 0 y no se ha completado antes
  */
 export function OnboardingTour() {
     const [isOpen, setIsOpen] = useState(false)
@@ -99,7 +99,7 @@ export function OnboardingTour() {
             {/* Overlay para highlight de elementos */}
             {step.highlightSelector && isOpen && (
                 <div className="fixed inset-0 z-40 pointer-events-none">
-                    {/* TODO: Implementar l√≥gica de highlight con step.highlightSelector */}
+                    {/* TODO: Implementar lÛgica de highlight con step.highlightSelector */}
                 </div>
             )}
 

@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { Sale } from '@/types/portal'
 import { Button } from '@/components/ui/button'
@@ -21,13 +21,13 @@ export function SalePaymentControl({ sale, onStatusChange }: PaymentControlProps
     const isCash = sale.payment_method === 'cash'
 
     const handleRequestPayment = (type: '20' | '60' | 'final' | 'full', amount: number) => {
-        const title = type === 'full' ? 'Pago Ãšnico' : type === 'final' ? 'Pago Final' : `Pago ${type}%`
+        const title = type === 'full' ? 'Pago Único' : type === 'final' ? 'Pago Final' : `Pago ${type}%`
         const concept = `${sale.sale_number} - ${title}`
 
-        const subject = `Solicitud de Pago - InstalaciÃ³n Solar ${sale.sale_number}`
+        const subject = `Solicitud de Pago - Instalación Solar ${sale.sale_number}`
         const body = `Hola ${sale.customer_name},%0D%0A%0D%0A
-Adjunto enviamos la solicitud de pago correspondiente al ${title} de su instalaciÃ³n.%0D%0A%0D%0A
-Importe a abonar: â‚¬${amount.toLocaleString('es-ES')}%0D%0A
+Adjunto enviamos la solicitud de pago correspondiente al ${title} de su instalación.%0D%0A%0D%0A
+Importe a abonar: €${amount.toLocaleString('es-ES')}%0D%0A
 Concepto: ${concept}%0D%0A%0D%0A
 Por favor, realice la transferencia a la cuenta ESXX XXXX XXXX XXXX XXXX.%0D%0A%0D%0A
 Gracias,%0D%0A
@@ -58,7 +58,7 @@ El equipo de SolisTech.`
                 }
 
                 // Trigger notification email (Non-blocking)
-                const title = type === 'full' ? 'Pago Ãšnico' : type === 'final' ? 'Pago Final' : `Pago ${type}%`
+                const title = type === 'full' ? 'Pago Único' : type === 'final' ? 'Pago Final' : `Pago ${type}%`
                 const amount = isCash ? sale.amount : (type === '60' ? sale.amount * 0.6 : sale.amount * 0.2)
 
                 notifyPaymentReceived(sale.customer_email, amount, sale.sale_number)
@@ -85,9 +85,9 @@ El equipo de SolisTech.`
         return (
             <div className="max-w-md mx-auto">
                 <PaymentCard
-                    title="Pago Ãšnico (Al Contado)"
+                    title="Pago Único (Al Contado)"
                     amount={sale.amount}
-                    status={sale.payment_final_status} // Usamos final_status para almacenar el estado del pago Ãºnico
+                    status={sale.payment_final_status} // Usamos final_status para almacenar el estado del pago único
                     date={sale.payment_final_date}
                     icon={<Banknote className="h-5 w-5" />}
                     onRequest={() => handleRequestPayment('full', sale.amount)}
@@ -117,7 +117,7 @@ El equipo de SolisTech.`
                 onMarkPaid={() => updatePaymentStatus('60', 'received')}
             />
             <PaymentCard
-                title="FinalizaciÃ³n (20%)"
+                title="Finalización (20%)"
                 amount={sale.amount * 0.20}
                 status={sale.payment_final_status}
                 date={sale.payment_final_date}
@@ -164,7 +164,7 @@ function PaymentCard({
                 {!isFullWidth && (isPaid ? <CreditCard className="h-4 w-4 text-green-600" /> : <DollarSign className="h-4 w-4 text-slate-400" />)}
             </div>
 
-            <p className={`font-bold mb-4 text-slate-800 ${isFullWidth ? 'text-4xl my-6' : 'text-2xl'}`}>â‚¬{amount.toLocaleString()}</p>
+            <p className={`font-bold mb-4 text-slate-800 ${isFullWidth ? 'text-4xl my-6' : 'text-2xl'}`}>€{amount.toLocaleString()}</p>
 
             {isPaid ? (
                 <div className="flex items-center text-green-700 gap-2 font-medium bg-green-100 p-2 rounded-lg justify-center">
@@ -194,7 +194,7 @@ function PaymentCard({
 
                     {isRequested && (
                         <span className="text-xs text-center text-amber-600 font-medium">
-                            Solicitado âœ…
+                            Solicitado ?
                         </span>
                     )}
                 </div>

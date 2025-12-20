@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,7 +7,7 @@ import { Plus, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { NewSubsidyApplicationDialog } from '@/components/subsidies/new-subsidy-application-dialog'
 
-// Definici√≥n de columnas del Kanban
+// DefiniciÛn de columnas del Kanban
 const KANBAN_COLUMNS = [
     { id: 'collecting_docs', label: 'Recopilando Docs', color: 'bg-gray-100', textColor: 'text-gray-700' },
     { id: 'ready_to_submit', label: 'Listo', color: 'bg-blue-100', textColor: 'text-blue-700' },
@@ -36,7 +36,7 @@ export default function SubsidiesPage() {
     }
 
     const moveApplication = async (appId: string, newStatus: string) => {
-        toast.error('Subvenciones no disponible - tablas pendientes de migraci√≥n')
+        toast.error('Subvenciones no disponible - tablas pendientes de migraciÛn')
     }
 
     const isUrgent = (deadline: string | null) => {
@@ -54,7 +54,7 @@ export default function SubsidiesPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Tramitaci√≥n de Subvenciones</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">TramitaciÛn de Subvenciones</h1>
                     <p className="text-muted-foreground">Gestiona los expedientes de ayudas fotovoltaicas</p>
                 </div>
                 <NewSubsidyApplicationDialog
@@ -99,12 +99,12 @@ export default function SubsidiesPage() {
                                             </CardHeader>
                                             <CardContent className="p-4 pt-0 space-y-2">
                                                 <div className="text-xs text-muted-foreground">
-                                                    {app.region} ‚Ä¢ {app.subsidy_type}
+                                                    {app.region} ï {app.subsidy_type}
                                                 </div>
 
                                                 {app.estimated_amount && (
                                                     <div className="text-sm font-semibold text-green-600">
-                                                        {app.estimated_amount.toLocaleString()}‚Ç¨
+                                                        {app.estimated_amount.toLocaleString()}Ä
                                                     </div>
                                                 )}
 
@@ -126,11 +126,11 @@ export default function SubsidiesPage() {
 
                                                 {app.submission_deadline && (
                                                     <div className={`text-xs ${urgent ? 'text-red-600 font-semibold' : 'text-muted-foreground'}`}>
-                                                        L√≠mite: {new Date(app.submission_deadline).toLocaleDateString()}
+                                                        LÌmite: {new Date(app.submission_deadline).toLocaleDateString()}
                                                     </div>
                                                 )}
 
-                                                {/* Acciones r√°pidas */}
+                                                {/* Acciones r·pidas */}
                                                 <div className="flex gap-1 pt-2">
                                                     {column.id !== 'approved' && column.id !== 'rejected' && (
                                                         <Button
@@ -144,7 +144,7 @@ export default function SubsidiesPage() {
                                                                 }
                                                             }}
                                                         >
-                                                            Avanzar ‚Üí
+                                                            Avanzar ?
                                                         </Button>
                                                     )}
                                                 </div>
@@ -164,7 +164,7 @@ export default function SubsidiesPage() {
                 })}
             </div>
 
-            {/* Estad√≠sticas r√°pidas */}
+            {/* EstadÌsticas r·pidas */}
             <div className="grid grid-cols-4 gap-4">
                 <Card>
                     <CardContent className="pt-6">
@@ -177,7 +177,7 @@ export default function SubsidiesPage() {
                         <div className="text-2xl font-bold text-yellow-600">
                             {applications.filter(a => isUrgent(a.submission_deadline)).length}
                         </div>
-                        <p className="text-xs text-muted-foreground">Urgentes (&lt; 7 d√≠as)</p>
+                        <p className="text-xs text-muted-foreground">Urgentes (&lt; 7 dÌas)</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -191,7 +191,7 @@ export default function SubsidiesPage() {
                 <Card>
                     <CardContent className="pt-6">
                         <div className="text-2xl font-bold text-blue-600">
-                            {applications.reduce((sum, a) => sum + (a.estimated_amount || 0), 0).toLocaleString()}‚Ç¨
+                            {applications.reduce((sum, a) => sum + (a.estimated_amount || 0), 0).toLocaleString()}Ä
                         </div>
                         <p className="text-xs text-muted-foreground">Total Estimado</p>
                     </CardContent>

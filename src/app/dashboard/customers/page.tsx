@@ -18,7 +18,7 @@ export default async function CustomersPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

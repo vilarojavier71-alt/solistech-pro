@@ -1,4 +1,4 @@
-ï»¿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { MunicipalBenefitsSearch } from '@/components/benefits/municipal-benefits-search'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Info } from 'lucide-react'
@@ -20,7 +20,7 @@ export default function BenefitsSearchPage() {
 
             <MunicipalBenefitsSearch />
 
-            {/* InformaciÃ³n adicional */}
+            {/* Información adicional */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -30,33 +30,33 @@ export default function BenefitsSearchPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div>
-                        <h4 className="font-semibold mb-2">Â¿QuÃ© es el IBI?</h4>
+                        <h4 className="font-semibold mb-2">¿Qué es el IBI?</h4>
                         <p className="text-sm text-muted-foreground">
                             El Impuesto sobre Bienes Inmuebles (IBI) es un tributo municipal que grava la propiedad de bienes inmuebles.
-                            Muchos ayuntamientos ofrecen bonificaciones del 30% al 95% durante 3-10 aÃ±os para instalaciones de energÃ­a solar.
+                            Muchos ayuntamientos ofrecen bonificaciones del 30% al 95% durante 3-10 años para instalaciones de energía solar.
                         </p>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold mb-2">Â¿QuÃ© es el ICIO?</h4>
+                        <h4 className="font-semibold mb-2">¿Qué es el ICIO?</h4>
                         <p className="text-sm text-muted-foreground">
-                            El Impuesto sobre Construcciones, Instalaciones y Obras (ICIO) grava la realizaciÃ³n de obras.
-                            Las bonificaciones suelen ser del 50% al 95% y se aplican una sola vez durante la instalaciÃ³n.
+                            El Impuesto sobre Construcciones, Instalaciones y Obras (ICIO) grava la realización de obras.
+                            Las bonificaciones suelen ser del 50% al 95% y se aplican una sola vez durante la instalación.
                         </p>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold mb-2">Â¿CÃ³mo solicitar las bonificaciones?</h4>
+                        <h4 className="font-semibold mb-2">¿Cómo solicitar las bonificaciones?</h4>
                         <p className="text-sm text-muted-foreground">
-                            Generalmente debes presentar una solicitud en tu ayuntamiento junto con la documentaciÃ³n tÃ©cnica de la instalaciÃ³n.
-                            Consulta las ordenanzas fiscales de tu municipio para conocer los requisitos especÃ­ficos.
+                            Generalmente debes presentar una solicitud en tu ayuntamiento junto con la documentación técnica de la instalación.
+                            Consulta las ordenanzas fiscales de tu municipio para conocer los requisitos específicos.
                         </p>
                     </div>
 
                     <div className="bg-amber-50 dark:bg-amber-950 p-4 rounded-lg">
                         <p className="text-sm">
                             <strong>Nota importante:</strong> Las bonificaciones mostradas son orientativas.
-                            Te recomendamos verificar la informaciÃ³n en las ordenanzas fiscales oficiales de tu ayuntamiento.
+                            Te recomendamos verificar la información en las ordenanzas fiscales oficiales de tu ayuntamiento.
                         </p>
                     </div>
                 </CardContent>

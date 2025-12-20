@@ -1,4 +1,4 @@
-ï»¿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { NewProjectForm } from '@/components/forms/new-project-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { auth } from '@/lib/auth'
@@ -15,7 +15,7 @@ export default async function NewProjectPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -25,7 +25,7 @@ export default async function NewProjectPage() {
     // Get customers for dropdown
     const customers = await prisma.customers.findMany({
         where: { organization_id: profile.organization_id },
-        select: { id: true, name: true },
+        select: { id: true, name: true, email: true },
         orderBy: { name: 'asc' }
     })
 
@@ -34,13 +34,13 @@ export default async function NewProjectPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Nuevo Proyecto</h1>
                 <p className="text-muted-foreground">
-                    Crea un nuevo proyecto de instalaciÃ³n solar
+                    Crea un nuevo proyecto de instalación solar
                 </p>
             </div>
 
             <Card>
                 <CardHeader>
-                    <CardTitle>InformaciÃ³n del Proyecto</CardTitle>
+                    <CardTitle>Información del Proyecto</CardTitle>
                     <CardDescription>
                         Completa los datos del proyecto fotovoltaico
                     </CardDescription>

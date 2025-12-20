@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 
@@ -28,9 +28,9 @@ export class ErrorBoundary extends Component<Props, State> {
         if (this.state.hasError) {
             return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] p-6 text-center border border-dashed border-red-200 rounded-xl bg-red-50/50">
-                    <h2 className="text-xl font-bold mb-2">Algo sali√≥ mal</h2>
+                    <h2 className="text-xl font-bold mb-2">Algo saliÛ mal</h2>
                     <p className="text-muted-foreground max-w-md">
-                        Esta secci√≥n ha encontrado un problema inesperado. No te preocupes, tus datos est√°n seguros.
+                        Esta secciÛn ha encontrado un problema inesperado. No te preocupes, tus datos est·n seguros.
                     </p>
                     <button
                         className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"

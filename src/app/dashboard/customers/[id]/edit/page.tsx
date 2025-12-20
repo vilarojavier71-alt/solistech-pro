@@ -15,7 +15,7 @@ export default async function EditCustomerPage({ params }: { params: Promise<{ i
     const session = await auth()
     if (!session?.user) redirect('/auth/login')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

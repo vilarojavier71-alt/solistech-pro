@@ -1,4 +1,4 @@
-ï»¿/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable jsx-a11y/alt-text */
 import React from 'react'
 import { Document, Page, Text, View, StyleSheet, Image, Font } from '@react-pdf/renderer'
 
@@ -132,12 +132,12 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
                     <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#0ea5e9' }}>{data.org_name}</Text>
                 </View>
 
-                <Text style={styles.coverTitle}>PROYECTO TÃ‰CNICO DE AUTOCONSUMO</Text>
-                <Text style={styles.coverSubtitle}>InstalaciÃ³n Fotovoltaica Conectada a Red</Text>
+                <Text style={styles.coverTitle}>PROYECTO TÉCNICO DE AUTOCONSUMO</Text>
+                <Text style={styles.coverSubtitle}>Instalación Fotovoltaica Conectada a Red</Text>
 
                 <View style={styles.coverDetails}>
                     <Text style={{ fontSize: 12, marginBottom: 8 }}>PROPIEDAD: {data.customer_name}</Text>
-                    <Text style={{ fontSize: 12, marginBottom: 8 }}>UBICACIÃ“N: {data.location_name}</Text>
+                    <Text style={{ fontSize: 12, marginBottom: 8 }}>UBICACIÓN: {data.location_name}</Text>
                     <Text style={{ fontSize: 12, marginBottom: 8 }}>POTENCIA: {data.system_size_kwp} kWp</Text>
                     <Text style={{ fontSize: 10, color: '#94a3b8', marginTop: 20 }}>FECHA: {new Date().toLocaleDateString()}</Text>
                 </View>
@@ -149,15 +149,15 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerText}>{data.project_name}</Text>
-                <Text style={styles.headerText}>Memoria TÃ©cnica</Text>
+                <Text style={styles.headerText}>Memoria Técnica</Text>
             </View>
 
             <Text style={styles.sectionTitle}>1. DATOS GENERALES</Text>
 
             <View style={styles.box}>
-                <Text style={styles.subSectionTitle}>1.1 Promotor de la InstalaciÃ³n</Text>
+                <Text style={styles.subSectionTitle}>1.1 Promotor de la Instalación</Text>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Nombre / RazÃ³n Social:</Text>
+                    <Text style={styles.label}>Nombre / Razón Social:</Text>
                     <Text style={styles.value}>{data.customer_name}</Text>
                 </View>
                 {data.customer_dni && (
@@ -168,14 +168,14 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
                 )}
                 {data.customer_address && (
                     <View style={styles.row}>
-                        <Text style={styles.label}>DirecciÃ³n:</Text>
+                        <Text style={styles.label}>Dirección:</Text>
                         <Text style={styles.value}>{data.customer_address}</Text>
                     </View>
                 )}
             </View>
 
             <View style={styles.box}>
-                <Text style={styles.subSectionTitle}>1.2 UbicaciÃ³n del Proyecto</Text>
+                <Text style={styles.subSectionTitle}>1.2 Ubicación del Proyecto</Text>
                 <View style={styles.row}>
                     <Text style={styles.label}>Emplazamiento:</Text>
                     <Text style={styles.value}>{data.location_name}</Text>
@@ -188,10 +188,10 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
                 )}
             </View>
 
-            <Text style={styles.sectionTitle}>2. DESCRIPCIÃ“N TÃ‰CNICA</Text>
+            <Text style={styles.sectionTitle}>2. DESCRIPCIÓN TÉCNICA</Text>
             <Text style={{ fontSize: 10, marginBottom: 10, lineHeight: 1.5 }}>
-                El objeto del presente proyecto es la definiciÃ³n tÃ©cnica de una instalaciÃ³n solar fotovoltaica
-                para autoconsumo, interconectada con la red elÃ©ctrica de distribuciÃ³n.
+                El objeto del presente proyecto es la definición técnica de una instalación solar fotovoltaica
+                para autoconsumo, interconectada con la red eléctrica de distribución.
             </Text>
 
             <View style={styles.box}>
@@ -201,12 +201,12 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
                     <Text style={styles.value}>{data.system_size_kwp} kWp</Text>
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>NÃºmero de MÃ³dulos:</Text>
+                    <Text style={styles.label}>Número de Módulos:</Text>
                     <Text style={styles.value}>{data.panels_count} unidades</Text>
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.label}>Modelo Estimado:</Text>
-                    <Text style={styles.value}>{data.panel_model || 'EstÃ¡ndar 450W-550W'}</Text>
+                    <Text style={styles.value}>{data.panel_model || 'Estándar 450W-550W'}</Text>
                 </View>
             </View>
 
@@ -214,19 +214,19 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
                 <Text style={styles.subSectionTitle}>2.2 Inversor</Text>
                 <View style={styles.row}>
                     <Text style={styles.label}>Tipo:</Text>
-                    <Text style={styles.value}>ConexiÃ³n a Red</Text>
+                    <Text style={styles.value}>Conexión a Red</Text>
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.label}>Modelo:</Text>
-                    <Text style={styles.value}>{data.inverter_model || 'SegÃºn disponibilidad (Huawei/Fronius/SMA)'}</Text>
+                    <Text style={styles.value}>{data.inverter_model || 'Según disponibilidad (Huawei/Fronius/SMA)'}</Text>
                 </View>
             </View>
 
-            <Text style={styles.sectionTitle}>3. PRODUCCIÃ“N ESTIMADA</Text>
+            <Text style={styles.sectionTitle}>3. PRODUCCIÓN ESTIMADA</Text>
             <View style={styles.box}>
                 <View style={styles.row}>
-                    <Text style={styles.label}>ProducciÃ³n Anual:</Text>
-                    <Text style={styles.value}>{data.annual_production.toLocaleString()} kWh/aÃ±o</Text>
+                    <Text style={styles.label}>Producción Anual:</Text>
+                    <Text style={styles.value}>{data.annual_production.toLocaleString()} kWh/año</Text>
                 </View>
                 <View style={styles.row}>
                     <Text style={styles.label}>Performance Ratio (PR):</Text>
@@ -235,7 +235,7 @@ export const TechnicalMemoryPDF = ({ data }: { data: TechnicalData }) => (
             </View>
 
             <Text style={{ fontSize: 9, color: '#64748b', fontStyle: 'italic', marginTop: 20 }}>
-                Nota: Los datos de producciÃ³n son estimaciones basadas en datos histÃ³ricos de irradiaciÃ³n y geometrÃ­a de la instalaciÃ³n diseÃ±ada.
+                Nota: Los datos de producción son estimaciones basadas en datos históricos de irradiación y geometría de la instalación diseñada.
             </Text>
 
         </Page>

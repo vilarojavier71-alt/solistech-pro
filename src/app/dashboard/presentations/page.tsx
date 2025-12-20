@@ -1,4 +1,4 @@
-ï»¿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,7 +9,7 @@ import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
     title: 'Presentaciones | SolisTech PRO',
-    description: 'GestiÃ³n de presentaciones PowerPoint',
+    description: 'Gestión de presentaciones PowerPoint',
 }
 
 export default async function PresentationsPage() {
@@ -17,7 +17,7 @@ export default async function PresentationsPage() {
 
     if (!session?.user) redirect('/auth/login')
 
-    const userData = await prisma.User.findUnique({
+    const userData = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -40,7 +40,7 @@ export default async function PresentationsPage() {
                 <Link href="/dashboard/presentations/new">
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        Nueva PresentaciÃ³n
+                        Nueva Presentación
                     </Button>
                 </Link>
             </div>
@@ -72,10 +72,10 @@ export default async function PresentationsPage() {
                             <CardContent>
                                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                     <span>Estado: {presentation.status}</span>
-                                    <span>DeducciÃ³n: {presentation.fiscal_deduction_type}%</span>
+                                    <span>Deducción: {presentation.fiscal_deduction_type}%</span>
                                     <span>Creado: {new Date(presentation.created_at).toLocaleDateString()}</span>
                                     {presentation.simulated_photo_url && (
-                                        <span className="text-green-600">âœ“ Con IA</span>
+                                        <span className="text-green-600">? Con IA</span>
                                     )}
                                 </div>
                             </CardContent>
@@ -87,12 +87,12 @@ export default async function PresentationsPage() {
                             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
                             <h3 className="text-lg font-semibold mb-2">No hay presentaciones</h3>
                             <p className="text-sm text-muted-foreground mb-4">
-                                Crea tu primera presentaciÃ³n PowerPoint con IA
+                                Crea tu primera presentación PowerPoint con IA
                             </p>
                             <Link href="/dashboard/presentations/new">
                                 <Button>
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Nueva PresentaciÃ³n
+                                    Nueva Presentación
                                 </Button>
                             </Link>
                         </CardContent>

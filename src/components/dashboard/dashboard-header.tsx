@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useEffect } from "react"
 import { Bell, Search, Menu, User } from "lucide-react"
@@ -120,7 +120,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                                 <span>Notificaciones</span>
                                 {unreadCount > 0 && (
                                     <Button variant="ghost" size="sm" onClick={handleMarkAllRead} className="text-xs h-6">
-                                        Marcar leÃ­das
+                                        Marcar leídas
                                     </Button>
                                 )}
                             </DropdownMenuLabel>
@@ -172,10 +172,10 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem>Perfil</DropdownMenuItem>
-                            <DropdownMenuItem>Configuración</DropdownMenuItem>
+                            <DropdownMenuItem>Configuraci�n</DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer">
-                                Cerrar Sesión
+                                Cerrar Sesi�n
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

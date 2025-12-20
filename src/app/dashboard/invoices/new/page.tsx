@@ -14,7 +14,7 @@ export default async function NewInvoicePage() {
 
     if (!session?.user) redirect('/auth/login')
 
-    const userData = await prisma.User.findUnique({
+    const userData = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

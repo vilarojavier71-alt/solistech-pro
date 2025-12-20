@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { Button } from '@/components/ui/button'
 import { initializeRoles } from '@/lib/actions/team-management'
@@ -19,7 +19,7 @@ export function InitializeRolesButton({ organizationId }: { organizationId: stri
                 toast.success('Roles inicializados correctamente')
             }
         } catch (e) {
-            toast.error('Error de conexiÃ³n')
+            toast.error('Error de conexión')
         } finally {
             setLoading(false)
         }
@@ -29,9 +29,9 @@ export function InitializeRolesButton({ organizationId }: { organizationId: stri
         <div className="p-6 border border-yellow-200 bg-yellow-50 rounded-lg flex flex-col items-center gap-4 text-center">
             <ServerCrash className="w-10 h-10 text-yellow-600" />
             <div>
-                <h3 className="text-lg font-medium text-yellow-900">ConfiguraciÃ³n Incompleta</h3>
+                <h3 className="text-lg font-medium text-yellow-900">Configuración Incompleta</h3>
                 <p className="text-sm text-yellow-700 max-w-md">
-                    Tu organizaciÃ³n no tiene roles definidos (Admin, Comercial, Instalador).
+                    Tu organización no tiene roles definidos (Admin, Comercial, Instalador).
                     Es necesario inicializarlos para gestionar el equipo.
                 </p>
             </div>

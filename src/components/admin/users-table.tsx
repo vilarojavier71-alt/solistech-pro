@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -121,7 +121,7 @@ export function UsersTable({ users }: UsersTableProps) {
                                                     Editar detalles
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={() => setResettingUser(user)}>
-                                                    Cambiar contraseña
+                                                    Cambiar contrase�a
                                                 </DropdownMenuItem>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React from 'react'
 import { Moon, Sun, Monitor } from 'lucide-react'
@@ -55,17 +55,17 @@ export function ThemeSelector({ className }: { className?: string }) {
                 <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer">
                     <Sun className="mr-2 h-4 w-4 text-gold-500" />
                     <span>Claro</span>
-                    {theme === 'light' && <span className="ml-auto">âœ“</span>}
+                    {theme === 'light' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer">
                     <Moon className="mr-2 h-4 w-4 text-teal-400" />
                     <span>Oscuro</span>
-                    {theme === 'dark' && <span className="ml-auto">âœ“</span>}
+                    {theme === 'dark' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setTheme('system')} className="cursor-pointer">
                     <Monitor className="mr-2 h-4 w-4 text-slate-600" />
                     <span>Sistema</span>
-                    {theme === 'system' && <span className="ml-auto">âœ“</span>}
+                    {theme === 'system' && <span className="ml-auto">✓</span>}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -94,7 +94,7 @@ export function ThemeSelectorSidebar() {
     return (
         <div className="space-y-2 px-4 py-4 bg-slate-50 dark:bg-slate-800/50">
             <div className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-3">
-                ðŸŽ¨ Apariencia
+                🎨 Apariencia
             </div>
 
             <button
@@ -108,7 +108,7 @@ export function ThemeSelectorSidebar() {
             >
                 <Sun className={cn('h-5 w-5', theme === 'light' ? 'text-white' : 'text-gold-500')} />
                 <span className="text-sm">Claro</span>
-                {theme === 'light' && <span className="ml-auto text-lg">âœ“</span>}
+                {theme === 'light' && <span className="ml-auto text-lg">✓</span>}
             </button>
 
             <button
@@ -122,7 +122,7 @@ export function ThemeSelectorSidebar() {
             >
                 <Moon className={cn('h-5 w-5', theme === 'dark' ? 'text-white' : 'text-teal-500')} />
                 <span className="text-sm">Oscuro</span>
-                {theme === 'dark' && <span className="ml-auto text-lg">âœ“</span>}
+                {theme === 'dark' && <span className="ml-auto text-lg">✓</span>}
             </button>
 
             <button
@@ -136,7 +136,7 @@ export function ThemeSelectorSidebar() {
             >
                 <Monitor className={cn('h-5 w-5', theme === 'system' ? 'text-white' : 'text-slate-600')} />
                 <span className="text-sm">Sistema</span>
-                {theme === 'system' && <span className="ml-auto text-lg">âœ“</span>}
+                {theme === 'system' && <span className="ml-auto text-lg">✓</span>}
             </button>
         </div>
     )

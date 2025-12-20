@@ -1,4 +1,4 @@
-ï»¿"use client";
+"use client";
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -52,7 +52,7 @@ export function NewExpenseDialog() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                     <div className="space-y-2">
-                        <Label>DescripciÃ³n</Label>
+                        <Label>Descripción</Label>
                         <Input
                             required
                             placeholder="Ej: Licencia de Software"
@@ -62,7 +62,7 @@ export function NewExpenseDialog() {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>Importe (â‚¬)</Label>
+                            <Label>Importe (€)</Label>
                             <Input
                                 required
                                 type="number"
@@ -83,7 +83,7 @@ export function NewExpenseDialog() {
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Label>CategorÃ­a</Label>
+                        <Label>Categoría</Label>
                         <Select
                             value={formData.category}
                             onValueChange={(val) => setFormData({ ...formData, category: val as ExpenseCategory })}
@@ -97,7 +97,7 @@ export function NewExpenseDialog() {
                                 <SelectItem value="Marketing">Marketing</SelectItem>
                                 <SelectItem value="Software">Software</SelectItem>
                                 <SelectItem value="Personnel">Personal</SelectItem>
-                                <SelectItem value="Vehicles">VehÃ­culos</SelectItem>
+                                <SelectItem value="Vehicles">Vehículos</SelectItem>
                                 <SelectItem value="Other">Otro</SelectItem>
                             </SelectContent>
                         </Select>

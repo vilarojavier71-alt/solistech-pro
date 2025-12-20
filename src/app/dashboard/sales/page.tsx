@@ -1,4 +1,4 @@
-ï»¿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { SalesTable } from '@/components/dashboard/sales-table'
 import { Button } from '@/components/ui/button'
@@ -12,13 +12,13 @@ export default async function SalesPage() {
 
     if (!session?.user) return <div>No autorizado</div>
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!profile?.organization_id) {
-        return <div>No se encontrÃ³ la organizaciÃ³n del usuario</div>
+        return <div>No se encontró la organización del usuario</div>
     }
 
     // STUB: sales table not in current Prisma schema
@@ -31,7 +31,7 @@ export default async function SalesPage() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Ventas</h1>
                     <p className="text-muted-foreground">
-                        Gestiona tus expedientes, cobros y documentaciÃ³n
+                        Gestiona tus expedientes, cobros y documentación
                     </p>
                 </div>
                 <Button asChild className="bg-sky-600 hover:bg-sky-700">

@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,12 +39,12 @@ export function SolarCalculator() {
     const [consumption, setConsumption] = useState<number>(4000)
     const [installationType, setInstallationType] = useState<string>('residential')
     const [location, setLocation] = useState<{ lat: number; lng: number }>({ lat: 40.4168, lng: -3.7038 }) // Madrid by default
-    const [locationName, setLocationName] = useState<string>('Madrid, Espa√±a')
+    const [locationName, setLocationName] = useState<string>('Madrid, EspaÒa')
     const [roofOrientation, setRoofOrientation] = useState<string>('south')
     const [roofTilt, setRoofTilt] = useState<number>(30)
     const [availableArea, setAvailableArea] = useState<number>(0)
 
-    // Estados para selector de ubicaci√≥n
+    // Estados para selector de ubicaciÛn
     const [useManualCoords, setUseManualCoords] = useState<boolean>(false)
     const [citySearch, setCitySearch] = useState<string>('')
     const [filteredCities, setFilteredCities] = useState<CityLocation[]>(SPANISH_CITIES.slice(0, 10))
@@ -57,7 +57,7 @@ export function SolarCalculator() {
     const [subsidies, setSubsidies] = useState<any[]>([])
     const [subsidiesBreakdown, setSubsidiesBreakdown] = useState<any>(null)
 
-    // Cargar subvenciones cuando cambia la regi√≥n
+    // Cargar subvenciones cuando cambia la regiÛn
     useEffect(() => {
         const fetchSubsidies = async () => {
             try {
@@ -73,7 +73,7 @@ export function SolarCalculator() {
         }
     }, [region])
 
-    // Funci√≥n para calcular el desglose de subvenciones
+    // FunciÛn para calcular el desglose de subvenciones
     const calculateSubsidiesBreakdown = (grossCost: number, subsidiesList: any[]) => {
         let direct = 0
         let irpf = 0
@@ -102,7 +102,7 @@ export function SolarCalculator() {
     const handleCalculate = async () => {
         setLoading(true)
         try {
-            // Aqu√≠ integraremos con PVGis
+            // AquÌ integraremos con PVGis
             const response = await fetch('/api/calculate-solar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -115,12 +115,12 @@ export function SolarCalculator() {
                 })
             })
 
-            if (!response.ok) throw new Error('Error en el c√°lculo')
+            if (!response.ok) throw new Error('Error en el c·lculo')
 
             const data = await response.json()
             setResult(data)
 
-            // Guardar c√°lculo en BD autom√°ticamente
+            // Guardar c·lculo en BD autom·ticamente
             try {
                 const savedCalc = await saveCalculation({
                     systemSize: data.systemSize,
@@ -140,20 +140,20 @@ export function SolarCalculator() {
                 if (savedCalc?.id) {
                     setSavedCalculationId(savedCalc.id)
 
-                    // Calcular ROI autom√°ticamente con el nuevo motor
+                    // Calcular ROI autom·ticamente con el nuevo motor
                     if (showSubsidies) {
                         setIsCalculatingROI(true)
                         const roiResult = await calculateFullROI(savedCalc.id)
 
                         if (roiResult.success && roiResult.data) {
-                            // Recargar c√°lculo completo con subvenciones
+                            // Recargar c·lculo completo con subvenciones
                             setFullCalculation({
                                 ...savedCalc,
                                 ...roiResult.data
                             })
-                            toast.success(`√¢≈ì‚Ä¶ Subvenciones calculadas: ${roiResult.data.totalSubsidies.toLocaleString()}√¢‚Äö¬¨ en ayudas`)
+                            toast.success(`‚úÖ Subvenciones calculadas: ${roiResult.data.totalSubsidies.toLocaleString()}‚Ç¨ en ayudas`)
                         } else {
-                            toast.warning('No se pudieron calcular las subvenciones autom√°ticamente')
+                            toast.warning('No se pudieron calcular las subvenciones autom·ticamente')
                         }
                         setIsCalculatingROI(false)
                     }
@@ -163,9 +163,9 @@ export function SolarCalculator() {
                 // No bloqueamos el flujo si falla el guardado
             }
 
-            toast.success('C√°lculo completado')
+            toast.success('C·lculo completado')
         } catch (error) {
-            toast.error('Error al calcular la instalaci√≥n')
+            toast.error('Error al calcular la instalaciÛn')
         } finally {
             setLoading(false)
         }
@@ -175,9 +175,9 @@ export function SolarCalculator() {
         <div className="space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Datos de la Instalaci√≥n</CardTitle>
+                    <CardTitle>Datos de la InstalaciÛn</CardTitle>
                     <CardDescription>
-                        Introduce los datos para calcular el sistema √≥ptimo
+                        Introduce los datos para calcular el sistema Ûptimo
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -191,13 +191,13 @@ export function SolarCalculator() {
                             placeholder="4000"
                         />
                         <p className="text-xs text-muted-foreground">
-                            Lo puedes encontrar en tu factura el√©ctrica
+                            Lo puedes encontrar en tu factura elÈctrica
                         </p>
                     </div>
 
-                    {/* Tipo de Instalaci√≥n */}
+                    {/* Tipo de InstalaciÛn */}
                     <div className="space-y-2">
-                        <Label>Tipo de Instalaci√É¬≥n</Label>
+                        <Label>Tipo de Instalaci√≥n</Label>
                         <Select value={installationType} onValueChange={setInstallationType}>
                             <SelectTrigger>
                                 <SelectValue />
@@ -205,15 +205,15 @@ export function SolarCalculator() {
                             <SelectContent>
                                 <SelectItem value="residential">Residencial (Vivienda)</SelectItem>
                                 <SelectItem value="commercial">Comercial (Negocio)</SelectItem>
-                                <SelectItem value="industrial">Industrial (F√°brica)</SelectItem>
+                                <SelectItem value="industrial">Industrial (F·brica)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    {/* Ubicaci√É¬≥n */}
+                    {/* Ubicaci√≥n */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <Label>Ubicaci√≥n</Label>
+                            <Label>UbicaciÛn</Label>
                             <div className="flex items-center gap-2">
                                 <Switch
                                     checked={useManualCoords}
@@ -265,7 +265,7 @@ export function SolarCalculator() {
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground">
-                                    √∞≈∏‚Äú¬ç {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                                    üìç {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
                                 </p>
                             </>
                         ) : (
@@ -305,21 +305,21 @@ export function SolarCalculator() {
                                     />
                                 </div>
                                 <p className="text-xs text-muted-foreground col-span-2">
-                                    üí° Introduce coordenadas exactas para m√°xima precisi√≥n
+                                    ?? Introduce coordenadas exactas para m·xima precisiÛn
                                 </p>
                             </div>
                         )}
                     </div>
 
-                    {/* Orientaci√≥n del Tejado */}
+                    {/* OrientaciÛn del Tejado */}
                     <div className="space-y-2">
-                        <Label>Orientaci√≥n del Tejado</Label>
+                        <Label>OrientaciÛn del Tejado</Label>
                         <Select value={roofOrientation} onValueChange={setRoofOrientation}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="south">Sur (√ìptimo)</SelectItem>
+                                <SelectItem value="south">Sur (”ptimo)</SelectItem>
                                 <SelectItem value="southeast">Sureste</SelectItem>
                                 <SelectItem value="southwest">Suroeste</SelectItem>
                                 <SelectItem value="east">Este</SelectItem>
@@ -329,11 +329,11 @@ export function SolarCalculator() {
                         </Select>
                     </div>
 
-                    {/* Inclinaci√≥n */}
+                    {/* InclinaciÛn */}
                     <div className="space-y-4">
                         <div className="flex justify-between">
-                            <Label>Inclinaci√≥n del Tejado</Label>
-                            <span className="text-sm text-muted-foreground">{roofTilt}¬∞</span>
+                            <Label>InclinaciÛn del Tejado</Label>
+                            <span className="text-sm text-muted-foreground">{roofTilt}∞</span>
                         </div>
                         <Slider
                             value={[roofTilt]}
@@ -343,13 +343,13 @@ export function SolarCalculator() {
                             step={5}
                         />
                         <p className="text-xs text-muted-foreground">
-                            0¬∞ = Plano | 30¬∞ = Ideal | 90¬∞ = Vertical
+                            0∞ = Plano | 30∞ = Ideal | 90∞ = Vertical
                         </p>
                     </div>
 
-                    {/* √É¬Årea Disponible (NUEVO FASE 8) */}
+                    {/* √Årea Disponible (NUEVO FASE 8) */}
                     <div className="space-y-2">
-                        <Label>√É¬Årea Disponible en Tejado (m√Ç¬≤)</Label>
+                        <Label>√Årea Disponible en Tejado (m¬≤)</Label>
                         <Input
                             type="number"
                             value={availableArea}
@@ -357,13 +357,13 @@ export function SolarCalculator() {
                             placeholder="Ej: 50"
                         />
                         <p className="text-xs text-muted-foreground">
-                            Opcional. Se usar√° para validar si caben los paneles.
+                            Opcional. Se usar· para validar si caben los paneles.
                         </p>
                     </div>
 
-                    {/* Selector de Regi√≥n (FASE 9) */}
+                    {/* Selector de RegiÛn (FASE 9) */}
                     <div className="space-y-2 border-t pt-4 mt-4">
-                        <Label>Regi√≥n / Comunidad Aut√≥noma</Label>
+                        <Label>RegiÛn / Comunidad AutÛnoma</Label>
                         <Select value={region} onValueChange={setRegion}>
                             <SelectTrigger>
                                 <SelectValue />
@@ -371,13 +371,13 @@ export function SolarCalculator() {
                             <SelectContent>
                                 <SelectItem value="Comunidad Valenciana">Comunidad Valenciana</SelectItem>
                                 <SelectItem value="Madrid">Madrid</SelectItem>
-                                <SelectItem value="Catalu√±a">Catalu√±a</SelectItem>
-                                <SelectItem value="Andaluc√≠a">Andaluc√≠a</SelectItem>
+                                <SelectItem value="CataluÒa">CataluÒa</SelectItem>
+                                <SelectItem value="AndalucÌa">AndalucÌa</SelectItem>
                                 <SelectItem value="Islas Baleares">Islas Baleares</SelectItem>
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-muted-foreground">
-                            Selecciona tu regi√≥n para ver las ayudas disponibles
+                            Selecciona tu regiÛn para ver las ayudas disponibles
                         </p>
                     </div>
 
@@ -396,7 +396,7 @@ export function SolarCalculator() {
                         />
                     </div>
 
-                    {/* Bot√≥n Calcular */}
+                    {/* BotÛn Calcular */}
                     <Button
                         onClick={handleCalculate}
                         disabled={loading}
@@ -408,7 +408,7 @@ export function SolarCalculator() {
                         ) : (
                             <>
                                 <Calculator className="mr-2 h-4 w-4" />
-                                Calcular Sistema √ìptimo
+                                Calcular Sistema ”ptimo
                             </>
                         )}
                     </Button>
@@ -419,26 +419,26 @@ export function SolarCalculator() {
             {result && (
                 <Card className="border-green-200 bg-green-50/50">
                     <CardHeader>
-                        <CardTitle className="text-green-900">Resultados del C√É¬°lculo</CardTitle>
-                        <CardDescription>Sistema solar √≥ptimo para tu instalaci√≥n</CardDescription>
+                        <CardTitle className="text-green-900">Resultados del C√°lculo</CardTitle>
+                        <CardDescription>Sistema solar Ûptimo para tu instalaciÛn</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {/* Validation Alert */}
                         {availableArea > 0 && (result.panels * 2) > availableArea && (
                             <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg flex items-start gap-3">
-                                <div className="mt-1">√¢≈°¬†√Ø¬∏¬è</div>
+                                <div className="mt-1">‚ö†Ô∏è</div>
                                 <div className="flex-1">
-                                    <h4 className="font-semibold">√Ç¬°√É¬Årea Insuficiente!</h4>
+                                    <h4 className="font-semibold">¬°√Årea Insuficiente!</h4>
                                     <p className="text-sm mt-1">
-                                        Necesitas aprox. <span className="font-bold">{(result.panels * 2).toFixed(1)} m¬≤</span> para {result.panels} paneles,
-                                        pero solo tienes <span className="font-bold">{availableArea} m¬≤</span> disponibles.
+                                        Necesitas aprox. <span className="font-bold">{(result.panels * 2).toFixed(1)} m≤</span> para {result.panels} paneles,
+                                        pero solo tienes <span className="font-bold">{availableArea} m≤</span> disponibles.
                                     </p>
                                     {(() => {
                                         const maxPanels = Math.floor(availableArea / (2 * 1.2))
                                         const maxPower = (maxPanels * 450) / 1000
                                         return (
                                             <div className="mt-3 p-3 bg-white rounded border border-red-300">
-                                                <p className="text-sm font-semibold text-red-900">√∞≈∏‚Äô¬° Sugerencia:</p>
+                                                <p className="text-sm font-semibold text-red-900">üí° Sugerencia:</p>
                                                 <p className="text-sm mt-1">
                                                     Reduce a <span className="font-bold">{maxPanels} paneles</span> ({maxPower.toFixed(1)} kWp)
                                                     para que quepa en tu tejado.
@@ -452,8 +452,8 @@ export function SolarCalculator() {
 
                         {availableArea > 0 && (result.panels * 2) <= availableArea && (
                             <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-lg flex items-center gap-3">
-                                <div>‚úÖ</div>
-                                <div className="text-sm font-medium">Instalaci√≥n viable: Ocupar√° el {((result.panels * 2 / availableArea) * 100).toFixed(0)}% del tejado.</div>
+                                <div>?</div>
+                                <div className="text-sm font-medium">InstalaciÛn viable: Ocupar· el {((result.panels * 2 / availableArea) * 100).toFixed(0)}% del tejado.</div>
                             </div>
                         )}
 
@@ -463,7 +463,7 @@ export function SolarCalculator() {
                                 <CardContent className="flex items-center justify-center py-8">
                                     <div className="flex items-center gap-3">
                                         <Sparkles className="h-5 w-5 animate-pulse text-blue-600" />
-                                        <p className="text-blue-900 font-medium">Calculando subvenciones autom√°ticamente...</p>
+                                        <p className="text-blue-900 font-medium">Calculando subvenciones autom·ticamente...</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -490,7 +490,7 @@ export function SolarCalculator() {
                             </div>
 
                             <div className="p-4 bg-white rounded-lg border">
-                                <div className="text-sm text-muted-foreground mb-1">Producci√≥n Anual</div>
+                                <div className="text-sm text-muted-foreground mb-1">ProducciÛn Anual</div>
                                 <div className="text-2xl font-bold">{result.production.toLocaleString()} kWh</div>
                             </div>
 
@@ -500,7 +500,7 @@ export function SolarCalculator() {
                                     <span>Ahorro Anual</span>
                                 </div>
                                 <div className="text-2xl font-bold text-green-600">
-                                    {result.savings.toLocaleString()}‚Ç¨
+                                    {result.savings.toLocaleString()}Ä
                                 </div>
                             </div>
 
@@ -515,10 +515,10 @@ export function SolarCalculator() {
                             </div>
                         </div>
 
-                        {/* Gr√°fica de Producci√≥n Mensual */}
+                        {/* Gr·fica de ProducciÛn Mensual */}
                         {result.monthlyProduction && result.monthlyProduction.length > 0 && (
                             <div className="mt-6 p-4 bg-white rounded-lg border">
-                                <h3 className="text-sm font-semibold mb-4">Producci√≥n Mensual Estimada</h3>
+                                <h3 className="text-sm font-semibold mb-4">ProducciÛn Mensual Estimada</h3>
                                 <ProductionChart monthlyProduction={result.monthlyProduction} />
                             </div>
                         )}
@@ -539,9 +539,9 @@ export function SolarCalculator() {
                                         annualROI: result.annualROI,
                                         monthlyProduction: result.monthlyProduction
                                     })
-                                    toast.success('C√°lculo guardado correctamente')
+                                    toast.success('C·lculo guardado correctamente')
                                 } catch (error) {
-                                    toast.error('Error al guardar el c√°lculo')
+                                    toast.error('Error al guardar el c·lculo')
                                 }
                             }}>
                                 <Save className="mr-2 h-4 w-4" />
@@ -550,27 +550,27 @@ export function SolarCalculator() {
 
                             <Button variant="outline" className="w-full" onClick={async () => {
                                 if (!savedCalculationId) {
-                                    toast.error('Primero guarda el c√°lculo')
+                                    toast.error('Primero guarda el c·lculo')
                                     return
                                 }
 
-                                toast.loading('Generando memoria t√©cnica...')
+                                toast.loading('Generando memoria tÈcnica...')
                                 const result = await generateTechnicalMemory(savedCalculationId)
 
                                 if (result.error) {
                                     toast.error(result.error)
                                 } else {
-                                    toast.success('Memoria t√©cnica generada')
-                                    // Descargar autom√°ticamente
+                                    toast.success('Memoria tÈcnica generada')
+                                    // Descargar autom·ticamente
                                     window.open(result.url, '_blank')
                                 }
                             }}>
                                 <FileText className="mr-2 h-4 w-4" />
-                                Memoria T√©cnica
+                                Memoria TÈcnica
                             </Button>
 
                             <Button variant="outline" className="w-full" onClick={() => {
-                                toast.info('Exportaci√≥n a PDF pr√≥ximamente')
+                                toast.info('ExportaciÛn a PDF prÛximamente')
                             }}>
                                 <Download className="mr-2 h-4 w-4" />
                                 Exportar PDF

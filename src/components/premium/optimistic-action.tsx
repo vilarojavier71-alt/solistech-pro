@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { useState, useTransition } from 'react'
 import { toast } from 'sonner'
@@ -33,7 +33,7 @@ export function OptimisticAction<T = any, R = any>({
     onSuccess,
     onError,
     onRevert,
-    successMessage = 'Acción completada',
+    successMessage = 'Acci�n completada',
     errorMessage = 'Error al procesar',
     loadingMessage = 'Procesando...',
     showToast = true,

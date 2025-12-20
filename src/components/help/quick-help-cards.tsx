@@ -1,8 +1,8 @@
-Ôªø/**
+/**
  * Quick Help Cards
  * 
- * Tarjetas de ayuda r√°pida para el dashboard.
- * Gu√≠as paso a paso para tareas comunes.
+ * Tarjetas de ayuda r·pida para el dashboard.
+ * GuÌas paso a paso para tareas comunes.
  * 
  * @author @PM_DOCU
  * @version 1.0.0
@@ -101,17 +101,17 @@ export const quickHelpCards = [
         id: 'import-excel',
         icon: <FileSpreadsheet className="size-8" />,
         title: 'Importar Clientes desde Excel',
-        description: 'Sube tu archivo y el sistema detecta autom√°ticamente las columnas',
+        description: 'Sube tu archivo y el sistema detecta autom·ticamente las columnas',
         steps: [
-            '1. Ve a "Importar" en el men√É¬∫ lateral',
+            '1. Ve a "Importar" en el men√∫ lateral',
             '2. Arrastra tu archivo Excel o CSV',
-            '3. Revisa la detecci√≥n autom√°tica de columnas',
-            '4. Confirma y listo - tus clientes est√°n importados'
+            '3. Revisa la detecciÛn autom·tica de columnas',
+            '4. Confirma y listo - tus clientes est·n importados'
         ],
         tips: [
-            '√¢≈ì‚Ä¶ Formatos soportados: .xlsx, .xls, .csv',
-            '√¢≈ì‚Ä¶ M√É¬°ximo 10.000 filas por archivo',
-            '√¢≈°¬†√Ø¬∏¬è Aseg√É¬∫rate de que la primera fila tiene los nombres de columnas'
+            '‚úÖ Formatos soportados: .xlsx, .xls, .csv',
+            '‚úÖ M√°ximo 10.000 filas por archivo',
+            '‚ö†Ô∏è Aseg√∫rate de que la primera fila tiene los nombres de columnas'
         ],
         cta: {
             text: 'Ir a Importar',
@@ -122,18 +122,18 @@ export const quickHelpCards = [
     {
         id: 'ai-presentation',
         icon: <Sparkles className="size-8" />,
-        title: 'Generar Presentaci√≥n con IA',
-        description: 'Crea una presentaci√≥n profesional en 1 click',
+        title: 'Generar PresentaciÛn con IA',
+        description: 'Crea una presentaciÛn profesional en 1 click',
         steps: [
             '1. Abre un proyecto existente',
-            '2. Pulsa "Generar Presentaci√≥n"',
+            '2. Pulsa "Generar PresentaciÛn"',
             '3. La IA analiza los datos y crea las diapositivas',
-            '4. Descarga el PDF o env√≠alo por email al cliente'
+            '4. Descarga el PDF o envÌalo por email al cliente'
         ],
         tips: [
-            '‚úÖ Incluye: ROI, ahorro anual, gr√°ficos de producci√≥n',
-            '‚úÖ Personalizado con tu logo y colores corporativos',
-            '‚ö° Generaci√≥n en menos de 10 segundos'
+            '? Incluye: ROI, ahorro anual, gr·ficos de producciÛn',
+            '? Personalizado con tu logo y colores corporativos',
+            '? GeneraciÛn en menos de 10 segundos'
         ],
         cta: {
             text: 'Ver Ejemplo',
@@ -145,30 +145,30 @@ export const quickHelpCards = [
         id: 'gps-troubleshooting',
         icon: <MapPin className="size-8" />,
         title: 'Problemas con el GPS',
-        description: 'Soluciones r√°pidas para el control horario',
+        description: 'Soluciones r·pidas para el control horario',
         steps: [
-            '1. Verifica que has dado permisos de ubicaci√≥n a la app',
-            '2. Activa el GPS en los ajustes del m√≥vil',
-            '3. Si est√°s en interior, sal al exterior para mejor se√±al',
-            '4. En modo offline, los fichajes se sincronizan autom√°ticamente'
+            '1. Verifica que has dado permisos de ubicaciÛn a la app',
+            '2. Activa el GPS en los ajustes del mÛvil',
+            '3. Si est·s en interior, sal al exterior para mejor seÒal',
+            '4. En modo offline, los fichajes se sincronizan autom·ticamente'
         ],
         tips: [
-            '‚úÖ Precisi√≥n t√≠pica: 10-50 metros',
-            '‚úÖ Funciona offline - se sincroniza al recuperar conexi√≥n',
-            '‚ö†Ô∏è En tejados met√°licos la se√±al puede ser d√©bil'
+            '? PrecisiÛn tÌpica: 10-50 metros',
+            '? Funciona offline - se sincroniza al recuperar conexiÛn',
+            '?? En tejados met·licos la seÒal puede ser dÈbil'
         ],
         troubleshooting: [
             {
-                problem: '"Ubicaci√≥n no disponible"',
-                solution: 'Ve a Ajustes > Privacidad > Ubicaci√≥n > Solistech Pro > "Siempre"'
+                problem: '"UbicaciÛn no disponible"',
+                solution: 'Ve a Ajustes > Privacidad > UbicaciÛn > Solistech Pro > "Siempre"'
             },
             {
-                problem: '"Fuera del √°rea permitida"',
-                solution: 'Est√°s a m√°s de 500m de la obra. Ac√©rcate o contacta con tu supervisor.'
+                problem: '"Fuera del ·rea permitida"',
+                solution: 'Est·s a m·s de 500m de la obra. AcÈrcate o contacta con tu supervisor.'
             },
             {
                 problem: 'Fichajes no se sincronizan',
-                solution: 'Verifica tu conexi√≥n a internet. Los fichajes est√°n guardados y se subir√°n autom√°ticamente.'
+                solution: 'Verifica tu conexiÛn a internet. Los fichajes est·n guardados y se subir·n autom·ticamente.'
             }
         ],
         cta: {

@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ const AI_PROVIDERS = [
     {
         id: 'stability',
         name: 'Stability AI',
-        description: 'Stable Diffusion - M√°s econ√≥mico',
+        description: 'Stable Diffusion - M·s econÛmico',
         price: '~$0.002 por imagen',
         docsUrl: 'https://platform.stability.ai/account/keys'
     },
@@ -70,9 +70,9 @@ export function AIIntegrationForm() {
         if (result.error) {
             toast.error(result.error)
         } else {
-            toast.success('‚úÖ API key configurada correctamente')
+            toast.success('? API key configurada correctamente')
             setApiKey('') // Limpiar input por seguridad
-            loadSettings() // Recargar configuraci√≥n
+            loadSettings() // Recargar configuraciÛn
         }
     }
 
@@ -94,7 +94,7 @@ export function AIIntegrationForm() {
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
                     <AlertDescription className="text-green-800 dark:text-green-200">
                         API configurada correctamente con <strong>{currentSettings.ai_provider}</strong>.
-                        Las presentaciones con IA est√°n habilitadas.
+                        Las presentaciones con IA est·n habilitadas.
                     </AlertDescription>
                 </Alert>
             )}
@@ -102,8 +102,8 @@ export function AIIntegrationForm() {
             {!currentSettings?.has_api_key && (
                 <Alert>
                     <AlertDescription>
-                        Configura tu API key para generar im√°genes con IA en las presentaciones.
-                        <strong> T√∫ pagas solo lo que usas</strong> (~$0.002-0.04 por imagen).
+                        Configura tu API key para generar im·genes con IA en las presentaciones.
+                        <strong> T˙ pagas solo lo que usas</strong> (~$0.002-0.04 por imagen).
                     </AlertDescription>
                 </Alert>
             )}
@@ -151,7 +151,7 @@ export function AIIntegrationForm() {
                 </p>
             </div>
 
-            {/* Bot√≥n de guardar */}
+            {/* BotÛn de guardar */}
             <Button
                 onClick={handleSave}
                 disabled={validating || !apiKey.trim()}
@@ -167,14 +167,14 @@ export function AIIntegrationForm() {
                 )}
             </Button>
 
-            {/* Informaci√≥n adicional */}
+            {/* InformaciÛn adicional */}
             <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
-                <h4 className="font-semibold">‚ÑπÔ∏è Informaci√≥n importante:</h4>
+                <h4 className="font-semibold">?? InformaciÛn importante:</h4>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                    <li>La API key se valida autom√°ticamente al guardar</li>
-                    <li>Solo pagas por las im√°genes que generes</li>
+                    <li>La API key se valida autom·ticamente al guardar</li>
+                    <li>Solo pagas por las im·genes que generes</li>
                     <li>Puedes cambiar de proveedor en cualquier momento</li>
-                    <li>Las im√°genes se generan bajo demanda al crear presentaciones</li>
+                    <li>Las im·genes se generan bajo demanda al crear presentaciones</li>
                 </ul>
             </div>
         </div>

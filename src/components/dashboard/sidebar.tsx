@@ -1,4 +1,4 @@
-ï»¿"use client"
+"use client"
 
 import { usePermission } from "@/hooks/use-permission"
 import Link from "next/link"
@@ -68,7 +68,7 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
             ]
         },
         {
-            section: "FacturaciÃ³n",
+            section: "Facturación",
             items: [
                 { href: "/dashboard/invoices", label: "Facturas", icon: FileText, permission: "finance:view" as const },
                 { href: "/dashboard/finance", label: "Finanzas", icon: CreditCard, permission: "finance:view" as const },
@@ -94,10 +94,10 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
             ]
         },
         {
-            section: "AdministraciÃ³n",
+            section: "Administración",
             items: [
-                { href: "/dashboard/settings", label: "ConfiguraciÃ³n", icon: Settings, permission: "settings:view" as const },
-                { href: "/dashboard/admin/users", label: "GestiÃ³n Usuarios", icon: Shield, permission: "users:view" as const },
+                { href: "/dashboard/settings", label: "Configuración", icon: Settings, permission: "settings:view" as const },
+                { href: "/dashboard/admin/users", label: "Gestión Usuarios", icon: Shield, permission: "users:view" as const },
             ]
         }
     ]
@@ -238,10 +238,10 @@ export function Sidebar({ userRole, plan = 'basic' }: SidebarProps) {
                         isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-3",
                         "text-zinc-400 hover:bg-red-500/10 hover:text-red-500"
                     )}
-                    title="Cerrar SesiÃ³n"
+                    title="Cerrar Sesión"
                 >
                     <LogOut className={cn(isCollapsed ? "h-6 w-6" : "h-4 w-4")} />
-                    {!isCollapsed && <span className="text-sm font-medium">Cerrar SesiÃ³n</span>}
+                    {!isCollapsed && <span className="text-sm font-medium">Cerrar Sesión</span>}
                 </button>
             </div>
         </div>

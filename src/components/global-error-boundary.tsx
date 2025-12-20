@@ -1,4 +1,4 @@
-ï»¿"use client"
+"use client"
 
 import * as React from "react"
 import { Button } from "@/components/ui/button"
@@ -24,7 +24,7 @@ export class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, Err
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-        console.error("ðŸ”¥ CRITICAL UI CRASH DETECTED:", error, errorInfo)
+        console.error("?? CRITICAL UI CRASH DETECTED:", error, errorInfo)
         // Here you would log to Sentry/LogRocket
     }
 
@@ -36,9 +36,9 @@ export class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, Err
                         <AlertTriangle className="h-10 w-10 text-red-500" />
                     </div>
 
-                    <h1 className="text-3xl font-bold tracking-tight mb-2">Algo saliÃ³ mal</h1>
+                    <h1 className="text-3xl font-bold tracking-tight mb-2">Algo salió mal</h1>
                     <p className="text-zinc-400 max-w-md mb-8">
-                        Hemos detectado un error crÃ­tico en la interfaz. Nuestro equipo de Ã©lite ha sido notificado.
+                        Hemos detectado un error crítico en la interfaz. Nuestro equipo de élite ha sido notificado.
                     </p>
 
                     <div className="bg-zinc-900/50 p-4 rounded-lg border border-red-500/20 max-w-lg w-full mb-8 font-mono text-xs text-left overflow-auto max-h-40">

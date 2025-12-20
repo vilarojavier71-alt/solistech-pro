@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useUser } from "@/lib/auth/useUser" // We assume this exists or use Supabase Auth hook
 import { ReactNode } from "react"

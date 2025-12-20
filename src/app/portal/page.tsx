@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 import { ClientLoginForm } from '@/components/portal/client-login-form'
@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export const metadata: Metadata = {
     title: 'Portal Cliente | SolisTech PRO',
-    description: 'Accede a tu trámite de instalación solar',
+    description: 'Accede a tu tr�mite de instalaci�n solar',
 }
 
 export default function ClientPortalPage() {
@@ -24,9 +24,9 @@ export default function ClientPortalPage() {
 
                 <Card className="shadow-xl">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-2xl">ðŸ” Accede a tu TrÃ¡mite</CardTitle>
+                        <CardTitle className="text-2xl">🔐 Accede a tu Trámite</CardTitle>
                         <CardDescription>
-                            Ingresa tu DNI y código de acceso para ver el estado de tu instalación solar
+                            Ingresa tu DNI y c�digo de acceso para ver el estado de tu instalaci�n solar
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -35,11 +35,11 @@ export default function ClientPortalPage() {
                 </Card>
 
                 <div className="mt-6 text-center text-sm text-sky-700">
-                    <p>¿No tienes código de acceso?</p>
+                    <p>�No tienes c�digo de acceso?</p>
                     <p className="mt-1">
                         Revisa el email que te enviamos o{' '}
                         <a href="mailto:soporte@solistech.com" className="font-medium underline hover:text-sky-900">
-                            contáctanos
+                            cont�ctanos
                         </a>
                     </p>
                 </div>

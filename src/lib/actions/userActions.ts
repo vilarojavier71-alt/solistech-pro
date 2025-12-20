@@ -20,7 +20,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
 
     try {
         // Permission Check: Requester must be admin, owner, or cto
-        const requesterProfile = await prisma.User.findUnique({
+        const requesterProfile = await prisma.users.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -41,7 +41,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
         }
 
         // Safety Check: Target user must be in same org
-        const targetProfile = await prisma.User.findUnique({
+        const targetProfile = await prisma.users.findUnique({
             where: { id: targetUserId },
             select: { organization_id: true }
         })
@@ -54,8 +54,30 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
             return { success: false, message: "El usuario no pertenece a tu organización." }
         }
 
+        // 🛡️ PROTECCIÓN OWNER: Impedir auto-degradación
+        // Si el usuario intenta cambiar su propio rol de 'owner' a otro rol, bloquearlo
+        if (targetUserId === session.user.id && requesterProfile.role === 'owner' && newRole !== 'owner') {
+            return {
+                success: false,
+                message: "No puedes degradar tu propio rol de Owner. Transfiere la propiedad primero."
+            }
+        }
+
+        // Impedir que cualquiera cambie el rol del Owner (excepto el propio owner para transferir)
+        const targetUser = await prisma.users.findUnique({
+            where: { id: targetUserId },
+            select: { role: true }
+        })
+
+        if (targetUser?.role === 'owner' && targetUserId !== session.user.id) {
+            return {
+                success: false,
+                message: "No puedes modificar el rol del Owner de la organización."
+            }
+        }
+
         // Execution - Update role
-        await prisma.User.update({
+        await prisma.users.update({
             where: { id: targetUserId },
             data: { role: newRole }
         })

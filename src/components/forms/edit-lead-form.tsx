@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 
@@ -72,7 +72,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
                     <Label htmlFor="name">Nombre *</Label>
                     <Input
                         id="name"
-                        placeholder="Juan PÃ©rez"
+                        placeholder="Juan Pérez"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -93,7 +93,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="phone">TelÃ©fono</Label>
+                    <Label htmlFor="phone">Teléfono</Label>
                     <Input
                         id="phone"
                         type="tel"
@@ -116,7 +116,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="estimated_value">Valor Estimado (â‚¬)</Label>
+                    <Label htmlFor="estimated_value">Valor Estimado (€)</Label>
                     <Input
                         id="estimated_value"
                         type="number"
@@ -140,7 +140,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
                         <SelectContent>
                             <SelectItem value="web">Web</SelectItem>
                             <SelectItem value="referral">Referido</SelectItem>
-                            <SelectItem value="cold_call">Llamada en frÃ­o</SelectItem>
+                            <SelectItem value="cold_call">Llamada en frío</SelectItem>
                             <SelectItem value="social_media">Redes sociales</SelectItem>
                             <SelectItem value="other">Otro</SelectItem>
                         </SelectContent>
@@ -172,7 +172,7 @@ export function EditLeadForm({ lead }: { lead: Lead }) {
                     <Label htmlFor="notes">Notas</Label>
                     <Textarea
                         id="notes"
-                        placeholder="Información adicional sobre el lead..."
+                        placeholder="Informaci�n adicional sobre el lead..."
                         rows={4}
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

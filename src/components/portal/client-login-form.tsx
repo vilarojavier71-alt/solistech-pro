@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -26,7 +26,7 @@ export function ClientLoginForm() {
             const result = await loginClientAction(dni, accessCode)
 
             if (!result.success || !result.data) {
-                toast.error(result.error || 'DNI o cÃ³digo de acceso incorrecto')
+                toast.error(result.error || 'DNI o código de acceso incorrecto')
                 setLoading(false)
                 return
             }
@@ -37,11 +37,11 @@ export function ClientLoginForm() {
             sessionStorage.setItem('client_sale_id', sale.id)
             sessionStorage.setItem('client_dni', sale.dni)
 
-            toast.success('Â¡Bienvenido!')
+            toast.success('¡Bienvenido!')
             router.push('/portal/dashboard')
         } catch (error: any) {
             console.error('Login error:', error)
-            toast.error('Error al iniciar sesiÃ³n')
+            toast.error('Error al iniciar sesión')
         } finally {
             setLoading(false)
         }
@@ -67,7 +67,7 @@ export function ClientLoginForm() {
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="code">CÃ³digo de Acceso</Label>
+                <Label htmlFor="code">Código de Acceso</Label>
                 <Input
                     id="code"
                     placeholder="ABC123"

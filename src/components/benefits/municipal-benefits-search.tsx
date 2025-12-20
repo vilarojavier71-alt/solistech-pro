@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Search, MapPin, TrendingUp, Info } from 'lucide-react'
@@ -100,7 +100,7 @@ export function MunicipalBenefitsSearch() {
 
     const calculateEstimatedSavings = (projectCost: number, ibi: number, icio: number) => {
         const ibiAnnual = (projectCost * 0.7 * 0.007) * (ibi / 100)
-        const ibiTotal = ibiAnnual * 3 // 3 años promedio
+        const ibiTotal = ibiAnnual * 3 // 3 a�os promedio
         const icioSavings = (projectCost * 0.03) * (icio / 100)
         return Math.round(ibiTotal + icioSavings)
     }
@@ -120,16 +120,16 @@ export function MunicipalBenefitsSearch() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {/* Toggle entre selector y bÃºsqueda */}
+                        {/* Toggle entre selector y búsqueda */}
                         <div className="flex items-center justify-between">
-                            <Label>MÃ©todo de bÃºsqueda</Label>
+                            <Label>Método de búsqueda</Label>
                             <div className="flex items-center gap-2">
                                 <Switch
                                     checked={useTextSearch}
                                     onCheckedChange={setUseTextSearch}
                                 />
                                 <span className="text-xs text-muted-foreground">
-                                    BÃºsqueda por texto
+                                    Búsqueda por texto
                                 </span>
                             </div>
                         </div>
@@ -156,7 +156,7 @@ export function MunicipalBenefitsSearch() {
                                         setSelectedCity(value)
                                         setSearchTerm(value)
                                         setCitySearch('')
-                                        // Buscar automáticamente
+                                        // Buscar autom�ticamente
                                         handleSearch(value)
                                     }}
                                 >
@@ -172,11 +172,11 @@ export function MunicipalBenefitsSearch() {
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground">
-                                    💡 Selecciona de la lista de 50 ciudades principales de España
+                                    ?? Selecciona de la lista de 50 ciudades principales de Espa�a
                                 </p>
                             </>
                         ) : (
-                            /* BÃºsqueda por texto */
+                            /* Búsqueda por texto */
                             <div className="relative">
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
@@ -222,7 +222,7 @@ export function MunicipalBenefitsSearch() {
                     <Alert className="mt-4">
                         <Info className="h-4 w-4" />
                         <AlertDescription>
-                            <strong>Tip:</strong> Si tu municipio no aparece, se mostrarán las bonificaciones de tu comarca o región.
+                            <strong>Tip:</strong> Si tu municipio no aparece, se mostrar�n las bonificaciones de tu comarca o regi�n.
                         </AlertDescription>
                     </Alert>
                 </CardContent>
@@ -231,7 +231,7 @@ export function MunicipalBenefitsSearch() {
             {/* Resultados */}
             {results.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Resultados de bÃºsqueda</h3>
+                    <h3 className="text-lg font-semibold">Resultados de búsqueda</h3>
 
                     {results.map((result) => {
                         const badge = getScopeLevelBadge(result.scope_level)
@@ -258,23 +258,23 @@ export function MunicipalBenefitsSearch() {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {/* IBI */}
                                         <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                                            <p className="text-sm text-muted-foreground">BonificaciÃ³n IBI</p>
+                                            <p className="text-sm text-muted-foreground">Bonificación IBI</p>
                                             <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                                 {result.ibi_percentage}%
                                             </p>
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                Durante 3 años (promedio)
+                                                Durante 3 a�os (promedio)
                                             </p>
                                         </div>
 
                                         {/* ICIO */}
                                         <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                                            <p className="text-sm text-muted-foreground">BonificaciÃ³n ICIO</p>
+                                            <p className="text-sm text-muted-foreground">Bonificación ICIO</p>
                                             <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                                 {result.icio_percentage}%
                                             </p>
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                AplicaciÃ³n Ãºnica
+                                                Aplicación única
                                             </p>
                                         </div>
 
@@ -285,10 +285,10 @@ export function MunicipalBenefitsSearch() {
                                                 Ahorro Estimado
                                             </p>
                                             <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                                                {estimatedSavings.toLocaleString()}â‚¬
+                                                {estimatedSavings.toLocaleString()}€
                                             </p>
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                Para proyecto de 15.000â‚¬
+                                                Para proyecto de 15.000€
                                             </p>
                                         </div>
                                     </div>
@@ -319,8 +319,8 @@ export function MunicipalBenefitsSearch() {
                         </p>
                         <Alert>
                             <AlertDescription>
-                                <strong>¿Tu municipio no está?</strong> Puedes reportar las bonificaciones
-                                de tu ayuntamiento para que las añadamos a la base de datos.
+                                <strong>�Tu municipio no est�?</strong> Puedes reportar las bonificaciones
+                                de tu ayuntamiento para que las a�adamos a la base de datos.
                             </AlertDescription>
                         </Alert>
                     </CardContent>

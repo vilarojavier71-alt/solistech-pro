@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Phone, Mail, Calendar, MessageSquare, CheckCircle2 } from "lucide-react"

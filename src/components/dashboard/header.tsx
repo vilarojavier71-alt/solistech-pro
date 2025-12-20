@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 
 import { useRouter } from 'next/navigation'
@@ -23,7 +23,7 @@ export function DashboardHeader({ user }: { user: any }) {
 
     const handleLogout = async () => {
         await signOut({ redirect: false })
-        toast.success('SesiÃ³n cerrada')
+        toast.success('Sesión cerrada')
         router.push('/auth/login')
         router.refresh()
     }
@@ -55,7 +55,7 @@ export function DashboardHeader({ user }: { user: any }) {
                     <div className="mr-4 hidden md:block">
                         <Link href="/dashboard/settings/billing">
                             <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800 hover:bg-blue-200 cursor-pointer transition-colors border border-blue-200">
-                                ðŸ”’ PLAN GRATUITO
+                                ?? PLAN GRATUITO
                             </span>
                         </Link>
                     </div>
@@ -78,7 +78,7 @@ export function DashboardHeader({ user }: { user: any }) {
                         <DropdownMenuItem asChild>
                             <Link href="/dashboard/help">
                                 <BookOpen className="mr-2 h-4 w-4" />
-                                <span>GuÃ­as y Tutoriales</span>
+                                <span>Guías y Tutoriales</span>
                             </Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -114,12 +114,12 @@ export function DashboardHeader({ user }: { user: any }) {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
                             <Settings className="mr-2 h-4 w-4" />
-                            <span>ConfiguraciÃ³n</span>
+                            <span>Configuración</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout}>
                             <LogOut className="mr-2 h-4 w-4" />
-                            <span>Cerrar sesiÃ³n</span>
+                            <span>Cerrar sesión</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

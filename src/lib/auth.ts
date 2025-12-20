@@ -81,7 +81,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     return null
                 }
 
-                const user = await prisma.User.findUnique({
+                const user = await prisma.user.findUnique({
                     where: { email: credentials.email as string },
                 })
 
@@ -112,13 +112,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async signIn({ user, account }) {
             // For OAuth (Google), create/update user in our users table
             if (account?.provider === "google" && user.email) {
-                const existingUser = await prisma.User.findUnique({
+                const existingUser = await prisma.user.findUnique({
                     where: { email: user.email },
                 })
 
                 if (!existingUser) {
                     // Create new user from Google OAuth
-                    await prisma.User.create({
+                    await prisma.user.create({
                         data: {
                             email: user.email,
                             full_name: user.name || "Usuario",
@@ -143,7 +143,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // This ensures session reflects changes made after login (e.g., creating org)
             if (token.id) {
                 console.log('[AUTH] JWT Callback -> Fetching user data for:', token.id)
-                const dbUser = await prisma.User.findUnique({
+                const dbUser = await prisma.user.findUnique({
                     where: { id: token.id as string },
                     select: {
                         organization_id: true,

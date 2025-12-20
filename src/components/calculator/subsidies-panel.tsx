@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -55,7 +55,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8 text-muted-foreground">
-                        <p>No hay datos de subvenciones disponibles para esta ubicaciÃ³n</p>
+                        <p>No hay datos de subvenciones disponibles para esta ubicación</p>
                         <p className="text-sm mt-2">Recalcula el proyecto para obtener las ayudas actualizadas</p>
                     </div>
                 </CardContent>
@@ -86,7 +86,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <TrendingUp className="h-4 w-4 text-green-600" />
                                 <p className="font-semibold text-green-900 dark:text-green-100">
-                                    DeducciÃ³n IRPF
+                                    Deducción IRPF
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -95,9 +95,9 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                DeducciÃ³n del {calculation.subsidy_irpf_percentage}% en la declaraciÃ³n de la renta.
-                                                Tipo: {calculation.subsidy_irpf_type === '60' ? 'RehabilitaciÃ³n integral' :
-                                                    calculation.subsidy_irpf_type === '40' ? 'ReducciÃ³n â‰¥30%' :
+                                                Deducción del {calculation.subsidy_irpf_percentage}% en la declaración de la renta.
+                                                Tipo: {calculation.subsidy_irpf_type === '60' ? 'Rehabilitación integral' :
+                                                    calculation.subsidy_irpf_type === '40' ? 'Reducción ≥30%' :
                                                         'Mejora eficiencia'}
                                             </p>
                                         </TooltipContent>
@@ -105,11 +105,11 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                 </TooltipProvider>
                             </div>
                             <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                                {calculation.subsidy_irpf_percentage}% de la inversiÃ³n
+                                {calculation.subsidy_irpf_percentage}% de la inversión
                             </p>
                         </div>
                         <p className="text-2xl font-bold text-green-600">
-                            {calculation.subsidy_irpf_amount.toLocaleString('es-ES')}â‚¬
+                            {calculation.subsidy_irpf_amount.toLocaleString('es-ES')}€
                         </p>
                     </div>
                 )}
@@ -121,7 +121,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <Home className="h-4 w-4 text-blue-600" />
                                 <p className="font-semibold text-blue-900 dark:text-blue-100">
-                                    BonificaciÃ³n IBI
+                                    Bonificación IBI
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -130,23 +130,23 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                BonificaciÃ³n del {calculation.subsidy_ibi_percentage}% en el Impuesto sobre Bienes Inmuebles
-                                                durante {calculation.subsidy_ibi_duration_years} años.
-                                                Ahorro estimado: {calculation.subsidy_ibi_annual?.toLocaleString('es-ES')}€/año
+                                                Bonificación del {calculation.subsidy_ibi_percentage}% en el Impuesto sobre Bienes Inmuebles
+                                                durante {calculation.subsidy_ibi_duration_years} a�os.
+                                                Ahorro estimado: {calculation.subsidy_ibi_annual?.toLocaleString('es-ES')}�/a�o
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
                             </div>
                             <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                                {calculation.subsidy_ibi_percentage}% durante {calculation.subsidy_ibi_duration_years} años
+                                {calculation.subsidy_ibi_percentage}% durante {calculation.subsidy_ibi_duration_years} a�os
                                 <span className="text-xs ml-2">
-                                    ({calculation.subsidy_ibi_annual?.toLocaleString('es-ES')}€/año)
+                                    ({calculation.subsidy_ibi_annual?.toLocaleString('es-ES')}�/a�o)
                                 </span>
                             </p>
                         </div>
                         <p className="text-2xl font-bold text-blue-600">
-                            {calculation.subsidy_ibi_total.toLocaleString('es-ES')}â‚¬
+                            {calculation.subsidy_ibi_total.toLocaleString('es-ES')}€
                         </p>
                     </div>
                 )}
@@ -158,7 +158,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <Building2 className="h-4 w-4 text-purple-600" />
                                 <p className="font-semibold text-purple-900 dark:text-purple-100">
-                                    BonificaciÃ³n ICIO
+                                    Bonificación ICIO
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -167,8 +167,8 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                BonificaciÃ³n del {calculation.subsidy_icio_percentage}% en el Impuesto sobre
-                                                Construcciones, Instalaciones y Obras (pago Ãºnico)
+                                                Bonificación del {calculation.subsidy_icio_percentage}% en el Impuesto sobre
+                                                Construcciones, Instalaciones y Obras (pago único)
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
@@ -179,7 +179,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             </p>
                         </div>
                         <p className="text-2xl font-bold text-purple-600">
-                            {calculation.subsidy_icio_amount.toLocaleString('es-ES')}â‚¬
+                            {calculation.subsidy_icio_amount.toLocaleString('es-ES')}€
                         </p>
                     </div>
                 )}
@@ -190,7 +190,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                 <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg text-white shadow-lg">
                     <p className="text-lg font-bold">TOTAL AYUDAS</p>
                     <p className="text-3xl font-bold">
-                        {calculation.total_subsidies.toLocaleString('es-ES')}â‚¬
+                        {calculation.total_subsidies.toLocaleString('es-ES')}€
                     </p>
                 </div>
 
@@ -198,7 +198,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                 <div className="text-center space-y-2 pt-4">
                     <p className="text-sm text-muted-foreground">Coste neto final</p>
                     <p className="text-5xl font-bold text-green-600">
-                        {calculation.net_cost?.toLocaleString('es-ES')}â‚¬
+                        {calculation.net_cost?.toLocaleString('es-ES')}€
                     </p>
                     <p className="text-xs text-muted-foreground">
                         Ahorro de {((calculation.total_subsidies / calculation.total_cost) * 100).toFixed(1)}% sobre el precio original
@@ -215,7 +215,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             </p>
                         </div>
                         <div className="text-center p-3 bg-muted rounded-lg">
-                            <p className="text-xs text-muted-foreground mb-1">ROI (25 años)</p>
+                            <p className="text-xs text-muted-foreground mb-1">ROI (25 a�os)</p>
                             <p className="text-2xl font-bold text-green-600">
                                 {calculation.roi_with_subsidies?.toFixed(0)}%
                             </p>
@@ -225,7 +225,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
 
                 {/* Disclaimer */}
                 <div className="text-xs text-muted-foreground text-center pt-4 border-t">
-                    <p>* Las ayudas están sujetas a cumplimiento de requisitos legales y disponibilidad presupuestaria</p>
+                    <p>* Las ayudas est�n sujetas a cumplimiento de requisitos legales y disponibilidad presupuestaria</p>
                     {calculation.subsidy_municipality && (
                         <Button variant="link" size="sm" className="text-xs mt-2">
                             <ExternalLink className="h-3 w-3 mr-1" />

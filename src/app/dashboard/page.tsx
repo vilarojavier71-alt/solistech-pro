@@ -1,4 +1,4 @@
-ï»¿import { Suspense } from 'react'
+import { Suspense } from 'react'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -50,7 +50,7 @@ async function DashboardContent() {
     console.log('[DEBUG DASHBOARD] prisma.User type:', typeof prisma.User)
     console.log('[DEBUG DASHBOARD] prisma.user type:', typeof (prisma as any).user)
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true, role: true }
     })
@@ -61,8 +61,8 @@ async function DashboardContent() {
         // For now, return null or a specific error component to avoid crash
         return (
             <div className="p-8 text-center text-red-500">
-                <h1>Error CrÃ­tico de Cuenta</h1>
-                <p>Tu usuario existe en sesiÃ³n pero no se encuentra en la base de datos.</p>
+                <h1>Error Crítico de Cuenta</h1>
+                <p>Tu usuario existe en sesión pero no se encuentra en la base de datos.</p>
                 <p>Por favor, contacta a soporte.</p>
             </div>
         )
@@ -71,7 +71,7 @@ async function DashboardContent() {
     console.log('[DASHBOARD PAGE] Profile Result:', profile ? 'Found' : 'NULL')
     console.log('[DASHBOARD PAGE] Org ID in DB:', profile?.organization_id)
 
-    // SI EL USUARIO NO TIENE ORGANIZACIÃ“N: MOSTRAR FORMULARIO DE ONBOARDING
+    // SI EL USUARIO NO TIENE ORGANIZACIÓN: MOSTRAR FORMULARIO DE ONBOARDING
     if (!profile?.organization_id) {
         return <CreateOrganizationForm />
     }
@@ -107,10 +107,10 @@ async function DashboardContent() {
             <div className="max-w-5xl mx-auto py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center space-y-4 mb-12">
                     <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-                        Â¡Bienvenido a SolisTech PRO!
+                        ¡Bienvenido a SolisTech PRO!
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Tu espacio de trabajo estÃ¡ listo. Sigue estos 3 pasos para poner en marcha tu negocio solar.
+                        Tu espacio de trabajo está listo. Sigue estos 3 pasos para poner en marcha tu negocio solar.
                     </p>
                 </div>
 
@@ -126,7 +126,7 @@ async function DashboardContent() {
                                 <h3 className="text-xl font-semibold">Configura tu Taller</h3>
                                 <p className="text-muted-foreground">Personaliza tu perfil, logo de empresa y datos fiscales para tus facturas.</p>
                                 <Button variant="link" className="p-0 text-blue-600 group-hover:translate-x-1 transition-transform">
-                                    Ir a ConfiguraciÃ³n <ArrowRight className="ml-1 h-4 w-4" />
+                                    Ir a Configuración <ArrowRight className="ml-1 h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
@@ -180,7 +180,7 @@ async function DashboardContent() {
                         Hola, <span className="text-primary">{profile.full_name?.split(' ')[0]}</span>
                     </h1>
                     <p className="text-lg text-muted-foreground font-light">
-                        AquÃ­ tienes el resumen de tu actividad hoy.
+                        Aquí tienes el resumen de tu actividad hoy.
                     </p>
                 </div>
                 <div className="flex flex-col items-end">
@@ -207,7 +207,7 @@ async function DashboardContent() {
                     <DashboardMetric
                         icon={DollarSign}
                         label="Ayudas Gestionadas"
-                        value={totalSubsidies > 0 ? `${(totalSubsidies / 1000).toFixed(0)}kâ‚¬` : '0â‚¬'}
+                        value={totalSubsidies > 0 ? `${(totalSubsidies / 1000).toFixed(0)}k€` : '0€'}
                         secondary="Subvenciones totales tramitadas"
                         trend={{ value: "+12%", positive: true }}
                         variant="default"
@@ -239,7 +239,7 @@ async function DashboardContent() {
                     {/* Section Header */}
                     <div className="flex items-center gap-3">
                         <div className="h-1 w-6 bg-primary rounded-full" />
-                        <h2 className="text-xl font-semibold tracking-tight">Acciones RÃ¡pidas</h2>
+                        <h2 className="text-xl font-semibold tracking-tight">Acciones Rápidas</h2>
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -267,7 +267,7 @@ async function DashboardContent() {
                 <div className="space-y-8">
                     <div className="flex items-center gap-3">
                         <div className="h-1 w-6 bg-amber-500 rounded-full" />
-                        <h2 className="text-xl font-semibold tracking-tight">AtenciÃ³n Requerida</h2>
+                        <h2 className="text-xl font-semibold tracking-tight">Atención Requerida</h2>
                     </div>
 
                     <Card className="h-full border-border/50 shadow-sm bg-card/60 backdrop-blur-md">
@@ -287,15 +287,15 @@ async function DashboardContent() {
                                     <div className="mt-1 h-2 w-2 rounded-full bg-amber-500 shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                                     <div className="space-y-1">
                                         <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">Seguimiento Lead #405</p>
-                                        <p className="text-xs text-muted-foreground">Sin contacto desde hace 3 dÃ­as.</p>
+                                        <p className="text-xs text-muted-foreground">Sin contacto desde hace 3 días.</p>
                                     </div>
                                 </div>
                                 {/* Item 2 */}
                                 <div className="group flex gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
                                     <div className="mt-1 h-2 w-2 rounded-full bg-blue-500 shrink-0" />
                                     <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">DocumentaciÃ³n Pte.</p>
-                                        <p className="text-xs text-muted-foreground">Cliente "InstalaciÃ³n Norte" subiÃ³ archivos.</p>
+                                        <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">Documentación Pte.</p>
+                                        <p className="text-xs text-muted-foreground">Cliente "Instalación Norte" subió archivos.</p>
                                     </div>
                                 </div>
                             </div>

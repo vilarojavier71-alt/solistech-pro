@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { ExcelImporter } from '@/components/import/excel-importer'
 import { useRouter } from 'next/navigation'
@@ -9,7 +9,7 @@ import { ArrowLeft } from 'lucide-react'
 const LEAD_FIELDS = [
     { name: 'name', label: 'Nombre', required: true },
     { name: 'email', label: 'Email', required: false },
-    { name: 'phone', label: 'TelÃ©fono', required: false },
+    { name: 'phone', label: 'Teléfono', required: false },
     { name: 'company', label: 'Empresa', required: false },
     { name: 'source', label: 'Origen', required: false },
     { name: 'status', label: 'Estado', required: false },
@@ -24,7 +24,7 @@ export default function ImportLeadsPage() {
     const handleImport = async (data: any[]) => {
         return {
             success: 0,
-            errors: ['Leads no disponible - tabla pendiente de migraciÃ³n a Prisma']
+            errors: ['Leads no disponible - tabla pendiente de migración a Prisma']
         }
     }
 
@@ -41,7 +41,7 @@ export default function ImportLeadsPage() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Importar Leads</h1>
                     <p className="text-muted-foreground">
-                        Importa mÃºltiples leads desde un archivo Excel o CSV
+                        Importa múltiples leads desde un archivo Excel o CSV
                     </p>
                 </div>
             </div>
@@ -56,13 +56,13 @@ export default function ImportLeadsPage() {
                 <CardContent>
                     <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                         <li><strong>Nombre</strong> (requerido): Nombre del contacto</li>
-                        <li><strong>Email</strong>: DirecciÃ³n de correo electrÃ³nico</li>
-                        <li><strong>TelÃ©fono</strong>: NÃºmero de telÃ©fono</li>
+                        <li><strong>Email</strong>: Dirección de correo electrónico</li>
+                        <li><strong>Teléfono</strong>: Número de teléfono</li>
                         <li><strong>Empresa</strong>: Nombre de la empresa</li>
                         <li><strong>Origen</strong>: web, referral, cold_call, social_media, other</li>
                         <li><strong>Estado</strong>: new, contacted, qualified, proposal, won, lost</li>
-                        <li><strong>Valor Estimado</strong>: Valor numÃ©rico en euros</li>
-                        <li><strong>Notas</strong>: InformaciÃ³n adicional</li>
+                        <li><strong>Valor Estimado</strong>: Valor numérico en euros</li>
+                        <li><strong>Notas</strong>: Información adicional</li>
                     </ul>
                 </CardContent>
             </Card>

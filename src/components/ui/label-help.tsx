@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React from 'react'
 import { HelpCircle } from 'lucide-react'
@@ -21,7 +21,7 @@ interface LabelHelpProps {
 
 /**
  * @FRONTEND_COORD - Componente reutilizable Label + Tooltip
- * Combina un Label estándar con ayuda contextual mediante tooltip
+ * Combina un Label est�ndar con ayuda contextual mediante tooltip
  * Estilo: Dark Industrial Premium
  */
 export function LabelHelp({

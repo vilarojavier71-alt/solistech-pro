@@ -1,4 +1,4 @@
-Ôªøimport { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Hammer, Calendar as CalendarIcon, MapPin, CheckCircle } from 'lucide-react'
@@ -25,9 +25,9 @@ export default async function InstallationsPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Mis Instalaciones (T√©cnico)</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Mis Instalaciones (TÈcnico)</h1>
                 <p className="text-muted-foreground">
-                    Calendario de obras y detalles t√©cnicos asignados
+                    Calendario de obras y detalles tÈcnicos asignados
                 </p>
             </div>
 
@@ -47,11 +47,11 @@ export default async function InstallationsPage() {
                             <div className="flex items-center text-slate-600 dark:text-slate-300">
                                 <MapPin className="h-4 w-4 mr-2" />
                                 {/* Location is JSON, need to parse if possible or show address */}
-                                {project.location ? (project.location as any).address : 'Sin direcci√≥n'}
+                                {project.location ? (project.location as any).address : 'Sin direcciÛn'}
                             </div>
                             <div className="flex items-center text-slate-600 dark:text-slate-300">
                                 <Hammer className="h-4 w-4 mr-2" />
-                                {Number(project.system_size_kwp || 0).toFixed(1)} kWp ({project.installation_type || 'Est√°ndar'})
+                                {Number(project.system_size_kwp || 0).toFixed(1)} kWp ({project.installation_type || 'Est·ndar'})
                             </div>
 
                             <div className="pt-4 flex gap-2">
@@ -70,7 +70,7 @@ export default async function InstallationsPage() {
                     <div className="col-span-full text-center py-12 border-2 border-dashed rounded-lg bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                         <Hammer className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                         <h3 className="text-lg font-medium text-slate-900 dark:text-white">Sin instalaciones pendientes</h3>
-                        <p className="text-slate-500 dark:text-slate-400">No hay proyectos en fase de instalaci√≥n actualmente.</p>
+                        <p className="text-slate-500 dark:text-slate-400">No hay proyectos en fase de instalaciÛn actualmente.</p>
                     </div>
                 )}
             </div>

@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -144,7 +144,7 @@ export function NewSaleForm() {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-                {/* 1. SECCIÃ“N CLIENTE */}
+                {/* 1. SECCIÓN CLIENTE */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export function NewSaleForm() {
                             Datos del Cliente
                         </CardTitle>
                         <CardDescription>
-                            Â¿Es un cliente recurrente o uno nuevo?
+                            ¿Es un cliente recurrente o uno nuevo?
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -197,7 +197,7 @@ export function NewSaleForm() {
                                     <div className="space-y-2">
                                         <Label>Nombre Completo *</Label>
                                         <Input
-                                            placeholder="Ej. Juan PÃ©rez"
+                                            placeholder="Ej. Juan Pérez"
                                             value={newCustomer.full_name}
                                             onChange={(e) => setNewCustomer({ ...newCustomer, full_name: e.target.value })}
                                             required
@@ -214,7 +214,7 @@ export function NewSaleForm() {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>TelÃ©fono</Label>
+                                    <Label>Teléfono</Label>
                                     <Input
                                         placeholder="600 000 000"
                                         value={newCustomer.phone}
@@ -235,16 +235,16 @@ export function NewSaleForm() {
                     </CardContent>
                 </Card>
 
-                {/* 2. SECCIÃ“N VENTA */}
+                {/* 2. SECCIÓN VENTA */}
                 <Card>
                     <CardHeader>
                         <CardTitle>Detalles de Venta</CardTitle>
-                        <CardDescription>InformaciÃ³n econÃ³mica y tÃ©cnica bÃ¡sica.</CardDescription>
+                        <CardDescription>Información económica y técnica básica.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label>NÂº Expediente</Label>
+                                <Label>Nº Expediente</Label>
                                 <Input
                                     value={saleData.sale_number}
                                     onChange={(e) => setSaleData({ ...saleData, sale_number: e.target.value })}
@@ -252,7 +252,7 @@ export function NewSaleForm() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label>Importe Total (â‚¬)</Label>
+                                <Label>Importe Total (€)</Label>
                                 <Input
                                     type="number"
                                     value={saleData.amount}
@@ -279,7 +279,7 @@ export function NewSaleForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Material / DescripciÃ³n Sistema</Label>
+                            <Label>Material / Descripción Sistema</Label>
                             <Textarea
                                 placeholder="Ej. 10 Paneles Jinko 440W + Inversor Huawei 5K..."
                                 className="h-24"

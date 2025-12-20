@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, Save, Info } from 'lucide-react'
@@ -72,7 +72,7 @@ export default function PaymentSettingsPage() {
                 const { data, error } = await updatePaymentMethod(editingMethod.id, formData)
                 if (error) throw new Error(error)
 
-                toast.success("MÃ©todo actualizado")
+                toast.success("Método actualizado")
                 // Optimistic Update
                 setMethods(methods.map(m => m.id === editingMethod.id ? { ...m, ...data } : m))
             } else {
@@ -80,7 +80,7 @@ export default function PaymentSettingsPage() {
                 const { data, error } = await createPaymentMethod(formData)
                 if (error) throw new Error(error)
 
-                toast.success("MÃ©todo creado")
+                toast.success("Método creado")
                 setMethods([...methods, data as PaymentMethod])
             }
             setIsDialogOpen(false)
@@ -98,7 +98,7 @@ export default function PaymentSettingsPage() {
             const { error } = await deletePaymentMethod(deleteId)
             if (error) throw new Error(error)
 
-            toast.success("MÃ©todo eliminado")
+            toast.success("Método eliminado")
             setMethods(methods.filter(m => m.id !== deleteId))
             setDeleteId(null)
         } catch (error: any) {
@@ -107,11 +107,11 @@ export default function PaymentSettingsPage() {
     }
 
     return (
-        <PageShell title="MÃ©todos de Pago" description="Gestiona las opciones de cobro para tus facturas.">
+        <PageShell title="Métodos de Pago" description="Gestiona las opciones de cobro para tus facturas.">
             <div className="flex justify-end mb-6">
                 <Button onClick={handleOpenCreate}>
                     <Plus className="mr-2 h-4 w-4" />
-                    Nuevo MÃ©todo
+                    Nuevo Método
                 </Button>
             </div>
 
@@ -148,9 +148,9 @@ export default function PaymentSettingsPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{editingMethod ? "Editar MÃ©todo" : "Crear MÃ©todo"}</DialogTitle>
+                        <DialogTitle>{editingMethod ? "Editar Método" : "Crear Método"}</DialogTitle>
                         <DialogDescription>
-                            Configura los detalles que se mostrarÃ¡n en la factura.
+                            Configura los detalles que se mostrarán en la factura.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
@@ -167,12 +167,12 @@ export default function PaymentSettingsPage() {
                             <Textarea
                                 value={formData.instructions}
                                 onChange={e => setFormData({ ...formData, instructions: e.target.value })}
-                                placeholder="Ej: IBAN: ES21..., TelÃ©fono: 600..."
+                                placeholder="Ej: IBAN: ES21..., Teléfono: 600..."
                                 rows={4}
                             />
                             <p className="text-xs text-muted-foreground">
                                 <Info className="h-3 w-3 inline mr-1" />
-                                Estas instrucciones se aÃ±adirÃ¡n automÃ¡ticamente a las notas de la factura.
+                                Estas instrucciones se añadirán automáticamente a las notas de la factura.
                             </p>
                         </div>
                     </div>
@@ -189,14 +189,14 @@ export default function PaymentSettingsPage() {
             <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Â¿Eliminar mÃ©todo?</DialogTitle>
+                        <DialogTitle>¿Eliminar método?</DialogTitle>
                         <DialogDescription>
-                            Esta acciÃ³n no se puede deshacer. (Soft delete: no afectarÃ¡ a facturas antiguas)
+                            Esta acción no se puede deshacer. (Soft delete: no afectará a facturas antiguas)
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setDeleteId(null)}>Cancelar</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Confirmar EliminaciÃ³n</Button>
+                        <Button variant="destructive" onClick={handleDelete}>Confirmar Eliminación</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

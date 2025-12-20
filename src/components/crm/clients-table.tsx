@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { DataTablePremium, DataTableColumn } from '@/components/premium'
@@ -42,7 +42,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
     const [editingClient, setEditingClient] = useState<ClientData | null>(null)
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este cliente?')) return
+        if (!confirm('�Est�s seguro de que quieres eliminar este cliente?')) return
         toast.info('Funcionalidad de eliminar en desarrollo')
     }
 
@@ -89,7 +89,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
         },
         {
             id: 'phone',
-            label: 'TelÃ©fono',
+            label: 'Teléfono',
             accessor: 'phone',
             width: 180,
             render: (value) => value ? (
@@ -124,7 +124,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
         },
         {
             id: 'location',
-            label: 'UbicaciÃ³n',
+            label: 'Ubicación',
             accessor: (client) => {
                 if (!client.address?.city && !client.address?.province) return null
                 return [client.address.city, client.address.province].filter(Boolean).join(', ')
@@ -201,7 +201,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
                 <User className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No hay clientes</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                    Comienza añadiendo tu primer cliente al CRM
+                    Comienza a�adiendo tu primer cliente al CRM
                 </p>
             </div>
         )
@@ -212,7 +212,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
             columns={columns}
             data={clients}
             features={{
-                virtualScroll: false, // Desactivar para usar paginaciÃ³n normal
+                virtualScroll: false, // Desactivar para usar paginación normal
                 stickyHeader: true,
                 compactView: true,
                 export: true,

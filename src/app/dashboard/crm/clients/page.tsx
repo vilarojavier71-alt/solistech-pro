@@ -1,4 +1,4 @@
-﻿import { getCustomers } from "@/lib/actions/customers"
+import { getCustomers } from "@/lib/actions/customers"
 import { ClientsTable } from "@/components/crm/clients-table"
 import { Button } from "@/components/ui/button"
 import { ClientActions } from "@/components/crm/client-actions"

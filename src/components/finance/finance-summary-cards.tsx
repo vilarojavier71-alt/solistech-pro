@@ -1,4 +1,4 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Euro, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 interface FinanceSummaryProps {

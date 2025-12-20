@@ -1,4 +1,4 @@
-Ôªøimport { Metadata } from 'next'
+import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,8 +15,8 @@ import { getEmployees } from '@/lib/actions/employees'
 import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
-    title: 'Configuraci√≥n | SolisTech PRO',
-    description: 'Configuraci√≥n de tu cuenta y organizaci√≥n',
+    title: 'ConfiguraciÛn | SolisTech PRO',
+    description: 'ConfiguraciÛn de tu cuenta y organizaciÛn',
 }
 
 export default async function SettingsPage() {
@@ -25,7 +25,7 @@ export default async function SettingsPage() {
     if (!session?.user) return null
 
     // Get user profile
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
     })
 
@@ -57,7 +57,7 @@ export default async function SettingsPage() {
     return (
         <div className="space-y-6 pb-20">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Configuraci√≥n</h1>
+                <h1 className="text-3xl font-bold tracking-tight">ConfiguraciÛn</h1>
                 <p className="text-muted-foreground">
                     Gestiona tu perfil y las preferencias de tu espacio de trabajo.
                 </p>
@@ -106,7 +106,7 @@ export default async function SettingsPage() {
                                     className="w-full justify-start text-left font-normal data-[state=active]:bg-muted data-[state=active]:text-foreground"
                                 >
                                     <CreditCard className="mr-2 h-4 w-4" />
-                                    Facturaci√≥n
+                                    FacturaciÛn
                                 </TabsTrigger>
                             </>
                         )}
@@ -132,7 +132,7 @@ export default async function SettingsPage() {
                         <div>
                             <h3 className="text-lg font-medium">Perfil Personal</h3>
                             <p className="text-sm text-muted-foreground">
-                                Actualiza tu informaci√≥n personal y c√≥mo te ven los dem√°s.
+                                Actualiza tu informaciÛn personal y cÛmo te ven los dem·s.
                             </p>
                         </div>
                         <Separator />
@@ -143,7 +143,7 @@ export default async function SettingsPage() {
                         <div>
                             <h3 className="text-lg font-medium">Apariencia</h3>
                             <p className="text-sm text-muted-foreground">
-                                Personaliza la est√©tica de la aplicaci√≥n.
+                                Personaliza la estÈtica de la aplicaciÛn.
                             </p>
                         </div>
                         <Separator />
@@ -152,7 +152,7 @@ export default async function SettingsPage() {
 
                     <TabsContent value="organization" className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-medium">Organizaci√≥n</h3>
+                            <h3 className="text-lg font-medium">OrganizaciÛn</h3>
                             <p className="text-sm text-muted-foreground">
                                 Gestiona los detalles de tu empresa.
                             </p>
@@ -181,7 +181,7 @@ export default async function SettingsPage() {
                                     ) : (
                                         <div className="flex flex-col items-center justify-center p-12 text-center">
                                             <Users className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                                            <h3 className="text-lg font-semibold">Tu equipo est√° vac√≠o</h3>
+                                            <h3 className="text-lg font-semibold">Tu equipo est· vacÌo</h3>
                                             <p className="text-sm text-muted-foreground mt-2 max-w-sm">
                                                 Comienza agregando miembros para colaborar en proyectos.
                                             </p>

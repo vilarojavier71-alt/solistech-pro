@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
@@ -63,7 +63,7 @@ export function TourProvider({ children }: { children: ReactNode }) {
         if (!isActive || !currentStep) return
 
         if (currentStep.route && currentStep.route !== pathname) {
-            console.log(`🚀 Tour: Redirecting to ${currentStep.route}`)
+            console.log(`?? Tour: Redirecting to ${currentStep.route}`)
             router.push(currentStep.route)
         }
     }, [isActive, currentStep, pathname, router])

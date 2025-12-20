@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
@@ -40,7 +40,7 @@ export function NewLeadForm() {
                     <Input
                         id="name"
                         name="name"
-                        placeholder="Juan PÃ©rez"
+                        placeholder="Juan Pérez"
                         required
                         disabled={isPending}
                     />
@@ -58,7 +58,7 @@ export function NewLeadForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="phone">TelÃ©fono</Label>
+                    <Label htmlFor="phone">Teléfono</Label>
                     <Input
                         id="phone"
                         name="phone"
@@ -79,7 +79,7 @@ export function NewLeadForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="estimated_value">Valor Estimado (â‚¬)</Label>
+                    <Label htmlFor="estimated_value">Valor Estimado (€)</Label>
                     <Input
                         id="estimated_value"
                         name="estimated_value"
@@ -98,7 +98,7 @@ export function NewLeadForm() {
                         <SelectContent>
                             <SelectItem value="web">Web</SelectItem>
                             <SelectItem value="referral">Referido</SelectItem>
-                            <SelectItem value="cold_call">Llamada en frÃ­o</SelectItem>
+                            <SelectItem value="cold_call">Llamada en frío</SelectItem>
                             <SelectItem value="social_media">Redes sociales</SelectItem>
                             <SelectItem value="other">Otro</SelectItem>
                         </SelectContent>
@@ -125,7 +125,7 @@ export function NewLeadForm() {
                     <Textarea
                         id="notes"
                         name="notes"
-                        placeholder="InformaciÃ³n adicional sobre el lead..."
+                        placeholder="Información adicional sobre el lead..."
                         rows={4}
                         disabled={isPending}
                     />

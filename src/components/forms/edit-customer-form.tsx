@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 
@@ -40,7 +40,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
         city: customer.address?.city || '',
         state: customer.address?.state || '',
         postal_code: customer.address?.postal_code || '',
-        country: customer.address?.country || 'España',
+        country: customer.address?.country || 'Espa�a',
     })
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -92,7 +92,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
                     <Label htmlFor="name">Nombre *</Label>
                     <Input
                         id="name"
-                        placeholder="Juan PÃ©rez"
+                        placeholder="Juan Pérez"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -113,7 +113,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="phone">TelÃ©fono</Label>
+                    <Label htmlFor="phone">Teléfono</Label>
                     <Input
                         id="phone"
                         type="tel"
@@ -147,7 +147,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Dirección</h3>
+                    <h3 className="text-sm font-medium mb-3">Direcci�n</h3>
                 </div>
 
                 <div className="col-span-2 space-y-2">
@@ -173,7 +173,7 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="postal_code">Código Postal</Label>
+                    <Label htmlFor="postal_code">C�digo Postal</Label>
                     <Input
                         id="postal_code"
                         placeholder="28001"
@@ -195,10 +195,10 @@ export function EditCustomerForm({ customer }: { customer: Customer }) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="country">PaÃ­s</Label>
+                    <Label htmlFor="country">País</Label>
                     <Input
                         id="country"
-                        placeholder="España"
+                        placeholder="Espa�a"
                         value={formData.country}
                         onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                         disabled={loading}

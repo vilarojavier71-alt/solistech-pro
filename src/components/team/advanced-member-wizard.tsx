@@ -1,4 +1,4 @@
-Ôªø"use client"
+"use client"
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -114,7 +114,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
         try {
             await onComplete(getValues())
             toast.success("Miembro creado exitosamente")
-            triggerConfetti() // üéâ WOW Factor
+            triggerConfetti() // ?? WOW Factor
         } catch (error) {
             toast.error("Error al crear miembro")
         } finally {
@@ -202,7 +202,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                         <Input
                                             id="fullName"
                                             {...form.register("step1.fullName")}
-                                            placeholder="Ej. Juan P√©rez"
+                                            placeholder="Ej. Juan PÈrez"
                                             className={cn(errors.step1?.fullName && "border-destructive focus-visible:ring-destructive")}
                                         />
                                         {errors.step1?.fullName && <span className="text-xs text-destructive">{errors.step1.fullName.message}</span>}
@@ -219,7 +219,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                         {errors.step1?.email && <span className="text-xs text-destructive">{errors.step1.email.message}</span>}
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="phone">Tel√©fono M√≥vil</Label>
+                                        <Label htmlFor="phone">TelÈfono MÛvil</Label>
                                         <Input id="phone" {...form.register("step1.phone")} placeholder="+34 600 000 000" />
                                     </div>
 
@@ -227,8 +227,8 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                         <Label className="mb-2 block font-semibold">Contacto de Emergencia (Opcional)</Label>
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <Input {...form.register("step1.emergencyContact.name")} placeholder="Nombre Contacto" />
-                                            <Input {...form.register("step1.emergencyContact.phone")} placeholder="Tel√©fono Contacto" />
-                                            <Input {...form.register("step1.emergencyContact.relation")} placeholder="Relaci√≥n (Ej. C√≥nyuge)" />
+                                            <Input {...form.register("step1.emergencyContact.phone")} placeholder="TelÈfono Contacto" />
+                                            <Input {...form.register("step1.emergencyContact.relation")} placeholder="RelaciÛn (Ej. CÛnyuge)" />
                                         </div>
                                     </div>
                                 </div>
@@ -347,9 +347,9 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                             >
                                 <div className="text-center space-y-2 mb-8">
                                     <ShieldCheck className="w-12 h-12 mx-auto text-muted-foreground/50" />
-                                    <h3 className="text-lg font-medium">Documentaci√≥n y Certificados</h3>
+                                    <h3 className="text-lg font-medium">DocumentaciÛn y Certificados</h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Opcional. Puede a√±adir los carnets vigentes ahora o m√°s tarde desde el perfil.
+                                        Opcional. Puede aÒadir los carnets vigentes ahora o m·s tarde desde el perfil.
                                     </p>
                                 </div>
 
@@ -360,7 +360,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                     </div>
                                     <div>
                                         <p className="font-medium">Subir certificaciones</p>
-                                        <p className="text-xs text-muted-foreground mt-1">Arrastre archivos PDF o im√°genes aqu√≠</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Arrastre archivos PDF o im·genes aquÌ</p>
                                     </div>
                                     <Button type="button" variant="secondary" size="sm" onClick={() => toast.info("Funcionalidad de subida en desarrollo")}>
                                         Seleccionar Archivos
@@ -371,7 +371,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-400">
                                     <p className="flex items-center gap-2">
                                         <ShieldCheck className="w-4 h-4" />
-                                        Nota: El control de caducidad se activar√° autom√°ticamente al guardar.
+                                        Nota: El control de caducidad se activar· autom·ticamente al guardar.
                                     </p>
                                 </div>
                             </motion.div>
@@ -388,7 +388,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                         onClick={currentStep === 1 ? onCancel : handleBack}
                         disabled={isSubmitting}
                     >
-                        {currentStep === 1 ? "Cancelar" : "Atr√°s"}
+                        {currentStep === 1 ? "Cancelar" : "Atr·s"}
                     </Button>
 
                     {currentStep < 3 ? (

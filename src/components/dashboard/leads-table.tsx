@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import {
     Table,
@@ -47,7 +47,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
     const [isPending, startTransition] = useTransition()
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Â¿EstÃ¡s seguro de que quieres eliminar este lead?')) return
+        if (!confirm('¿Estás seguro de que quieres eliminar este lead?')) return
 
         startTransition(async () => {
             const result = await deleteLead(id)
@@ -119,7 +119,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                             </TableCell>
                             <TableCell>
                                 {lead.estimated_value
-                                    ? `${Number(lead.estimated_value).toLocaleString()}â‚¬`
+                                    ? `${Number(lead.estimated_value).toLocaleString()}€`
                                     : '-'}
                             </TableCell>
                             <TableCell className="capitalize">{lead.source || '-'}</TableCell>

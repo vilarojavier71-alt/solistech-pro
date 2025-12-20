@@ -1,4 +1,4 @@
-Ôªø"use client";
+"use client";
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -27,10 +27,10 @@ export function ApiKeyConfig({ initialKeyStatus }: ApiKeyConfigProps) {
 
         if (result.success) {
             setStatus('configured');
-            toast.success("√âxito", {
+            toast.success("…xito", {
                 description: "Clave API de Google guardada. Recargando...",
             });
-            // üö® Importante: Forzar un refresh de la p√°gina para cargar el script din√°micamente
+            // ?? Importante: Forzar un refresh de la p·gina para cargar el script din·micamente
             // Small delay to let toast show
             setTimeout(() => {
                 window.location.reload();
@@ -64,7 +64,7 @@ export function ApiKeyConfig({ initialKeyStatus }: ApiKeyConfigProps) {
                     </p>
                     <p className="text-xs text-muted-foreground">
                         {status === 'configured'
-                            ? 'El servicio de autocompletado est√° activo.'
+                            ? 'El servicio de autocompletado est· activo.'
                             : 'Necesaria para buscar direcciones exactas.'
                         }
                     </p>
@@ -74,7 +74,7 @@ export function ApiKeyConfig({ initialKeyStatus }: ApiKeyConfigProps) {
             <div className="flex gap-2 w-full md:w-auto min-w-[300px]">
                 <Input
                     type="password"
-                    placeholder={status === 'configured' ? "‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢" : "Introduce tu API Key"}
+                    placeholder={status === 'configured' ? "ïïïïïïïïïïïïïïïïïïïïïïïï" : "Introduce tu API Key"}
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
                     disabled={isLoading}

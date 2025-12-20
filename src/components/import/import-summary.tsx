@@ -1,4 +1,4 @@
-ï»¿"use client"
+"use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -71,7 +71,7 @@ export function ImportSummary({ result, entityName, onReset, onComplete }: Impor
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Resumen de OperaciÃ³n</CardTitle>
+                    <CardTitle>Resumen de Operación</CardTitle>
                     <CardDescription>
                         Procesados {result.processedRows} de {result.totalRows} registros detectados.
                     </CardDescription>
@@ -79,7 +79,7 @@ export function ImportSummary({ result, entityName, onReset, onComplete }: Impor
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                            <span>Tasa de Ã‰xito</span>
+                            <span>Tasa de Éxito</span>
                             <span className="font-bold">{successRate}%</span>
                         </div>
                         <Progress value={successRate} className="h-2" />
@@ -88,9 +88,9 @@ export function ImportSummary({ result, entityName, onReset, onComplete }: Impor
                     {result.errors.length > 0 && (
                         <Alert variant="destructive">
                             <AlertTriangle className="h-4 w-4" />
-                            <AlertTitle>AtenciÃ³n Requerida</AlertTitle>
+                            <AlertTitle>Atención Requerida</AlertTitle>
                             <AlertDescription className="mt-2">
-                                <p className="mb-2">Se encontraron {result.errors.length} problemas que impidieron la importaciÃ³n de algunas filas.</p>
+                                <p className="mb-2">Se encontraron {result.errors.length} problemas que impidieron la importación de algunas filas.</p>
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -107,7 +107,7 @@ export function ImportSummary({ result, entityName, onReset, onComplete }: Impor
                     <div className="flex justify-between pt-4">
                         <Button variant="ghost" onClick={onReset}>
                             <RotateCcw className="w-4 h-4 mr-2" />
-                            Nueva ImportaciÃ³n
+                            Nueva Importación
                         </Button>
                         <Button onClick={onComplete} className="gap-2">
                             Finalizar

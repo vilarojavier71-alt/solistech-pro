@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -56,7 +56,7 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
         fetchProjects()
     }, [selectedCustomer])
 
-    // Cargar cÃ¡lculos cuando se selecciona un proyecto
+    // Cargar cálculos cuando se selecciona un proyecto
     useEffect(() => {
         if (!selectedProject) {
             setCalculations([])
@@ -89,7 +89,7 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
 
     const handleGenerate = async () => {
         if (!selectedCustomer || !selectedProject || !selectedCalculation) {
-            toast.error('Por favor, selecciona cliente, proyecto y cÃ¡lculo')
+            toast.error('Por favor, selecciona cliente, proyecto y cálculo')
             return
         }
 
@@ -103,7 +103,7 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
                 // For now, skip photo upload
             }
 
-            // Generar presentaciÃ³n
+            // Generar presentación
             const result = await createPresentation(
                 selectedCustomer,
                 selectedProject,
@@ -114,14 +114,14 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
             if (result.error) {
                 toast.error(result.error)
             } else {
-                toast.success('âœ… PresentaciÃ³n generada con Ã©xito')
+                toast.success('? Presentación generada con éxito')
                 if (result.hasSimulatedImage) {
-                    toast.success('ðŸŽ¨ Imagen simulada con IA incluida')
+                    toast.success('?? Imagen simulada con IA incluida')
                 }
                 router.push('/dashboard/presentations')
             }
         } catch (error: any) {
-            toast.error('Error al generar la presentaciÃ³n')
+            toast.error('Error al generar la presentación')
             console.error(error)
         } finally {
             setIsGenerating(false)
@@ -131,9 +131,9 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>ConfiguraciÃ³n de la PresentaciÃ³n</CardTitle>
+                <CardTitle>Configuración de la Presentación</CardTitle>
                 <CardDescription>
-                    Selecciona el cliente, proyecto y cÃ¡lculo para generar la presentaciÃ³n
+                    Selecciona el cliente, proyecto y cálculo para generar la presentación
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -218,9 +218,9 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
                     </Select>
                 </div>
 
-                {/* Selector de CÃ¡lculo */}
+                {/* Selector de Cálculo */}
                 <div className="space-y-2">
-                    <Label htmlFor="calculation">CÃ¡lculo Solar</Label>
+                    <Label htmlFor="calculation">Cálculo Solar</Label>
                     <Select
                         value={selectedCalculation}
                         onValueChange={setSelectedCalculation}
@@ -228,26 +228,26 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
                     >
                         <SelectTrigger id="calculation">
                             <SelectValue placeholder={
-                                loadingCalculations ? 'Cargando cÃ¡lculos...' :
+                                loadingCalculations ? 'Cargando cálculos...' :
                                     !selectedProject ? 'Primero selecciona un proyecto' :
-                                        'Selecciona un cÃ¡lculo'
+                                        'Selecciona un cálculo'
                             } />
                         </SelectTrigger>
                         <SelectContent>
                             {calculations.length === 0 ? (
                                 <div className="p-4 text-center text-sm text-muted-foreground">
-                                    No hay cÃ¡lculos para este proyecto
+                                    No hay cálculos para este proyecto
                                 </div>
                             ) : (
                                 calculations.map((calc) => (
                                     <SelectItem key={calc.id} value={calc.id}>
                                         <div className="flex flex-col">
                                             <span>
-                                                {calc.system_size_kwp} kWp - {calc.estimated_production_kwh?.toLocaleString()} kWh/aÃ±o
+                                                {calc.system_size_kwp} kWp - {calc.estimated_production_kwh?.toLocaleString()} kWh/año
                                             </span>
                                             {calc.net_cost && (
                                                 <span className="text-xs text-green-600">
-                                                    Coste neto: {calc.net_cost.toLocaleString()}â‚¬ (con ayudas)
+                                                    Coste neto: {calc.net_cost.toLocaleString()}€ (con ayudas)
                                                 </span>
                                             )}
                                             <span className="text-xs text-muted-foreground">
@@ -284,32 +284,32 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
                     </div>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Sparkles className="h-3 w-3" />
-                        Si subes foto y tienes API configurada, la IA generarÃ¡ una simulaciÃ³n con placas solares
+                        Si subes foto y tienes API configurada, la IA generará una simulación con placas solares
                     </p>
                     <p className="text-xs text-amber-600 dark:text-amber-400">
-                        ðŸ’¡ Puedes generar presentaciones sin foto ni API - incluirÃ¡n todos los datos tÃ©cnicos y fiscales
+                        ?? Puedes generar presentaciones sin foto ni API - incluirán todos los datos técnicos y fiscales
                     </p>
                 </div>
 
-                {/* InformaciÃ³n */}
+                {/* Información */}
                 <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-4 border border-blue-200 dark:border-blue-800">
                     <div className="flex items-start gap-3">
                         <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
                         <div className="text-sm text-blue-900 dark:text-blue-100">
-                            <p className="font-medium mb-1">Â¿QuÃ© incluye la presentaciÃ³n?</p>
+                            <p className="font-medium mb-1">¿Qué incluye la presentación?</p>
                             <ul className="space-y-1 text-xs text-blue-700 dark:text-blue-300">
-                                <li>â€¢ Datos tÃ©cnicos del sistema solar</li>
-                                <li>â€¢ ProducciÃ³n estimada mensual</li>
-                                <li>â€¢ Ahorro econÃ³mico detallado</li>
-                                <li>â€¢ Deducciones fiscales (IRPF, IBI, ICIO)</li>
-                                <li>â€¢ SimulaciÃ³n visual con IA (si subes foto)</li>
-                                <li>â€¢ Presupuesto con coste neto final</li>
+                                <li>• Datos técnicos del sistema solar</li>
+                                <li>• Producción estimada mensual</li>
+                                <li>• Ahorro económico detallado</li>
+                                <li>• Deducciones fiscales (IRPF, IBI, ICIO)</li>
+                                <li>• Simulación visual con IA (si subes foto)</li>
+                                <li>• Presupuesto con coste neto final</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                {/* BotÃ³n Generar */}
+                {/* Botón Generar */}
                 <Button
                     onClick={handleGenerate}
                     disabled={isGenerating || !selectedCalculation}
@@ -319,12 +319,12 @@ export function NewPresentationForm({ customers }: NewPresentationFormProps) {
                     {isGenerating ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Generando presentaciÃ³n...
+                            Generando presentación...
                         </>
                     ) : (
                         <>
                             <Sparkles className="mr-2 h-4 w-4" />
-                            Generar PresentaciÃ³n con IA
+                            Generar Presentación con IA
                         </>
                     )}
                 </Button>

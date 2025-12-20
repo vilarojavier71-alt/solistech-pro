@@ -1,4 +1,4 @@
-ï»¿import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { getSetting } from "@/lib/actions/settings"
 import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client"
@@ -36,7 +36,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             </DashboardLayoutClient>
 
             {/* Google Maps Platform API (Places Library) */}
-            {/* Carga DinÃ¡mica: Renderizamos solo si hay clave vÃ¡lida en DB (prioridad sobre .env) */}
+            {/* Carga Dinámica: Renderizamos solo si hay clave válida en DB (prioridad sobre .env) */}
             {googleApiKey && googleApiKey.length > 20 && (
                 <script
                     async

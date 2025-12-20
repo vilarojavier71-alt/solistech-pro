@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -64,10 +64,10 @@ export function OpportunitiesList({ opportunities, customerId }: { opportunities
 
     const getStageLabel = (stage: string) => {
         const labels: Record<string, string> = {
-            prospecting: 'ProspecciÃ³n',
-            qualification: 'CualificaciÃ³n',
+            prospecting: 'Prospección',
+            qualification: 'Cualificación',
             proposal: 'Propuesta',
-            negotiation: 'NegociaciÃ³n',
+            negotiation: 'Negociación',
             closed_won: 'Ganada',
             closed_lost: 'Perdida'
         }
@@ -91,12 +91,12 @@ export function OpportunitiesList({ opportunities, customerId }: { opportunities
                         </DialogHeader>
                         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                             <div className="space-y-2">
-                                <Label>TÃ­tulo</Label>
-                                <Input name="title" required placeholder="Ej. InstalaciÃ³n Solar 5kW" className="bg-zinc-950 border-zinc-800" />
+                                <Label>Título</Label>
+                                <Input name="title" required placeholder="Ej. Instalación Solar 5kW" className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Valor Estimado (â‚¬)</Label>
+                                    <Label>Valor Estimado (€)</Label>
                                     <Input name="amount" type="number" required defaultValue="0" className="bg-zinc-950 border-zinc-800" />
                                 </div>
                                 <div className="space-y-2">
@@ -111,10 +111,10 @@ export function OpportunitiesList({ opportunities, customerId }: { opportunities
                                         <SelectValue placeholder="Selecciona etapa" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-zinc-900 border-zinc-800">
-                                        <SelectItem value="prospecting">ProspecciÃ³n</SelectItem>
-                                        <SelectItem value="qualification">CualificaciÃ³n</SelectItem>
+                                        <SelectItem value="prospecting">Prospección</SelectItem>
+                                        <SelectItem value="qualification">Cualificación</SelectItem>
                                         <SelectItem value="proposal">Propuesta</SelectItem>
-                                        <SelectItem value="negotiation">NegociaciÃ³n</SelectItem>
+                                        <SelectItem value="negotiation">Negociación</SelectItem>
                                         <SelectItem value="closed_won">Cerrado (Ganada)</SelectItem>
                                         <SelectItem value="closed_lost">Cerrado (Perdida)</SelectItem>
                                     </SelectContent>

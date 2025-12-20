@@ -1,4 +1,4 @@
-﻿import { getOpportunities } from "@/lib/actions/crm"
+import { getOpportunities } from "@/lib/actions/crm"
 import { OpportunitiesList } from "@/components/crm/opportunities-list"
 import { PageShell } from "@/components/ui/page-shell"
 
@@ -21,7 +21,7 @@ export default async function CRMOpportunitiesPage() {
     // For this iterations, we will render the list. The "New Opportunity" button in the list 
     // expects a customerId. If we are on the main page, we probably want a different Create button 
     // or the dialog needs to allow selecting a customer.
-    // Given the constraints and the user request for "Gestión de Clientes", I will prioritize the client-centric view.
+    // Given the constraints and the user request for "Gesti�n de Clientes", I will prioritize the client-centric view.
     // But for the global view, I'll pass current user's org ID or just let the list render.
 
     return (

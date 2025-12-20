@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useMemo } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -189,7 +189,7 @@ export function DataTablePremium<T extends Record<string, any>>({
                             onClick={() => setIsCompact(!isCompact)}
                         >
                             <Eye className="mr-2 h-4 w-4" />
-                            {isCompact ? `Mostrar ${hiddenColumnsCount} más` : 'Vista compacta'}
+                            {isCompact ? `Mostrar ${hiddenColumnsCount} m�s` : 'Vista compacta'}
                         </Button>
                     )}
                     {features.export && (

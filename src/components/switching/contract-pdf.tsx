@@ -1,4 +1,4 @@
-ï»¿import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
 
 // Estilos para el PDF
 const styles = StyleSheet.create({
@@ -104,7 +104,7 @@ export const ContractPDF = ({ data, tariff }: ContractPDFProps) => (
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>1. Datos del Titular</Text>
                 <View style={styles.row}>
-                    <Text style={styles.label}>Nombre / RazÃ³n Social:</Text>
+                    <Text style={styles.label}>Nombre / Razón Social:</Text>
                     <Text style={styles.value}>{data.holderName || '____________________________________'}</Text>
                 </View>
                 <View style={styles.row}>
@@ -112,7 +112,7 @@ export const ContractPDF = ({ data, tariff }: ContractPDFProps) => (
                     <Text style={styles.value}>{data.holderDni || '__________________'}</Text>
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>DirecciÃ³n del Suministro:</Text>
+                    <Text style={styles.label}>Dirección del Suministro:</Text>
                     <Text style={styles.value}>{data.address || '____________________________________'}</Text>
                 </View>
             </View>
@@ -138,28 +138,28 @@ export const ContractPDF = ({ data, tariff }: ContractPDFProps) => (
                 </View>
             </View>
 
-            {/* Condiciones EconÃ³micas */}
+            {/* Condiciones Económicas */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>3. Condiciones EconÃ³micas - {tariff.planName}</Text>
+                <Text style={styles.sectionTitle}>3. Condiciones Económicas - {tariff.planName}</Text>
                 <View style={styles.row}>
-                    <Text style={styles.label}>TÃ©rmino de EnergÃ­a:</Text>
-                    <Text style={styles.value}>{tariff.priceEnergy} â‚¬/kWh</Text>
+                    <Text style={styles.label}>Término de Energía:</Text>
+                    <Text style={styles.value}>{tariff.priceEnergy} €/kWh</Text>
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>TÃ©rmino de Potencia:</Text>
-                    <Text style={styles.value}>{tariff.priceP1} â‚¬/kW/aÃ±o</Text>
+                    <Text style={styles.label}>Término de Potencia:</Text>
+                    <Text style={styles.value}>{tariff.priceP1} €/kW/año</Text>
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>DuraciÃ³n del Contrato:</Text>
+                    <Text style={styles.label}>Duración del Contrato:</Text>
                     <Text style={styles.value}>12 Meses</Text>
                 </View>
             </View>
 
             {/* Legal */}
             <Text style={styles.legalText}>
-                PROTECCIÃ“N DE DATOS: En cumplimiento del Reglamento (UE) 2016/679, se informa que los datos personales recogidos en este contrato serÃ¡n tratados por {tariff.company} con la finalidad de gestionar la relaciÃ³n contractual. El titular consiente expresamente el tratamiento de sus datos para la gestiÃ³n del suministro elÃ©ctrico y la facturaciÃ³n correspondiente.
+                PROTECCIÓN DE DATOS: En cumplimiento del Reglamento (UE) 2016/679, se informa que los datos personales recogidos en este contrato serán tratados por {tariff.company} con la finalidad de gestionar la relación contractual. El titular consiente expresamente el tratamiento de sus datos para la gestión del suministro eléctrico y la facturación correspondiente.
 
-                CONDICIONES GENERALES: El titular declara conocer y aceptar las condiciones generales de contrataciÃ³n de {tariff.company}, asÃ­ como las tarifas vigentes aplicables al presente contrato. Este contrato anula y sustituye a cualquier otro anterior para el mismo punto de suministro.
+                CONDICIONES GENERALES: El titular declara conocer y aceptar las condiciones generales de contratación de {tariff.company}, así como las tarifas vigentes aplicables al presente contrato. Este contrato anula y sustituye a cualquier otro anterior para el mismo punto de suministro.
             </Text>
 
             {/* Firma */}

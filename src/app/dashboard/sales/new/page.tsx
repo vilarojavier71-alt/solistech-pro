@@ -1,4 +1,4 @@
-﻿import { NewSaleForm } from '@/components/forms/new-sale-form'
+import { NewSaleForm } from '@/components/forms/new-sale-form'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'

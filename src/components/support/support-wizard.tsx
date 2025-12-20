@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -74,10 +74,10 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                     Centro de Ayuda
                 </h2>
                 <p className="text-zinc-500 text-sm mt-1">
-                    {step === 1 && "Â¿En quÃ© podemos ayudarte hoy?"}
+                    {step === 1 && "¿En qué podemos ayudarte hoy?"}
                     {step === 2 && "Hemos encontrado estas soluciones:"}
-                    {step === 3 && "Â¿Te sirviÃ³ este artÃ­culo?"}
-                    {step === 4 && "Describe tu problema para el equipo tÃ©cnico."}
+                    {step === 3 && "¿Te sirvió este artículo?"}
+                    {step === 4 && "Describe tu problema para el equipo técnico."}
                 </p>
             </div>
 
@@ -132,7 +132,7 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                                                     {article.title}
                                                     <ChevronRight size={16} className="text-zinc-600 group-hover:text-emerald-500" />
                                                 </h4>
-                                                <p className="text-sm text-zinc-500 mt-1 line-clamp-1">{article.subtitle || 'GuÃ­a rÃ¡pida de soluciÃ³n'}</p>
+                                                <p className="text-sm text-zinc-500 mt-1 line-clamp-1">{article.subtitle || 'Guía rápida de solución'}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -173,7 +173,7 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                             className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 max-h-[500px] overflow-y-auto"
                         >
                             <button onClick={() => setStep(1)} className="text-xs text-zinc-500 hover:text-white mb-4 flex items-center gap-1">
-                                <ChevronLeft size={12} /> Volver a bÃºsqueda
+                                <ChevronLeft size={12} /> Volver a búsqueda
                             </button>
 
                             <h3 className="text-xl font-bold text-white mb-4">{selectedArticle.title}</h3>
@@ -185,13 +185,13 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-zinc-800 flex flex-col gap-3">
-                                <p className="text-center text-sm text-zinc-400 mb-2">Â¿Se ha resuelto tu duda?</p>
+                                <p className="text-center text-sm text-zinc-400 mb-2">¿Se ha resuelto tu duda?</p>
                                 <div className="flex gap-4">
                                     <button
                                         onClick={() => onClose?.()}
                                         className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-lg font-medium text-sm flex items-center justify-center gap-2"
                                     >
-                                        <CheckCircle size={16} /> SÃ­, gracias
+                                        <CheckCircle size={16} /> Sí, gracias
                                     </button>
                                     <button
                                         onClick={() => setStep(4)}
@@ -214,7 +214,7 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                         >
                             <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded text-amber-500 text-xs flex items-center gap-2 mb-4">
                                 <AlertCircle size={16} />
-                                EstÃ¡s contactando con IngenierÃ­a. Tiempo de respuesta estimado: 24h.
+                                Estás contactando con Ingeniería. Tiempo de respuesta estimado: 24h.
                             </div>
 
                             <div>
@@ -243,7 +243,7 @@ export function SupportWizard({ onClose }: { onClose?: () => void }) {
                                 </div>
                             ) : (
                                 <div className="flex gap-3 pt-4">
-                                    <button onClick={() => setStep(1)} className="px-4 py-2 text-zinc-400 hover:text-white text-sm">AtrÃ¡s</button>
+                                    <button onClick={() => setStep(1)} className="px-4 py-2 text-zinc-400 hover:text-white text-sm">Atrás</button>
                                     <button
                                         onClick={handleSubmit}
                                         disabled={isSubmitting}

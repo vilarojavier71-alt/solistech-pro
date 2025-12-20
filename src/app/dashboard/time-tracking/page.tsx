@@ -1,4 +1,4 @@
-﻿import { PageShell } from "@/components/ui/page-shell"
+import { PageShell } from "@/components/ui/page-shell"
 import { TimeTracker } from "@/components/time-tracking/time-tracker"
 import { TimeHistory } from "@/components/time-tracking/time-history" // We'll create this next
 import { Suspense } from "react"

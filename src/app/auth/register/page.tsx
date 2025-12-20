@@ -1,4 +1,4 @@
-ï»¿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -48,7 +48,7 @@ export default function RegisterPage() {
                 toast.error('Error al registrar usuario')
                 setLoading(false)
             } else if (result?.ok) {
-                toast.success('Â¡Registro exitoso! Iniciando sesiÃ³n...')
+                toast.success('¡Registro exitoso! Iniciando sesión...')
                 window.location.href = '/dashboard'
             }
         } catch (error) {
@@ -103,13 +103,13 @@ export default function RegisterPage() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">ContraseÃ±a</Label>
+                            <Label htmlFor="password">Contraseña</Label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     id="password"
                                     type="password"
-                                    placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                                    placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="pl-10"
@@ -123,9 +123,9 @@ export default function RegisterPage() {
                         </Button>
                     </form>
                     <div className="mt-4 text-center text-sm">
-                        Â¿Ya tienes cuenta?{' '}
+                        ¿Ya tienes cuenta?{' '}
                         <Link href="/auth/login" className="text-primary hover:underline">
-                            Inicia SesiÃ³n
+                            Inicia Sesión
                         </Link>
                     </div>
                 </CardContent>

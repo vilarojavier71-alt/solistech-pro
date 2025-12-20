@@ -1,4 +1,4 @@
-Ôªø'use client'
+'use client'
 
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -37,15 +37,15 @@ export function ExcelImporterPremium() {
 
     // Mock data for demonstration
     const mockData = [
-        { id: 1, nombre: 'Juan Garc√≠a', email: 'juan@example.com', telefono: '612345678', ciudad: 'Madrid', nif: '12345678A', empresa: 'Acme Corp', cargo: 'CEO', sector: 'Tecnolog√≠a' },
-        { id: 2, nombre: 'Mar√≠a L√≥pez', email: 'maria@example.com', telefono: '678901234', ciudad: 'Barcelona', nif: '87654321B', empresa: 'Tech Solutions', cargo: 'CTO', sector: 'Software' },
-        { id: 3, nombre: 'Pedro Mart√≠nez', email: 'pedro@example.com', telefono: '654321098', ciudad: 'Valencia', nif: '11223344C', empresa: 'Solar Energy', cargo: 'Director', sector: 'Energ√≠a' }
+        { id: 1, nombre: 'Juan GarcÌa', email: 'juan@example.com', telefono: '612345678', ciudad: 'Madrid', nif: '12345678A', empresa: 'Acme Corp', cargo: 'CEO', sector: 'TecnologÌa' },
+        { id: 2, nombre: 'MarÌa LÛpez', email: 'maria@example.com', telefono: '678901234', ciudad: 'Barcelona', nif: '87654321B', empresa: 'Tech Solutions', cargo: 'CTO', sector: 'Software' },
+        { id: 3, nombre: 'Pedro MartÌnez', email: 'pedro@example.com', telefono: '654321098', ciudad: 'Valencia', nif: '11223344C', empresa: 'Solar Energy', cargo: 'Director', sector: 'EnergÌa' }
     ]
 
     const mockColumns = [
         { id: 'nombre', label: 'Nombre', accessor: 'nombre', mapped: true, sortable: true },
         { id: 'email', label: 'Email', accessor: 'email', mapped: true, sortable: true },
-        { id: 'telefono', label: 'Tel√©fono', accessor: 'telefono', mapped: true, sortable: true },
+        { id: 'telefono', label: 'TelÈfono', accessor: 'telefono', mapped: true, sortable: true },
         { id: 'ciudad', label: 'Ciudad', accessor: 'ciudad', mapped: true, sortable: true },
         { id: 'nif', label: 'NIF', accessor: 'nif', mapped: false },
         { id: 'empresa', label: 'Empresa', accessor: 'empresa', mapped: false },
@@ -96,7 +96,7 @@ export function ExcelImporterPremium() {
                                 <span className="text-teal-600 hover:underline font-medium text-lg">
                                     Haz clic para subir
                                 </span>
-                                <span className="text-slate-600 dark:text-slate-400"> o arrastra un archivo aqu√≠</span>
+                                <span className="text-slate-600 dark:text-slate-400"> o arrastra un archivo aquÌ</span>
                             </label>
                             <input
                                 id="file-upload"
@@ -115,10 +115,10 @@ export function ExcelImporterPremium() {
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
                                 <div className="text-sm space-y-1">
-                                    <div><strong>L√≠mites de seguridad:</strong></div>
-                                    <div>‚Ä¢ Tama√±o m√°ximo: 10 MB</div>
-                                    <div>‚Ä¢ Filas m√°ximas: 10,000</div>
-                                    <div>‚Ä¢ Campos personalizados: 20 m√°x</div>
+                                    <div><strong>LÌmites de seguridad:</strong></div>
+                                    <div>ï TamaÒo m·ximo: 10 MB</div>
+                                    <div>ï Filas m·ximas: 10,000</div>
+                                    <div>ï Campos personalizados: 20 m·x</div>
                                 </div>
                             </AlertDescription>
                         </Alert>
@@ -200,7 +200,7 @@ export function ExcelImporterPremium() {
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription className="flex items-center justify-between">
                                 <div>
-                                    <strong>{hiddenCount} columnas adicionales</strong> se guardar√°n como campos personalizados.
+                                    <strong>{hiddenCount} columnas adicionales</strong> se guardar·n como campos personalizados.
                                 </div>
                                 <Button
                                     variant="outline"
