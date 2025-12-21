@@ -82,6 +82,8 @@ RUN mkdir .next && chown nextjs:nodejs .next
 # Copiar build standalone
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy scripts for maintenance tasks
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
 # Cambiar a usuario no-root
 USER nextjs
