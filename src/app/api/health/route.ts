@@ -1,44 +1,97 @@
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
 
-// Use a dedicated client for health checks to avoid polluting the main pool
-const prisma = new PrismaClient()
+/**
+ * Health Check Endpoint
+ * 
+ * Verifica la salud de los componentes críticos del sistema.
+ * Usado para:
+ * - Monitorización de uptime
+ * - Pre-deploy sanity checks
+ * - Load balancer health probes
+ */
+
+interface HealthStatus {
+    status: 'healthy' | 'degraded' | 'unhealthy'
+    timestamp: string
+    version: string
+    checks: {
+        database: 'ok' | 'error'
+        environment: 'ok' | 'error'
+        memory: {
+            used: number
+            limit: number
+            percentage: number
+        }
+    }
+    errors: string[]
+}
 
 export async function GET() {
+    const errors: string[] = []
+    const startTime = Date.now()
+
+    // 1. Database Check
+    let databaseStatus: 'ok' | 'error' = 'error'
     try {
-        // Check 1: Database Connectivity
         await prisma.$queryRaw`SELECT 1`
-
-        // Check 2: Memory Usage (Optional but useful)
-        const memoryUsage = process.memoryUsage()
-
-        return NextResponse.json(
-            {
-                status: 'ok',
-                timestamp: new Date().toISOString(),
-                checks: {
-                    database: 'connected',
-                    memory: {
-                        rss: `${Math.round(memoryUsage.rss / 1024 / 1024)}MB`,
-                        heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)}MB`,
-                        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
-                    }
-                },
-                uptime: process.uptime()
-            },
-            { status: 200 }
-        )
+        databaseStatus = 'ok'
     } catch (error) {
-        console.error('Health Check Failed:', error)
-        return NextResponse.json(
-            {
-                status: 'error',
-                timestamp: new Date().toISOString(),
-                error: 'Database connection failed'
-            },
-            { status: 500 }
-        )
-    } finally {
-        await prisma.$disconnect()
+        errors.push(`Database: ${error instanceof Error ? error.message : 'Connection failed'}`)
     }
+
+    // 2. Environment Check
+    let envStatus: 'ok' | 'error' = 'ok'
+    const requiredEnvVars = [
+        'DATABASE_URL',
+        'NEXTAUTH_SECRET',
+        'NEXTAUTH_URL'
+    ]
+
+    for (const envVar of requiredEnvVars) {
+        if (!process.env[envVar]) {
+            envStatus = 'error'
+            errors.push(`Missing env: ${envVar}`)
+        }
+    }
+
+    // 3. Memory Check
+    const memoryUsage = process.memoryUsage()
+    const memoryUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024)
+    const memoryLimitMB = Math.round(memoryUsage.heapTotal / 1024 / 1024)
+    const memoryPercentage = Math.round((memoryUsage.heapUsed / memoryUsage.heapTotal) * 100)
+
+    // Determine overall status
+    let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy'
+    if (databaseStatus === 'error') {
+        overallStatus = 'unhealthy'
+    } else if (envStatus === 'error' || memoryPercentage > 90) {
+        overallStatus = 'degraded'
+    }
+
+    const response: HealthStatus = {
+        status: overallStatus,
+        timestamp: new Date().toISOString(),
+        version: process.env.npm_package_version || '1.0.0',
+        checks: {
+            database: databaseStatus,
+            environment: envStatus,
+            memory: {
+                used: memoryUsedMB,
+                limit: memoryLimitMB,
+                percentage: memoryPercentage
+            }
+        },
+        errors
+    }
+
+    const responseTime = Date.now() - startTime
+
+    return NextResponse.json(response, {
+        status: overallStatus === 'unhealthy' ? 503 : 200,
+        headers: {
+            'X-Response-Time': `${responseTime}ms`,
+            'Cache-Control': 'no-store'
+        }
+    })
 }
