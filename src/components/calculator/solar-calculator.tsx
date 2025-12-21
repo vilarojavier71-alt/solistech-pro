@@ -16,6 +16,7 @@ import { calculateFullROI } from '@/lib/actions/roi-calculator'
 import { generateTechnicalMemory } from '@/lib/actions/technical-memory'
 import { Switch } from '@/components/ui/switch'
 import { SPANISH_CITIES, searchCities, type CityLocation } from '@/lib/data/spanish-cities'
+import { InteractiveLocationPicker as LocationPicker } from './location-picker-wrapper'
 
 interface CalculationResult {
     systemSize: number
@@ -50,6 +51,7 @@ export function SolarCalculator() {
     const [filteredCities, setFilteredCities] = useState<CityLocation[]>(SPANISH_CITIES.slice(0, 10))
     const [manualLat, setManualLat] = useState<string>('40.4168')
     const [manualLng, setManualLng] = useState<string>('-3.7038')
+    const [locationSource, setLocationSource] = useState<'pin_drop' | 'city_select' | 'manual'>('city_select')
 
     // Estados para subvenciones (Fase 9)
     const [region, setRegion] = useState<string>('Comunidad Valenciana')
@@ -210,62 +212,85 @@ export function SolarCalculator() {
                         </Select>
                     </div>
 
-                    {/* Ubicación */}
-                    <div className="space-y-2">
+                    {/* Ubicación - Mapa Interactivo */}
+                    <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <Label>Ubicación</Label>
+                            <Label className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-primary" />
+                                Ubicación del Tejado
+                            </Label>
                             <div className="flex items-center gap-2">
                                 <Switch
                                     checked={useManualCoords}
                                     onCheckedChange={setUseManualCoords}
                                 />
                                 <span className="text-xs text-muted-foreground">
-                                    Coordenadas manuales
+                                    Entrada manual
                                 </span>
                             </div>
                         </div>
 
                         {!useManualCoords ? (
                             <>
-                                <Input
-                                    value={citySearch}
-                                    onChange={(e) => {
-                                        const query = e.target.value
-                                        setCitySearch(query)
-                                        if (query.length > 0) {
-                                            setFilteredCities(searchCities(query))
-                                        } else {
-                                            setFilteredCities(SPANISH_CITIES.slice(0, 10))
+                                {/* City Search Fallback */}
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={citySearch}
+                                        onChange={(e) => {
+                                            const query = e.target.value
+                                            setCitySearch(query)
+                                            if (query.length > 0) {
+                                                setFilteredCities(searchCities(query))
+                                            } else {
+                                                setFilteredCities(SPANISH_CITIES.slice(0, 10))
+                                            }
+                                        }}
+                                        placeholder="Buscar ciudad para centrar el mapa..."
+                                        className="flex-1"
+                                    />
+                                    <Select
+                                        value={locationName}
+                                        onValueChange={(value) => {
+                                            const city = SPANISH_CITIES.find(c => c.name === value)
+                                            if (city) {
+                                                setLocationName(city.name)
+                                                setLocation({ lat: city.lat, lng: city.lng })
+                                                setManualLat(city.lat.toString())
+                                                setManualLng(city.lng.toString())
+                                                setCitySearch('')
+                                            }
+                                        }}
+                                    >
+                                        <SelectTrigger className="w-[200px]">
+                                            <SelectValue placeholder="Ciudad" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {filteredCities.map((city) => (
+                                                <SelectItem key={city.name} value={city.name}>
+                                                    {city.name} ({city.province})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                {/* Interactive Map */}
+                                <LocationPicker
+                                    initialLocation={location}
+                                    onLocationChange={(newLoc) => {
+                                        setLocation({ lat: newLoc.lat, lng: newLoc.lng })
+                                        setManualLat(newLoc.lat.toString())
+                                        setManualLng(newLoc.lng.toString())
+                                        if (newLoc.address) {
+                                            setLocationName(newLoc.address.split(',')[0] || newLoc.address)
                                         }
+                                        setLocationSource(newLoc.source)
                                     }}
-                                    placeholder="Buscar ciudad..."
+                                    height="300px"
                                 />
-                                <Select
-                                    value={locationName}
-                                    onValueChange={(value) => {
-                                        const city = SPANISH_CITIES.find(c => c.name === value)
-                                        if (city) {
-                                            setLocationName(city.name)
-                                            setLocation({ lat: city.lat, lng: city.lng })
-                                            setManualLat(city.lat.toString())
-                                            setManualLng(city.lng.toString())
-                                            setCitySearch('')
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Selecciona una ciudad" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredCities.map((city) => (
-                                            <SelectItem key={city.name} value={city.name}>
-                                                {city.name} ({city.province})
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <p className="text-xs text-muted-foreground">
-                                    ðŸ“ {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+
+                                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                    👆 Haz clic en el mapa o arrastra el marcador para ubicación precisa
                                 </p>
                             </>
                         ) : (
@@ -274,7 +299,7 @@ export function SolarCalculator() {
                                     <Label className="text-xs">Latitud</Label>
                                     <Input
                                         type="number"
-                                        step="0.0001"
+                                        step="0.000001"
                                         value={manualLat}
                                         onChange={(e) => {
                                             setManualLat(e.target.value)
@@ -291,7 +316,7 @@ export function SolarCalculator() {
                                     <Label className="text-xs">Longitud</Label>
                                     <Input
                                         type="number"
-                                        step="0.0001"
+                                        step="0.000001"
                                         value={manualLng}
                                         onChange={(e) => {
                                             setManualLng(e.target.value)
@@ -305,11 +330,12 @@ export function SolarCalculator() {
                                     />
                                 </div>
                                 <p className="text-xs text-muted-foreground col-span-2">
-                                    💡 Introduce coordenadas exactas para máxima precisión
+                                    💡 Precisión de 6 decimales para máxima exactitud
                                 </p>
                             </div>
                         )}
                     </div>
+
 
                     {/* Orientación del Tejado */}
                     <div className="space-y-2">
