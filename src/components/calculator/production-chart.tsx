@@ -35,7 +35,7 @@ export function ProductionChart({ monthlyProduction }: ProductionChartProps) {
         labels: MONTHS,
         datasets: [
             {
-                label: 'ProducciÃ³n Solar (kWh)',
+                label: 'Producción Solar (kWh)',
                 data: monthlyProduction,
                 borderColor: 'rgb(34, 197, 94)',
                 backgroundColor: 'rgba(34, 197, 94, 0.1)',

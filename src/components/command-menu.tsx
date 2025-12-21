@@ -76,7 +76,7 @@ export function CommandMenu() {
                             </CommandItem>
                             <CommandItem onSelect={() => runCommand(() => router.push('/dashboard/switching'))}>
                                 <Zap className="mr-2 h-4 w-4" />
-                                <span>Switching ElÃ©ctrico</span>
+                                <span>Switching Eléctrico</span>
                             </CommandItem>
                         </CommandPrimitive.Group>
 

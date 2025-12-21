@@ -20,7 +20,7 @@ export function GenerateProposalButton({ opportunityId, customerId }: { opportun
             // Temporary: Notify user that calculation is needed
             // OR attempt to call it with dummy IDs if allowed (unlikely)
 
-            toast.info('Para generar una propuesta tÃ©cnica, primero debes crear un Estudio Solar.', {
+            toast.info('Para generar una propuesta técnica, primero debes crear un Estudio Solar.', {
                 action: {
                     label: 'Crear Estudio',
                     onClick: () => console.log('Redirect to study creation')
@@ -33,11 +33,11 @@ export function GenerateProposalButton({ opportunityId, customerId }: { opportun
             if (res.error) {
                 toast.error(res.error)
             } else {
-                toast.success('PresentaciÃ³n generada exitosamente!')
+                toast.success('Presentación generada exitosamente!')
             }
             */
         } catch (error) {
-            toast.error('Error al iniciar generaciÃ³n')
+            toast.error('Error al iniciar generación')
         } finally {
             setLoading(false)
         }

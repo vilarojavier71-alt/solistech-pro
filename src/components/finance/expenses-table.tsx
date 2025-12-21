@@ -16,7 +16,7 @@ interface ExpensesTableProps {
 export function ExpensesTable({ expenses }: ExpensesTableProps) {
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Â¿Seguro que quieres borrar este gasto?")) return;
+        if (!confirm("¿Seguro que quieres borrar este gasto?")) return;
         const res = await deleteExpense(id);
         if (res.success) toast.success("Gasto eliminado");
         else toast.error(res.message);
@@ -29,7 +29,7 @@ export function ExpensesTable({ expenses }: ExpensesTableProps) {
                     <TableRow>
                         <TableHead>Fecha</TableHead>
                         <TableHead>Concepto</TableHead>
-                        <TableHead>CategorÃ­a</TableHead>
+                        <TableHead>Categoría</TableHead>
                         <TableHead className="text-right">Importe</TableHead>
                         <TableHead className="w-[50px]"></TableHead>
                     </TableRow>

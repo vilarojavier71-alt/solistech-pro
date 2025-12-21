@@ -72,7 +72,7 @@ export function NewCustomerForm() {
                     <Label htmlFor="name">Nombre *</Label>
                     <Input
                         id="name"
-                        placeholder="Juan PÃ©rez"
+                        placeholder="Juan Pérez"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -93,7 +93,7 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="phone">TelÃ©fono</Label>
+                    <Label htmlFor="phone">Teléfono</Label>
                     <Input
                         id="phone"
                         type="tel"
@@ -175,7 +175,7 @@ export function NewCustomerForm() {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="country">PaÃ­s</Label>
+                    <Label htmlFor="country">País</Label>
                     <Input
                         id="country"
                         placeholder="España"

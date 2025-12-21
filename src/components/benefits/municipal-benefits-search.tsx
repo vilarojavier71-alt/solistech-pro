@@ -120,16 +120,16 @@ export function MunicipalBenefitsSearch() {
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
-                        {/* Toggle entre selector y bÃºsqueda */}
+                        {/* Toggle entre selector y búsqueda */}
                         <div className="flex items-center justify-between">
-                            <Label>MÃ©todo de bÃºsqueda</Label>
+                            <Label>Método de búsqueda</Label>
                             <div className="flex items-center gap-2">
                                 <Switch
                                     checked={useTextSearch}
                                     onCheckedChange={setUseTextSearch}
                                 />
                                 <span className="text-xs text-muted-foreground">
-                                    BÃºsqueda por texto
+                                    Búsqueda por texto
                                 </span>
                             </div>
                         </div>
@@ -176,7 +176,7 @@ export function MunicipalBenefitsSearch() {
                                 </p>
                             </>
                         ) : (
-                            /* BÃºsqueda por texto */
+                            /* Búsqueda por texto */
                             <div className="relative">
                                 <div className="flex gap-2">
                                     <div className="relative flex-1">
@@ -231,7 +231,7 @@ export function MunicipalBenefitsSearch() {
             {/* Resultados */}
             {results.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Resultados de bÃºsqueda</h3>
+                    <h3 className="text-lg font-semibold">Resultados de búsqueda</h3>
 
                     {results.map((result) => {
                         const badge = getScopeLevelBadge(result.scope_level)
@@ -258,7 +258,7 @@ export function MunicipalBenefitsSearch() {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {/* IBI */}
                                         <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                                            <p className="text-sm text-muted-foreground">BonificaciÃ³n IBI</p>
+                                            <p className="text-sm text-muted-foreground">Bonificación IBI</p>
                                             <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                                                 {result.ibi_percentage}%
                                             </p>
@@ -269,12 +269,12 @@ export function MunicipalBenefitsSearch() {
 
                                         {/* ICIO */}
                                         <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                                            <p className="text-sm text-muted-foreground">BonificaciÃ³n ICIO</p>
+                                            <p className="text-sm text-muted-foreground">Bonificación ICIO</p>
                                             <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                                 {result.icio_percentage}%
                                             </p>
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                AplicaciÃ³n Ãºnica
+                                                Aplicación única
                                             </p>
                                         </div>
 

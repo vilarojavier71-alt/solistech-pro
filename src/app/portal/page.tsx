@@ -24,7 +24,7 @@ export default function ClientPortalPage() {
 
                 <Card className="shadow-xl">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-2xl">ðŸ” Accede a tu TrÃ¡mite</CardTitle>
+                        <CardTitle className="text-2xl">ðŸ” Accede a tu Trámite</CardTitle>
                         <CardDescription>
                             Ingresa tu DNI y código de acceso para ver el estado de tu instalación solar
                         </CardDescription>

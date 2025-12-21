@@ -89,7 +89,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
         },
         {
             id: 'phone',
-            label: 'TelÃ©fono',
+            label: 'Teléfono',
             accessor: 'phone',
             width: 180,
             render: (value) => value ? (
@@ -124,7 +124,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
         },
         {
             id: 'location',
-            label: 'UbicaciÃ³n',
+            label: 'Ubicación',
             accessor: (client) => {
                 if (!client.address?.city && !client.address?.province) return null
                 return [client.address.city, client.address.province].filter(Boolean).join(', ')
@@ -212,7 +212,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
             columns={columns}
             data={clients}
             features={{
-                virtualScroll: false, // Desactivar para usar paginaciÃ³n normal
+                virtualScroll: false, // Desactivar para usar paginación normal
                 stickyHeader: true,
                 compactView: true,
                 export: true,

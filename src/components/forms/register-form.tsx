@@ -31,7 +31,7 @@ export function RegisterForm() {
             if (result.error) {
                 toast.error(result.error)
             } else {
-                toast.success('Â¡Cuenta creada! Redirigiendo al login...')
+                toast.success('¡Cuenta creada! Redirigiendo al login...')
                 router.push('/auth/login')
             }
         } catch (error: any) {

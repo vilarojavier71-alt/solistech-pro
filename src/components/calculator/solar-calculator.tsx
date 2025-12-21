@@ -197,7 +197,7 @@ export function SolarCalculator() {
 
                     {/* Tipo de Instalación */}
                     <div className="space-y-2">
-                        <Label>Tipo de InstalaciÃ³n</Label>
+                        <Label>Tipo de Instalación</Label>
                         <Select value={installationType} onValueChange={setInstallationType}>
                             <SelectTrigger>
                                 <SelectValue />
@@ -210,7 +210,7 @@ export function SolarCalculator() {
                         </Select>
                     </div>
 
-                    {/* UbicaciÃ³n */}
+                    {/* Ubicación */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label>Ubicación</Label>
@@ -419,7 +419,7 @@ export function SolarCalculator() {
             {result && (
                 <Card className="border-green-200 bg-green-50/50">
                     <CardHeader>
-                        <CardTitle className="text-green-900">Resultados del CÃ¡lculo</CardTitle>
+                        <CardTitle className="text-green-900">Resultados del Cálculo</CardTitle>
                         <CardDescription>Sistema solar óptimo para tu instalación</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -428,7 +428,7 @@ export function SolarCalculator() {
                             <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-lg flex items-start gap-3">
                                 <div className="mt-1">âš ï¸</div>
                                 <div className="flex-1">
-                                    <h4 className="font-semibold">Â¡Ãrea Insuficiente!</h4>
+                                    <h4 className="font-semibold">¡Ãrea Insuficiente!</h4>
                                     <p className="text-sm mt-1">
                                         Necesitas aprox. <span className="font-bold">{(result.panels * 2).toFixed(1)} m²</span> para {result.panels} paneles,
                                         pero solo tienes <span className="font-bold">{availableArea} m²</span> disponibles.

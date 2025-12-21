@@ -120,7 +120,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                                 <span>Notificaciones</span>
                                 {unreadCount > 0 && (
                                     <Button variant="ghost" size="sm" onClick={handleMarkAllRead} className="text-xs h-6">
-                                        Marcar leÃ­das
+                                        Marcar leídas
                                     </Button>
                                 )}
                             </DropdownMenuLabel>

@@ -61,13 +61,13 @@ export function DashboardMetric({
                         )}
                     </div>
 
-                    {/* 3. TÃ­tulo (Label) */}
+                    {/* 3. Título (Label) */}
                     <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                         {label}
                     </p>
                 </div>
 
-                {/* 4. MÃ©trica Secundaria */}
+                {/* 4. Métrica Secundaria */}
                 {secondary && (
                     <div className="pt-2 mt-auto border-t border-border/50 w-full">
                         <p className="text-xs text-muted-foreground/80 truncate">

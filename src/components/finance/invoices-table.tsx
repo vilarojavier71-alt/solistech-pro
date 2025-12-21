@@ -51,7 +51,7 @@ export function InvoicesTable({ invoices }: InvoicesTableProps) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>NÃºmero</TableHead>
+                        <TableHead>Número</TableHead>
                         <TableHead>Cliente</TableHead>
                         <TableHead>Fecha Emisión</TableHead>
                         <TableHead>Estado</TableHead>

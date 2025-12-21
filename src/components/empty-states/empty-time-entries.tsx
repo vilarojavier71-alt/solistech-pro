@@ -1,7 +1,7 @@
 ﻿/**
  * Empty State: No Time Entries
  * 
- * Pantalla vacÃ­a cuando el usuario no ha fichado.
+ * Pantalla vacía cuando el usuario no ha fichado.
  * Instrucciones claras sobre cómo usar el sistema de fichajes.
  * 
  * @author @FRONTEND_DISENOUI
@@ -38,9 +38,9 @@ export function EmptyTimeEntries() {
                 <Clock className="size-24 text-teal-500 relative" />
             </div>
 
-            {/* TÃ­tulo */}
+            {/* Título */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
-                AÃºn no has fichado hoy
+                Aún no has fichado hoy
             </h3>
 
             {/* Descripción */}
@@ -49,7 +49,7 @@ export function EmptyTimeEntries() {
                 El sistema validará tu ubicación GPS automáticamente.
             </p>
 
-            {/* CaracterÃ­sticas */}
+            {/* Características */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 max-w-lg">
                 <div className="flex items-start gap-3 text-left bg-slate-900/50 border border-slate-700 rounded-lg p-4">
                     <MapPin className="size-6 text-teal-500 flex-shrink-0 mt-0.5" />

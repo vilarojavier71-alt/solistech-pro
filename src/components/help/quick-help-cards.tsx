@@ -103,15 +103,15 @@ export const quickHelpCards = [
         title: 'Importar Clientes desde Excel',
         description: 'Sube tu archivo y el sistema detecta automáticamente las columnas',
         steps: [
-            '1. Ve a "Importar" en el menÃº lateral',
+            '1. Ve a "Importar" en el menú lateral',
             '2. Arrastra tu archivo Excel o CSV',
             '3. Revisa la detección automática de columnas',
             '4. Confirma y listo - tus clientes están importados'
         ],
         tips: [
             'âœ… Formatos soportados: .xlsx, .xls, .csv',
-            'âœ… MÃ¡ximo 10.000 filas por archivo',
-            'âš ï¸ AsegÃºrate de que la primera fila tiene los nombres de columnas'
+            'âœ… Máximo 10.000 filas por archivo',
+            'âš ï¸ Asegúrate de que la primera fila tiene los nombres de columnas'
         ],
         cta: {
             text: 'Ir a Importar',

@@ -167,7 +167,7 @@ export function EditProjectForm({ project, customers }: { project: Project; cust
                 </div>
 
                 <div className="col-span-2">
-                    <h3 className="text-sm font-medium mb-3">Datos TÃ©cnicos</h3>
+                    <h3 className="text-sm font-medium mb-3">Datos Técnicos</h3>
                 </div>
 
                 <div className="space-y-2">

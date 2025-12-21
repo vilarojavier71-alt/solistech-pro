@@ -96,12 +96,12 @@ export function ContactsList({ contacts, customerId }: { contacts: any[], custom
                                 <Input name="email" type="email" className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <div className="space-y-2">
-                                <Label>TelÃ©fono</Label>
+                                <Label>Teléfono</Label>
                                 <Input name="phone" className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Cargo / Rol</Label>
-                                <Input name="role" placeholder="Ej. CEO, TÃ©cnico..." className="bg-zinc-950 border-zinc-800" />
+                                <Input name="role" placeholder="Ej. CEO, Técnico..." className="bg-zinc-950 border-zinc-800" />
                             </div>
                             <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700" disabled={loading}>
                                 {loading ? 'Guardando...' : 'Guardar Contacto'}

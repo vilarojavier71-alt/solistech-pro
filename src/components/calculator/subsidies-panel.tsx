@@ -55,7 +55,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8 text-muted-foreground">
-                        <p>No hay datos de subvenciones disponibles para esta ubicaciÃ³n</p>
+                        <p>No hay datos de subvenciones disponibles para esta ubicación</p>
                         <p className="text-sm mt-2">Recalcula el proyecto para obtener las ayudas actualizadas</p>
                     </div>
                 </CardContent>
@@ -86,7 +86,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <TrendingUp className="h-4 w-4 text-green-600" />
                                 <p className="font-semibold text-green-900 dark:text-green-100">
-                                    DeducciÃ³n IRPF
+                                    Deducción IRPF
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -95,9 +95,9 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                DeducciÃ³n del {calculation.subsidy_irpf_percentage}% en la declaraciÃ³n de la renta.
-                                                Tipo: {calculation.subsidy_irpf_type === '60' ? 'RehabilitaciÃ³n integral' :
-                                                    calculation.subsidy_irpf_type === '40' ? 'ReducciÃ³n â‰¥30%' :
+                                                Deducción del {calculation.subsidy_irpf_percentage}% en la declaración de la renta.
+                                                Tipo: {calculation.subsidy_irpf_type === '60' ? 'Rehabilitación integral' :
+                                                    calculation.subsidy_irpf_type === '40' ? 'Reducción â‰¥30%' :
                                                         'Mejora eficiencia'}
                                             </p>
                                         </TooltipContent>
@@ -105,7 +105,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                 </TooltipProvider>
                             </div>
                             <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                                {calculation.subsidy_irpf_percentage}% de la inversiÃ³n
+                                {calculation.subsidy_irpf_percentage}% de la inversión
                             </p>
                         </div>
                         <p className="text-2xl font-bold text-green-600">
@@ -121,7 +121,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <Home className="h-4 w-4 text-blue-600" />
                                 <p className="font-semibold text-blue-900 dark:text-blue-100">
-                                    BonificaciÃ³n IBI
+                                    Bonificación IBI
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -130,7 +130,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                BonificaciÃ³n del {calculation.subsidy_ibi_percentage}% en el Impuesto sobre Bienes Inmuebles
+                                                Bonificación del {calculation.subsidy_ibi_percentage}% en el Impuesto sobre Bienes Inmuebles
                                                 durante {calculation.subsidy_ibi_duration_years} años.
                                                 Ahorro estimado: {calculation.subsidy_ibi_annual?.toLocaleString('es-ES')}€/año
                                             </p>
@@ -158,7 +158,7 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                             <div className="flex items-center gap-2">
                                 <Building2 className="h-4 w-4 text-purple-600" />
                                 <p className="font-semibold text-purple-900 dark:text-purple-100">
-                                    BonificaciÃ³n ICIO
+                                    Bonificación ICIO
                                 </p>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -167,8 +167,8 @@ export function SubsidiesPanel({ calculation }: SubsidiesPanelProps) {
                                         </TooltipTrigger>
                                         <TooltipContent className="max-w-xs">
                                             <p className="text-xs">
-                                                BonificaciÃ³n del {calculation.subsidy_icio_percentage}% en el Impuesto sobre
-                                                Construcciones, Instalaciones y Obras (pago Ãºnico)
+                                                Bonificación del {calculation.subsidy_icio_percentage}% en el Impuesto sobre
+                                                Construcciones, Instalaciones y Obras (pago único)
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>

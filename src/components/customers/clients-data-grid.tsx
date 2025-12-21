@@ -101,7 +101,7 @@ export function ClientsDataGrid({ initialData }: ClientsDataGridProps) {
         },
         {
             accessorKey: 'phone',
-            header: 'TelÃ©fono',
+            header: 'Teléfono',
             cell: ({ row }) => (
                 <div className="text-slate-400 text-sm font-mono">
                     {row.getValue('phone') || '-'}
@@ -139,7 +139,7 @@ export function ClientsDataGrid({ initialData }: ClientsDataGridProps) {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Abrir menÃº</span>
+                                    <span className="sr-only">Abrir menú</span>
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -318,7 +318,7 @@ export function ClientsDataGrid({ initialData }: ClientsDataGridProps) {
             <AlertDialog open={!!deletingClient} onOpenChange={(open) => !open && setDeletingClient(null)}>
                 <AlertDialogContent className="bg-slate-900 border-slate-700">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Â¿Eliminar cliente?</AlertDialogTitle>
+                        <AlertDialogTitle>¿Eliminar cliente?</AlertDialogTitle>
                         <AlertDialogDescription className="text-slate-400">
                             Esta acción marcará al cliente <span className="font-semibold text-slate-200">{deletingClient?.full_name}</span> como inactivo.
                             Los datos no se eliminarán permanentemente.

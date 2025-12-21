@@ -164,7 +164,7 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
                                             <Input
                                                 {...field}
                                                 className="bg-slate-950 border-slate-700"
-                                                placeholder="Juan PÃ©rez GarcÃ­a"
+                                                placeholder="Juan Pérez García"
                                             />
                                         </FormControl>
                                         <FormMessage />

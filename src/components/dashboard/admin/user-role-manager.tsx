@@ -98,7 +98,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
             case 'owner': return 'Propietario'
             case 'admin': return 'Administrador'
             case 'commercial': return 'Comercial'
-            case 'technician': return 'TÃ©cnico'
+            case 'technician': return 'Técnico'
             case 'canvasser': return 'Captador'
             case 'installer': return 'Instalador'
             case 'engineer': return 'Ingeniero'
@@ -209,7 +209,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                                                         <SelectItem value="admin">Administrador</SelectItem>
                                                         <SelectItem value="commercial">Comercial</SelectItem>
                                                         <SelectItem value="engineer">Ingeniero</SelectItem>
-                                                        <SelectItem value="technician">TÃ©cnico</SelectItem>
+                                                        <SelectItem value="technician">Técnico</SelectItem>
                                                         <SelectItem value="canvasser">Captador</SelectItem>
                                                         <SelectItem value="installer">Instalador</SelectItem>
                                                         <SelectItem value="viewer">Solo Lectura</SelectItem>

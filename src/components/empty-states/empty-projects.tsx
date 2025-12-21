@@ -1,8 +1,8 @@
 ﻿/**
  * Empty State: No Projects
  * 
- * Pantalla vacÃ­a cuando el usuario no tiene proyectos.
- * GuÃ­a visual para crear el primer estudio solar.
+ * Pantalla vacía cuando el usuario no tiene proyectos.
+ * Guía visual para crear el primer estudio solar.
  * 
  * @author @FRONTEND_DISENOUI
  * @version 1.0.0
@@ -40,7 +40,7 @@ export function EmptyProjects() {
                 <Sparkles className="size-24 text-cyan-500 relative" />
             </div>
 
-            {/* TÃ­tulo */}
+            {/* Título */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
                 Inicia tu Primer Estudio Solar
             </h3>
@@ -66,7 +66,7 @@ export function EmptyProjects() {
             {/* Ayuda secundaria */}
             <div className="mt-8 flex items-center gap-6 text-sm">
                 <p className="text-slate-500">
-                    Â¿Tienes clientes en Excel?
+                    ¿Tienes clientes en Excel?
                 </p>
                 <Button asChild variant="ghost" size="sm">
                     <Link href="/dashboard/import" className="text-cyan-500 hover:text-cyan-400">
@@ -76,7 +76,7 @@ export function EmptyProjects() {
                 </Button>
             </div>
 
-            {/* CaracterÃ­sticas rÃ¡pidas */}
+            {/* Características rápidas */}
             <div className="mt-12 grid grid-cols-3 gap-6 max-w-2xl">
                 <div className="text-center">
                     <div className="text-3xl mb-2">âš¡</div>

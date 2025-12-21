@@ -1,7 +1,7 @@
 ﻿/**
  * Empty State: No Customers
  * 
- * Pantalla vacÃ­a cuando no hay clientes.
+ * Pantalla vacía cuando no hay clientes.
  * Opciones claras: importar o crear manualmente.
  * 
  * @author @FRONTEND_DISENOUI
@@ -40,7 +40,7 @@ export function EmptyCustomers() {
                 <UserPlus className="size-24 text-amber-500 relative" />
             </div>
 
-            {/* TÃ­tulo */}
+            {/* Título */}
             <h3 className="text-3xl font-bold text-slate-100 mb-3">
                 Añade tus Primeros Clientes
             </h3>
@@ -82,7 +82,7 @@ export function EmptyCustomers() {
                     <li>âœ… Formatos soportados: .xlsx, .xls, .csv</li>
                     <li>✅ Detección automática de columnas</li>
                     <li>✅ Máximo 10.000 filas por archivo</li>
-                    <li>âš ï¸ AsegÃºrate de que la primera fila tiene los nombres de columnas</li>
+                    <li>âš ï¸ Asegúrate de que la primera fila tiene los nombres de columnas</li>
                 </ul>
             </div>
 
@@ -90,7 +90,7 @@ export function EmptyCustomers() {
             <p className="text-xs text-slate-500 mt-6">
                 ¿Necesitas ayuda con la importación?{' '}
                 <Link href="/dashboard/help" className="text-cyan-500 hover:underline">
-                    Ver guÃ­a paso a paso
+                    Ver guía paso a paso
                 </Link>
             </p>
         </motion.div>
