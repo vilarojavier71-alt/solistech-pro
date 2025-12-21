@@ -21,7 +21,7 @@ export async function createLead(formData: FormData) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -42,7 +42,7 @@ export async function createLead(formData: FormData) {
     const validation = CreateLeadSchema.safeParse(rawData)
 
     if (!validation.success) {
-        return { error: validation.error.errors[0].message }
+        return { error: validation.error.issues[0].message }
     }
 
     try {
@@ -62,25 +62,60 @@ export async function createLead(formData: FormData) {
     }
 }
 
-export async function getLeads() {
+export async function getLeads(params?: {
+    query?: string
+    status?: string
+    sort?: string
+}) {
     const session = await auth()
     if (!session?.user?.id) return []
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!user?.organization_id) return []
 
+    const where: any = {
+        organization_id: user.organization_id,
+    }
+
+    if (params?.status && params.status !== 'all') {
+        where.status = params.status
+    }
+
+    if (params?.query) {
+        where.OR = [
+            { name: { contains: params.query, mode: 'insensitive' } },
+            { email: { contains: params.query, mode: 'insensitive' } },
+            { company: { contains: params.query, mode: 'insensitive' } },
+            { phone: { contains: params.query, mode: 'insensitive' } },
+        ]
+    }
+
+    const orderBy: any = {}
+    if (params?.sort) {
+        const [field, direction] = params.sort.split('-')
+        // Only allow specific fields to prevent errors
+        if (['created_at', 'name', 'estimated_value', 'status'].includes(field)) {
+            orderBy[field] = direction === 'asc' ? 'asc' : 'desc'
+        } else {
+            orderBy.created_at = 'desc'
+        }
+    } else {
+        orderBy.created_at = 'desc'
+    }
+
     return await prisma.leads.findMany({
-        where: { organization_id: user.organization_id },
-        orderBy: { created_at: 'desc' },
+        where,
+        orderBy,
         include: {
             assigned_user: {
                 select: { full_name: true, avatar_url: true }
             }
-        }
+        },
+        take: 100 // Safety limit
     })
 }
 
@@ -104,7 +139,7 @@ export async function deleteLead(id: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -145,7 +180,7 @@ export async function updateLead(id: string, data: any) {
         const validation = CreateLeadSchema.partial().safeParse(data)
 
         if (!validation.success) {
-            return { error: validation.error.errors[0].message }
+            return { error: validation.error.issues[0].message }
         }
 
         await prisma.leads.update({
