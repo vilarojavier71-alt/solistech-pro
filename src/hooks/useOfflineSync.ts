@@ -42,7 +42,7 @@ interface UseOfflineSyncReturn {
     getQueueItems: () => Promise<QueueItem[]>
 }
 
-const DB_NAME = "solistech_offline"
+const DB_NAME = "motorgap_offline"
 const STORE_NAME = "sync_queue"
 const DB_VERSION = 2
 const MAX_RETRIES = 5

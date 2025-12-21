@@ -21,7 +21,7 @@ interface OnboardingStep {
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
     {
-        title: '¡Bienvenido a Solistech Pro!',
+        title: '¡Bienvenido a MotorGap!',
         description: 'Tu plataforma integral para gestionar proyectos fotovoltaicos. Vamos a hacer un recorrido rápido por las funciones principales.',
         icon: <Sparkles className="h-8 w-8 text-teal-400" />
     },

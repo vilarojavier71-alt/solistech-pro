@@ -32,10 +32,9 @@ import {
     Save,
     FileText,
     Sparkles,
-    Loader2,
-    Calculator
+    Loader2
 } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { CreateOrganizationForm } from '@/components/onboarding/create-organization-form'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -46,12 +45,14 @@ import { generateTechnicalMemory } from '@/lib/actions/technical-memory'
 import { ProductionChart } from './production-chart'
 import { SubsidiesPanel } from './subsidies-panel'
 import { TooltipInfo, CommonTooltips } from '@/components/ui/tooltip-info'
+import { SaveProjectDialog } from './save-project-dialog'
+import { createPresentation } from '@/lib/actions/presentation-generator' // AI Presentation
 
 // ============================================
 // SOLAR CALCULATOR PREMIUM - FULL FEATURED
 // ============================================
 
-export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
+export function SolarCalculatorPremium({ isPro = false, customers = [] }: { isPro?: boolean, customers?: any[] }) {
     // PROTECTED FEATURE GATE
     if (!isPro) {
         return (
@@ -127,6 +128,8 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
     const [isCalculatingROI, setIsCalculatingROI] = useState(false)
     const [expertMode, setExpertMode] = useState(false)
     const [showOrgModal, setShowOrgModal] = useState(false)
+    const [showSaveModal, setShowSaveModal] = useState(false)
+
 
     // Load subsidies when region changes
     useEffect(() => {
@@ -153,6 +156,64 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
             setFilteredCities(SPANISH_CITIES.slice(0, 10))
         }
     }, [citySearch])
+
+    // State for presentation generation
+    const [isGeneratingPresentation, setIsGeneratingPresentation] = useState(false)
+
+    const handleCreatePresentation = async () => {
+        if (!savedCalculationId) {
+            toast.error('Primero realiza un cálculo para tener datos base.')
+            return
+        }
+
+        setIsGeneratingPresentation(true)
+        toast.info('Iniciando Inteligencia Artificial... Generando narrativa y diapositivas.')
+
+        try {
+            const customerId = customers.length > 0 ? customers[0].id : undefined
+
+            if (!customerId) {
+                toast.warning('Se requiere al menos un cliente en la base de datos para asignar la presentación.')
+                setIsGeneratingPresentation(false)
+                return
+            }
+
+            const result = await createPresentation(
+                customerId,
+                undefined,
+                savedCalculationId
+            )
+
+            if (result.error) {
+                toast.error(result.error)
+            } else if (result.success && result.buffer) {
+                toast.success('¡Presentación Generada!')
+
+                // Decode base64 to blob
+                const binaryString = window.atob(result.buffer)
+                const len = binaryString.length
+                const bytes = new Uint8Array(len)
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i)
+                }
+                const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' })
+
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `Propuesta_Solar_IA_${new Date().toISOString().slice(0, 10)}.pptx`
+                document.body.appendChild(a)
+                a.click()
+                window.URL.revokeObjectURL(url)
+                document.body.removeChild(a)
+            }
+        } catch (err) {
+            console.error(err)
+            toast.error('Error en el motor de IA')
+        } finally {
+            setIsGeneratingPresentation(false)
+        }
+    }
 
     const handleCalculate = async () => {
         setLoading(true)
@@ -261,7 +322,7 @@ export function SolarCalculatorPremium({ isPro = false }: { isPro?: boolean }) {
 
         try {
             const pdfBlob = await generateTechnicalMemory(savedCalculationId)
-            const url = URL.createObjectURL(pdfBlob as Blob)
+            const url = URL.createObjectURL(pdfBlob as unknown as Blob)
             const a = document.createElement('a')
             a.href = url
             a.download = `memoria-tecnica-${savedCalculationId}.pdf`
@@ -382,32 +443,57 @@ Cada panel ocupa ~2 m². Ejemplo: 10 paneles = 20 m²"
                                 </Select>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Latitud</Label>
-                                    <Input
-                                        type="number"
-                                        step="0.0001"
-                                        value={manualLat}
-                                        onChange={(e) => {
-                                            setManualLat(e.target.value)
-                                            setLocation({ ...location, lat: parseFloat(e.target.value) })
-                                        }}
-                                        className="input-premium"
-                                    />
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Latitud</Label>
+                                        <Input
+                                            type="number"
+                                            step="0.0001"
+                                            value={manualLat}
+                                            onChange={(e) => {
+                                                setManualLat(e.target.value)
+                                                setLocation({ ...location, lat: parseFloat(e.target.value) })
+                                            }}
+                                            className="input-premium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Longitud</Label>
+                                        <Input
+                                            type="number"
+                                            step="0.0001"
+                                            value={manualLng}
+                                            onChange={(e) => {
+                                                setManualLng(e.target.value)
+                                                setLocation({ ...location, lng: parseFloat(e.target.value) })
+                                            }}
+                                            className="input-premium"
+                                        />
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label>Longitud</Label>
-                                    <Input
-                                        type="number"
-                                        step="0.0001"
-                                        value={manualLng}
-                                        onChange={(e) => {
-                                            setManualLng(e.target.value)
-                                            setLocation({ ...location, lng: parseFloat(e.target.value) })
-                                        }}
-                                        className="input-premium"
-                                    />
+
+                                {/* GEO-INTELLIGENCE PREVIEW */}
+                                <div className="rounded-lg border border-indigo-100 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-950/30 overflow-hidden">
+                                    <div className="relative h-40 w-full bg-slate-200">
+                                        <iframe
+                                            width="100%"
+                                            height="100%"
+                                            frameBorder="0"
+                                            scrolling="no"
+                                            marginHeight={0}
+                                            marginWidth={0}
+                                            src={`https://www.openstreetmap.org/export/embed.html?bbox=${location.lng - 0.05}%2C${location.lat - 0.05}%2C${location.lng + 0.05}%2C${location.lat + 0.05}&layer=mapnik&marker=${location.lat}%2C${location.lng}`}
+                                            className="opacity-90 hover:opacity-100 transition-opacity"
+                                        />
+                                        <div className="absolute bottom-2 right-2 bg-white/90 dark:bg-black/80 px-2 py-1 text-[10px] rounded shadow">
+                                            © OpenStreetMap
+                                        </div>
+                                    </div>
+
+                                    <div className="p-3">
+                                        <SolarPotentialIndicator lat={location.lat} lng={location.lng} />
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -695,17 +781,35 @@ Cada panel ocupa ~2 m². Ejemplo: 10 paneles = 20 m²"
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => toast.info('Próximamente: Guardar como proyecto')}
+                            onClick={() => {
+                                if (!result) {
+                                    toast.error('Primero debes realizar un cálculo')
+                                    return
+                                }
+                                setShowSaveModal(true)
+                            }}
+                            disabled={!result}
                         >
                             <Save className="mr-2 h-4 w-4" />
                             Guardar como Proyecto
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={() => toast.info('Próximamente: Crear presentación IA')}
+                            onClick={handleCreatePresentation}
+                            disabled={isGeneratingPresentation || !result}
+                            className={cn(isGeneratingPresentation && "animate-pulse border-amber-500 text-amber-600")}
                         >
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            Crear Presentación IA
+                            {isGeneratingPresentation ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Generando con IA...
+                                </>
+                            ) : (
+                                <>
+                                    <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
+                                    Crear Presentación IA
+                                </>
+                            )}
                         </Button>
                     </div>
 
@@ -755,6 +859,87 @@ Cada panel ocupa ~2 m². Ejemplo: 10 paneles = 20 m²"
                     <CreateOrganizationForm />
                 </DialogContent>
             </Dialog>
+
+            <SaveProjectDialog
+                open={showSaveModal}
+                onOpenChange={setShowSaveModal}
+                calculationData={{
+                    systemSize: result?.systemSize,
+                    production: result?.production,
+                    savings: result?.savings,
+                    panels: result?.panels,
+                    roi: fullCalculation?.roi_with_subsidies || result?.roi,
+                    location: location
+                }}
+                customers={customers}
+            />
+        </div>
+    )
+}
+
+function SolarPotentialIndicator({ lat, lng }: { lat: number, lng: number }) {
+    const [data, setData] = useState<any>(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+
+    // Debounce effect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchData()
+        }, 1000) // 1s debounce
+        return () => clearTimeout(timer)
+    }, [lat, lng])
+
+    const fetchData = async () => {
+        setLoading(true)
+        setError(false)
+        try {
+            const res = await fetch(`/api/solar-radiation?lat=${lat}&lon=${lng}`)
+            if (res.ok) {
+                const json = await res.json()
+                setData(json.data)
+            } else {
+                setError(true)
+            }
+        } catch (e) {
+            setError(true)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (loading) return <div className="text-xs text-slate-500 flex items-center animate-pulse"><Loader2 className="h-3 w-3 animate-spin mr-2" /> Analizando radiación solar satelital...</div>
+
+    if (error) return <div className="text-xs text-red-500">Sin datos de satélite</div>
+
+    if (!data) return null
+
+    // Determine quality label
+    const production = data.E_y // Annual kWh per 1kWp
+    let quality = 'Estándar'
+    let color = 'text-yellow-600'
+
+    if (production > 1600) { quality = 'Excelente'; color = 'text-green-600' }
+    else if (production > 1400) { quality = 'Muy Buena'; color = 'text-emerald-600' }
+    else if (production > 1200) { quality = 'Buena'; color = 'text-blue-600' }
+
+    return (
+        <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-slate-100 dark:border-white/5">
+            <div className="flex items-center gap-2">
+                <div className={`p-1.5 rounded-full bg-white shadow-sm ring-1 ring-inset ${color.replace('text-', 'ring-').replace('600', '100')} ${color.replace('text-', 'bg-').replace('600', '50')}`}>
+                    <Sparkles className={`h-3 w-3 ${color}`} />
+                </div>
+                <div>
+                    <span className="block font-bold text-slate-700 dark:text-slate-200">
+                        {production?.toFixed(0)} <span className="text-[10px] font-normal text-slate-500">kWh/kWp/año</span>
+                    </span>
+                </div>
+            </div>
+
+            <div className="text-right">
+                <span className={`block font-bold ${color}`}>{quality}</span>
+                <span className="text-[10px] text-slate-400">Datos PVGIS (UE)</span>
+            </div>
         </div>
     )
 }

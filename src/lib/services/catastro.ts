@@ -22,7 +22,7 @@ export function extractCoordsFromUrl(url: string): { lat: number, lng: number } 
 export async function geocodeAddress(address: string): Promise<{ lat: number, lng: number } | null> {
     try {
         const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`, {
-            headers: { "User-Agent": "SolisTechPro/1.0" }
+            headers: { "User-Agent": "MotorGap/1.0" }
         });
         const data = await response.json();
         if (data && data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
@@ -95,7 +95,7 @@ async function resilientFetch(url: string, attempts: number = 2): Promise<Respon
                 cache: 'no-store',
                 signal: controller.signal,
                 headers: {
-                    'User-Agent': 'SolisTechPro/1.0 (Contact: support@solistech.pro)'
+                    'User-Agent': 'MotorGap/1.0 (Contact: support@motorgap.es)'
                 }
             });
 

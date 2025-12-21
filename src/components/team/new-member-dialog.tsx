@@ -102,7 +102,7 @@ export function TeamMemberDialog({ roles, organizationId }: { roles: Role[], org
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="email">Correo Corporativo</Label>
-                            <Input id="email" name="email" type="email" placeholder="ana@solistech.pro" required />
+                            <Input id="email" name="email" type="email" placeholder="ana@motorgap.es" required />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="roleId">Rol / Cargo</Label>

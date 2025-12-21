@@ -33,7 +33,7 @@ export async function reverseGeocode(lat: number, lng: number) {
             `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=es`,
             {
                 headers: {
-                    'User-Agent': 'SolisTech PRO'
+                    'User-Agent': 'MotorGap'
                 }
             }
         )

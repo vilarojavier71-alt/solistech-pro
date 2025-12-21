@@ -2,7 +2,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, FileText, TrendingUp, Plus, Calculator, CalendarDays, ArrowRight, DollarSign, Bell, Settings } from 'lucide-react'
+import { Users, FileText, TrendingUp, Plus, Calculator, CalendarDays, ArrowRight, DollarSign, Bell, Settings, Briefcase, Receipt, FolderKanban } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
@@ -10,6 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { DashboardMetric } from '@/components/dashboard/dashboard-metric'
 import { SolarCalculatorWidget } from '@/components/tools/solar-calculator-widget'
 import { CreateOrganizationForm } from '@/components/onboarding/create-organization-form'
+import { RevenueChart } from '@/components/dashboard/revenue-chart'
+import { ProjectsWidget } from '@/components/dashboard/projects-widget'
+import { TodayAgenda } from '@/components/dashboard/today-agenda'
+import { getDashboardStats, getRecentProjects, getTodayAppointments } from '@/lib/actions/dashboard-stats'
 
 // Fallback skeleton
 function DashboardSkeleton() {
@@ -43,14 +47,7 @@ async function DashboardContent() {
     if (!session?.user) return null
 
     // Get user's profile
-    console.log('[DASHBOARD PAGE] Fetching profile for User ID:', session.user.id)
-
-    // [DEBUG] Inspect Prisma Client State
-    console.log('[DEBUG DASHBOARD] Prisma Keys:', Object.keys(prisma))
-    console.log('[DEBUG DASHBOARD] prisma.User type:', typeof prisma.User)
-    console.log('[DEBUG DASHBOARD] prisma.user type:', typeof (prisma as any).user)
-
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true, role: true }
     })
@@ -76,21 +73,12 @@ async function DashboardContent() {
         return <CreateOrganizationForm />
     }
 
-    // Parallel Data Fetching with Prisma (using available models)
-    // Note: leads, sales, calculations, presentations not in current Prisma schema
-    const [customersCount, projectsCount, invoicesCount] = await Promise.all([
-        prisma.customers.count({ where: { organization_id: profile.organization_id } }),
-        prisma.projects.count({ where: { organization_id: profile.organization_id } }),
-        prisma.invoices.count({ where: { organization_id: profile.organization_id } }),
+    // ----- CENTRALITA: Fetch all KPIs and widgets data in parallel -----
+    const [stats, recentProjects, todayAppointments] = await Promise.all([
+        getDashboardStats(),
+        getRecentProjects(5),
+        getTodayAppointments()
     ])
-
-    // Mock data for tables not yet in Prisma schema
-    // TODO: Add these tables to Prisma schema and implement properly
-    const leadsCount = 0
-    const quotesCount = 0
-    const presentationsCount = 0
-    const avgROI = 0
-    const totalSubsidies = 0
 
     const quickActions = [
         { title: 'Nuevo Lead', icon: Users, href: '/dashboard/leads', color: 'text-blue-500', bg: 'bg-blue-500/10' },
@@ -99,15 +87,13 @@ async function DashboardContent() {
         { title: 'Agenda', icon: CalendarDays, href: '/dashboard/calendar', color: 'text-purple-500', bg: 'bg-purple-500/10' },
     ]
 
-    // --------------------------------------------------------------------------------
-    // DAY 1 ONBOARDING: ACTION CARDS (Empty State)
-    // --------------------------------------------------------------------------------
-    if (customersCount === 0) {
+    // Empty state check
+    if (stats.customersCount === 0) {
         return (
             <div className="max-w-5xl mx-auto py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center space-y-4 mb-12">
                     <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
-                        ¡Bienvenido a SolisTech PRO!
+                        ¡Bienvenido a MotorGap!
                     </h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                         Tu espacio de trabajo está listo. Sigue estos 3 pasos para poner en marcha tu negocio solar.
@@ -193,118 +179,104 @@ async function DashboardContent() {
                 </div>
             </div>
 
-            {/* 2. Key Metrics Grid - Refactored Design */}
+            {/* 2. BENTO GRID - KPIs Maestros */}
             <section>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    <DashboardMetric
-                        icon={TrendingUp}
-                        label="ROI Promedio"
-                        value={`${avgROI}%`}
-                        secondary={`Base: ${projectsCount} proyectos`}
-                        trend={{ value: "+2.3%", positive: true }}
-                        variant="highlight"
-                    />
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {/* KPI 1: Ingresos Totales */}
                     <DashboardMetric
                         icon={DollarSign}
-                        label="Ayudas Gestionadas"
-                        value={totalSubsidies > 0 ? `${(totalSubsidies / 1000).toFixed(0)}k€` : '0€'}
-                        secondary="Subvenciones totales tramitadas"
-                        trend={{ value: "+12%", positive: true }}
-                        variant="default"
+                        label="Ingresos del Mes"
+                        value={new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(stats.monthlyRevenue)}
+                        secondary={`Total: ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(stats.totalRevenue)}`}
+                        variant="highlight"
                     />
-                    <DashboardMetric
-                        icon={FileText}
-                        label="Presentaciones"
-                        value={presentationsCount}
-                        secondary="Informes generados (IA)"
-                        variant="default"
-                    />
+
+                    {/* KPI 2: Leads Nuevos */}
                     <DashboardMetric
                         icon={Users}
-                        label="Cartera Clientes"
-                        value={customersCount}
-                        secondary="Clientes activos totales"
-                        trend={{ value: "+5", positive: true }}
+                        label="Leads Este Mes"
+                        value={stats.leadsCount}
+                        secondary="Oportunidades nuevas"
+                        variant="default"
+                    />
+
+                    {/* KPI 3: Proyectos Activos */}
+                    <DashboardMetric
+                        icon={FolderKanban}
+                        label="Proyectos Activos"
+                        value={stats.activeProjectsCount}
+                        secondary="En ejecución"
+                        variant="default"
+                    />
+
+                    {/* KPI 4: Citas Hoy */}
+                    <DashboardMetric
+                        icon={CalendarDays}
+                        label="Citas Hoy"
+                        value={stats.todayAppointments}
+                        secondary="Agendadas para hoy"
                         variant="default"
                     />
                 </div>
             </section>
 
-            {/* 3. Main Operational Area */}
-            <div className="grid gap-8 lg:grid-cols-3">
+            {/* 3. BENTO GRID - Widgets Operativos */}
+            <div className="grid gap-6 lg:grid-cols-3">
 
-                {/* Left: Quick Actions & Graph */}
-                <div className="lg:col-span-2 space-y-8">
+                {/* Column 1: Revenue & Quick Actions */}
+                <div className="space-y-6">
+                    <RevenueChart
+                        totalRevenue={stats.totalRevenue}
+                        monthlyRevenue={stats.monthlyRevenue}
+                        pendingInvoices={stats.pendingInvoices}
+                    />
 
-                    {/* Section Header */}
-                    <div className="flex items-center gap-3">
-                        <div className="h-1 w-6 bg-primary rounded-full" />
-                        <h2 className="text-xl font-semibold tracking-tight">Acciones Rápidas</h2>
-                    </div>
-
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        {quickActions.map((action) => {
-                            const Icon = action.icon
-                            return (
-                                <Link key={action.title} href={action.href} className="group">
-                                    <div className="flex flex-col items-center justify-center p-6 h-32 rounded-2xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 gap-3">
-                                        <div className={`p-3 rounded-xl transition-transform group-hover:scale-110 ${action.bg} ${action.color}`}>
-                                            <Icon className="w-6 h-6" />
-                                        </div>
-                                        <span className="font-medium text-sm text-center">{action.title}</span>
-                                    </div>
-                                </Link>
-                            )
-                        })}
-                    </div>
-
-                    {/* Placeholder Graph Area */}
-                    {/* Solar Calculator Widget */}
-                    <SolarCalculatorWidget />
-                </div>
-
-                {/* Right: Pending / Calendar */}
-                <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                        <div className="h-1 w-6 bg-amber-500 rounded-full" />
-                        <h2 className="text-xl font-semibold tracking-tight">Atención Requerida</h2>
-                    </div>
-
-                    <Card className="h-full border-border/50 shadow-sm bg-card/60 backdrop-blur-md">
-                        <CardHeader className="pb-4">
-                            <div className="flex justify-between items-center">
-                                <CardTitle className="text-base font-medium flex items-center gap-2">
-                                    <Bell className="w-4 h-4 text-primary" />
-                                    Notificaciones
-                                </CardTitle>
-                                <Badge variant="secondary" className="rounded-full px-2 text-xs">2 Nuevas</Badge>
-                            </div>
+                    {/* Quick Actions Grid */}
+                    <Card className="border-border/50">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">
+                                Acciones Rápidas
+                            </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {/* Item 1 */}
-                                <div className="group flex gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-amber-500 shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">Seguimiento Lead #405</p>
-                                        <p className="text-xs text-muted-foreground">Sin contacto desde hace 3 días.</p>
-                                    </div>
-                                </div>
-                                {/* Item 2 */}
-                                <div className="group flex gap-4 p-3 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/50">
-                                    <div className="mt-1 h-2 w-2 rounded-full bg-blue-500 shrink-0" />
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">Documentación Pte.</p>
-                                        <p className="text-xs text-muted-foreground">Cliente "Instalación Norte" subió archivos.</p>
-                                    </div>
-                                </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {quickActions.map((action) => {
+                                    const Icon = action.icon
+                                    return (
+                                        <Link key={action.title} href={action.href}>
+                                            <div className={`flex items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors ${action.bg}`}>
+                                                <Icon className={`h-4 w-4 ${action.color}`} />
+                                                <span className="text-sm font-medium">{action.title}</span>
+                                            </div>
+                                        </Link>
+                                    )
+                                })}
                             </div>
-
-                            <Button variant="ghost" className="w-full mt-6 text-xs text-muted-foreground hover:text-foreground">
-                                Ver todo el historial <ArrowRight className="ml-2 w-3 h-3" />
-                            </Button>
                         </CardContent>
                     </Card>
+                </div>
+
+                {/* Column 2: Projects Widget */}
+                <ProjectsWidget
+                    projects={recentProjects.map(p => ({
+                        ...p,
+                        updated_at: p.updated_at || new Date()
+                    }))}
+                    activeCount={stats.activeProjectsCount}
+                />
+
+                {/* Column 3: Today Agenda & Solar Calculator */}
+                <div className="space-y-6">
+                    <TodayAgenda
+                        appointments={todayAppointments.map(a => ({
+                            ...a,
+                            title: a.title || null
+                        }))}
+                        count={stats.todayAppointments}
+                    />
+
+                    {/* Solar Calculator Mini */}
+                    <SolarCalculatorWidget />
                 </div>
             </div>
         </div>

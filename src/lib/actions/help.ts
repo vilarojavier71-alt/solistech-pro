@@ -1,112 +1,126 @@
 'use server'
 
+import { prisma } from '@/lib/db'
 import { getCurrentUserWithRole } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
+import { HELP_TOPICS } from '@/components/help/help-data'
 
 export interface SearchResult {
     id: string
     title: string
-    subtitle: string
-    slug: string
-    category: {
-        name: string
-        slug: string
-    }
-    similarity?: number
+    description: string
+    category: string
+    cta: { text: string; link: string }
 }
 
 /**
- * INTELLIGENT SEARCH (Hybrid: Text + Vector later)
+ * INTELLIGENT SEARCH (Local in HELP_TOPICS)
+ * Searches across all help topics for matching terms
  */
 export async function searchHelpArticles(query: string): Promise<SearchResult[]> {
-    const supabase = await createClient()
+    if (!query || query.trim().length < 3) return []
 
-    if (!query || query.trim().length === 0) return []
+    const searchTerm = query.toLowerCase()
 
-    // 1. Full Text Search
-    // Using simple ILIKE for now, but configured for FTS if using `to_tsvector` in raw query
-    // Let's use Supabase 'textSearch' feature which wraps FTS
+    const results = HELP_TOPICS.filter(topic => {
+        const matchesTitle = topic.title.toLowerCase().includes(searchTerm)
+        const matchesDescription = topic.description.toLowerCase().includes(searchTerm)
+        const matchesSteps = topic.steps.some(s => s.toLowerCase().includes(searchTerm))
+        const matchesTips = topic.tips.some(t => t.toLowerCase().includes(searchTerm))
 
-    // NOTE: For 'smarter' search we would use embeddings. 
-    // Here we simulate prioritized search: Title > Content
+        return matchesTitle || matchesDescription || matchesSteps || matchesTips
+    }).map(topic => ({
+        id: topic.id,
+        title: topic.title,
+        description: topic.description,
+        category: topic.category,
+        cta: topic.cta
+    }))
 
-    const { data, error } = await supabase
-        .from('help_articles')
-        .select(`
-            id,
-            title,
-            subtitle,
-            slug,
-            category:help_categories(name, slug)
-        `)
-        .eq('status', 'published')
-        .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
-        .limit(5)
-
-    if (error) {
-        console.error("Search Error:", error)
-        return []
-    }
-
-    return (data || []) as SearchResult[]
+    return results.slice(0, 5)
 }
 
 /**
- * FETCH ARTICLE BY SLUG
+ * GET ARTICLE BY ID (from HELP_TOPICS)
  */
-export async function getArticle(slug: string) {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-        .from('help_articles')
-        .select(`
-            *,
-            category:help_categories(*)
-        `)
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .single()
-
-    if (error) return null
-    return data
+export async function getArticle(id: string) {
+    return HELP_TOPICS.find(t => t.id === id) || null
 }
 
 /**
- * TICKET CREATION (Last Resort)
+ * TICKET CREATION (Prisma - Production Ready)
+ * Creates a support ticket linked to the user's organization
  */
 export async function createTicket(prevState: any, formData: FormData) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getCurrentUserWithRole()
 
-    // Organization Context?
-    // We assume user is logged in
     if (!user) return { error: 'Debes iniciar sesión' }
 
-    // Fetch user or organization? 
-    // We need organization_id. Let's get it from user metadata or profile.
-    const { data: profile } = await supabase.from('users').select('organization_id').eq('id', user.id).single()
-
-    if (!profile) return { error: 'Error de cuenta' }
+    if (!user.organizationId) return { error: 'Sin organización asignada' }
 
     const subject = formData.get('subject') as string
     const description = formData.get('description') as string
-    const category = formData.get('category') as string
+    const category = formData.get('category') as string || 'general'
+    const sourcePage = formData.get('source_page') as string || null
 
-    // 1. Validate
-    if (!subject || subject.length < 5) return { error: 'Asunto muy corto' }
-    if (!description || description.length < 20) return { error: 'Describe mejor el problema' }
+    // Validation
+    if (!subject || subject.length < 5) {
+        return { error: 'El asunto es muy corto (mínimo 5 caracteres)' }
+    }
 
-    // 2. Insert
-    const { error: insertError } = await supabase.from('help_tickets').insert({
-        organization_id: profile.organization_id,
-        user_id: user.id,
-        subject: `[${category}] ${subject}`,
-        description,
-        status: 'open',
-        priority: 'medium'
-    })
+    if (!description || description.length < 20) {
+        return { error: 'Describe mejor el problema (mínimo 20 caracteres)' }
+    }
 
-    if (insertError) return { error: 'Error al enviar ticket' }
+    try {
+        await prisma.support_tickets.create({
+            data: {
+                organization_id: user.organizationId,
+                user_id: user.id,
+                subject: subject,
+                description: description,
+                category: category,
+                status: 'open',
+                priority: 'normal',
+                source_page: sourcePage
+            }
+        })
 
-    return { success: true }
+        revalidatePath('/dashboard/help')
+
+        return { success: true, message: 'Ticket enviado correctamente' }
+
+    } catch (error) {
+        console.error('[HELP] Error creating ticket:', error)
+        return { error: 'Error al enviar el ticket. Inténtalo de nuevo.' }
+    }
 }
 
+/**
+ * GET USER TICKETS
+ * Returns tickets created by the user's organization
+ */
+export async function getUserTickets() {
+    const user = await getCurrentUserWithRole()
+
+    if (!user?.organizationId) return []
+
+    return prisma.support_tickets.findMany({
+        where: { organization_id: user.organizationId },
+        orderBy: { created_at: 'desc' },
+        take: 10
+    })
+}
+
+/**
+ * TICKET CATEGORIES
+ * Available categories for support tickets
+ */
+export const TICKET_CATEGORIES = [
+    { slug: 'facturacion', name: 'Facturación y Pagos' },
+    { slug: 'tecnico', name: 'Problemas Técnicos' },
+    { slug: 'solar', name: 'Calculadora Solar' },
+    { slug: 'crm', name: 'CRM y Clientes' },
+    { slug: 'calendario', name: 'Agenda y Citas' },
+    { slug: 'general', name: 'Consulta General' }
+]

@@ -24,7 +24,66 @@ interface SaveCalculationData {
     availableArea?: number
 }
 
+// ... (existing imports and interface)
+
+export async function createProjectFromCalculation(
+    data: SaveCalculationData,
+    customerId: string,
+    name: string
+) {
+    try {
+        const sessionUser = await getCurrentUserWithRole()
+        if (!sessionUser || !sessionUser.id) {
+            return { error: 'No autenticado.' }
+        }
+
+        const dbUser = await prisma.User.findUnique({
+            where: { id: sessionUser.id },
+            select: { organization_id: true }
+        })
+
+        const organizationId = dbUser?.organization_id || sessionUser.organizationId
+        if (!organizationId) {
+            return { error: 'Organización requerida.' }
+        }
+
+        // Verify customer belongs to organization
+        const customer = await prisma.customers.findUnique({
+            where: { id: customerId },
+            select: { organization_id: true }
+        })
+
+        if (!customer || customer.organization_id !== organizationId) {
+            return { error: 'Cliente inválido.' }
+        }
+
+        const newProject = await prisma.projects.create({
+            data: {
+                organization_id: organizationId,
+                client_id: customerId,
+                name: name,
+                status: 'quote',
+                installation_type: 'residential', // Default, could be mapped if present in data
+                system_size_kwp: data.systemSize,
+                estimated_production_kwh: data.production,
+                estimated_savings: data.savings,
+                description: `Proyecto generado desde Calculadora.\nSistema: ${data.panels} paneles.\nProducción estimada: ${data.production} kWh/año.\nROI: ${data.roi}%`,
+                location: data.location as any, // Cast JSON
+                created_by: sessionUser.id
+            }
+        })
+
+        revalidatePath('/dashboard/projects')
+        return { success: true, projectId: newProject.id }
+
+    } catch (error: any) {
+        console.error('Error creating project from calc:', error)
+        return { error: error.message || 'Error al crear proyecto' }
+    }
+}
+
 export async function saveCalculation(data: SaveCalculationData) {
+    // ... (existing saveCalculation implementation) 
     try {
         const sessionUser = await getCurrentUserWithRole()
         if (!sessionUser || !sessionUser.id) {
@@ -48,7 +107,6 @@ export async function saveCalculation(data: SaveCalculationData) {
 
         // Validate and limit numeric values
         const safeROI = Math.min(Math.max(data.roi || 0, 0), 9999)
-        const safeAnnualROI = Math.min(Math.max(data.annualROI || 0, 0), 100)
 
         // Verify organization exists
         const orgExists = await prisma.organizations.findUnique({
@@ -60,19 +118,33 @@ export async function saveCalculation(data: SaveCalculationData) {
             return { error: 'La organización asignada no es válida.', code: 'ORGANIZATION_REQUIRED' }
         }
 
-        // Note: 'calculations' table may not exist in current schema
-        // For now, we'll log and return success stub
-        console.log('[CALCULATOR] Would save calculation:', {
-            organizationId,
-            systemSize: data.systemSize,
-            production: data.production,
-            savings: data.savings,
-            roi: safeROI
+        // Create calculation record
+        const calculation = await prisma.calculations.create({
+            data: {
+                organization_id: organizationId,
+                system_size_kwp: data.systemSize,
+                estimated_production_kwh: data.production,
+                estimated_savings: data.savings,
+                location: data.location as any,
+                components: {
+                    panels: { count: data.panels },
+                    monthlyProduction: data.monthlyProduction,
+                    consumption: data.consumption,
+                    roof: { tilt: data.roofTilt, orientation: data.roofOrientation },
+                    financials: {
+                        roi: data.roi,
+                        payback: data.payback,
+                        availableArea: data.availableArea
+                    }
+                } as any,
+                pvgis_data: {
+                    monthly: data.monthlyProduction
+                } as any,
+                subsidy_irpf_type: '40' // Default, assumes standard deduction
+            }
         })
 
-        revalidatePath('/dashboard/calculator')
-        return { success: true, message: 'Cálculo procesado (tabla calculations pendiente)' }
-
+        return { success: true, id: calculation.id, message: 'Cálculo guardado correctamente' }
     } catch (error: any) {
         console.error('Save calculation error:', error)
         return { error: `Error al guardar cálculo: ${error.message || 'Error desconocido'}` }

@@ -12,7 +12,7 @@ import { DownloadInvoicePDFButton } from '@/components/invoices/download-pdf-but
 import { PaymentForm } from '@/components/invoices/payment-form'
 
 export const metadata: Metadata = {
-    title: 'Detalle de Factura | SolisTech PRO',
+    title: 'Detalle de Factura | MotorGap',
 }
 
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {

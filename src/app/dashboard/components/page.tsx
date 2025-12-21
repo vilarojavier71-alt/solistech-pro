@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Package } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Componentes | SolisTech PRO',
+    title: 'Componentes | MotorGap',
     description: 'Catálogo de componentes solares',
 }
 

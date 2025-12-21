@@ -5,7 +5,7 @@ import { ClientLoginForm } from '@/components/portal/client-login-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-    title: 'Portal Cliente | SolisTech PRO',
+    title: 'Portal Cliente | MotorGap',
     description: 'Accede a tu trámite de instalación solar',
 }
 
@@ -15,7 +15,7 @@ export default function ClientPortalPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-sky-900 mb-2">
-                        SolisTech PRO
+                        MotorGap
                     </h1>
                     <p className="text-sky-700">
                         Portal de Cliente
@@ -38,7 +38,7 @@ export default function ClientPortalPage() {
                     <p>¿No tienes código de acceso?</p>
                     <p className="mt-1">
                         Revisa el email que te enviamos o{' '}
-                        <a href="mailto:soporte@solistech.com" className="font-medium underline hover:text-sky-900">
+                        <a href="mailto:soporte@motorgap.es" className="font-medium underline hover:text-sky-900">
                             contáctanos
                         </a>
                     </p>

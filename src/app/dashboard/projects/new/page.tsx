@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db'
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-    title: 'Nuevo Proyecto | SolisTech PRO',
+    title: 'Nuevo Proyecto | MotorGap',
     description: 'Crear un nuevo proyecto solar',
 }
 

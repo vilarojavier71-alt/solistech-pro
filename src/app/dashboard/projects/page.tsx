@@ -2,7 +2,7 @@
 import { ProjectsTable } from '@/components/projects/projects-table'
 
 export const metadata: Metadata = {
-    title: 'Proyectos | SolisTech PRO',
+    title: 'Proyectos | MotorGap',
     description: 'Gestiona tus proyectos solares',
 }
 

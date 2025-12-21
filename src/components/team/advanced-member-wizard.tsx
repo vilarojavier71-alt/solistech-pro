@@ -212,7 +212,7 @@ export function AdvancedMemberWizard({ roles, workZones, onComplete, onCancel }:
                                         <Input
                                             id="email"
                                             {...form.register("step1.email")}
-                                            placeholder="juan@solistech.pro"
+                                            placeholder="juan@motorgap.es"
                                             type="email"
                                             className={cn(errors.step1?.email && "border-destructive focus-visible:ring-destructive")}
                                         />

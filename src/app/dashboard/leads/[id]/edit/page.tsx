@@ -5,7 +5,7 @@ import { EditLeadForm } from '@/components/forms/edit-lead-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-    title: 'Editar Lead | SolisTech PRO',
+    title: 'Editar Lead | MotorGap',
 }
 
 export default async function EditLeadPage({ params }: { params: Promise<{ id: string }> }) {

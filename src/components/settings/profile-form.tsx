@@ -124,7 +124,7 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="juan@solistech.es"
+                    placeholder="juan@motorgap.es"
                 />
                 <p className="text-xs text-muted-foreground">
                     Cambiar tu email requiere verificación

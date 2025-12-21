@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CRMNavigation } from "@/components/crm/crm-nav"
 
 export const metadata: Metadata = {
-    title: "CRM | SolisTech Pro",
+    title: "CRM | MotorGap",
     description: "Gestión de clientes y oportunidades",
 }
 

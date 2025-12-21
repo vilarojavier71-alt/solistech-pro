@@ -126,7 +126,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
                     id="orgName"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="SolisTech Solutions S.L."
+                    placeholder="Mi Empresa S.L."
                 />
             </div>
 
@@ -159,7 +159,7 @@ export function OrganizationForm({ organization }: OrganizationFormProps) {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="contacto@solistech.es"
+                        placeholder="contacto@motorgap.es"
                     />
                 </div>
             </div>

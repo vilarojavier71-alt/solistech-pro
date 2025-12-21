@@ -15,7 +15,7 @@ import { getEmployees } from '@/lib/actions/employees'
 import { Separator } from '@/components/ui/separator'
 
 export const metadata: Metadata = {
-    title: 'Configuración | SolisTech PRO',
+    title: 'Configuración | MotorGap',
     description: 'Configuración de tu cuenta y organización',
 }
 
@@ -203,7 +203,7 @@ export default async function SettingsPage() {
                             <div>
                                 <h3 className="text-lg font-medium">Integraciones</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Conecta servicios externos para potenciar SolisTech.
+                                    Conecta servicios externos para potenciar MotorGap.
                                 </p>
                             </div>
                             <Separator />

@@ -6,7 +6,7 @@ import { EditCustomerForm } from '@/components/forms/edit-customer-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-    title: 'Editar Cliente | SolisTech PRO',
+    title: 'Editar Cliente | MotorGap',
 }
 
 export default async function EditCustomerPage({ params }: { params: Promise<{ id: string }> }) {

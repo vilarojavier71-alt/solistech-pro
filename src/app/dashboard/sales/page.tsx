@@ -12,7 +12,7 @@ export default async function SalesPage() {
 
     if (!session?.user) return <div>No autorizado</div>
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -21,9 +21,11 @@ export default async function SalesPage() {
         return <div>No se encontró la organización del usuario</div>
     }
 
-    // STUB: sales table not in current Prisma schema
-    // TODO: Add sales model to Prisma schema and implement
-    const sales: any[] = []
+    // Fetch real sales from database
+    const sales = await prisma.sales.findMany({
+        where: { organization_id: profile.organization_id },
+        orderBy: { created_at: 'desc' }
+    })
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">

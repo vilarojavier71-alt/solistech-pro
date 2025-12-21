@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth'
 import { prisma as db } from '@/lib/db'
 
 export const metadata: Metadata = {
-    title: 'Nueva Presentación | SolisTech PRO',
+    title: 'Nueva Presentación | MotorGap',
     description: 'Crear presentación PowerPoint con IA',
 }
 

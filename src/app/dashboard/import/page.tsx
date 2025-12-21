@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { UnifiedImportPage } from '@/components/import/unified-import-page'
 
 export const metadata: Metadata = {
-    title: 'Importar Datos | SolisTech PRO',
+    title: 'Importar Datos | MotorGap',
     description: 'Importa clientes, proyectos y cálculos desde Excel o CSV',
 }
 

@@ -46,6 +46,7 @@ model User {
   assigned_appointments  appointments[]
   created_invitations    invitations[]
   client_portal_project  projects?               @relation("client_portal_project")
+  support_tickets        support_tickets[]
 
   @@map("users")
   @@index([organization_id, role])
@@ -93,6 +94,7 @@ model organizations {
   payment_methods     payment_methods[]
   calculations        calculations[]
   presentations       presentations[]
+  support_tickets     support_tickets[]
 
   @@index([subscription_plan, subscription_status])
 }
@@ -736,4 +738,26 @@ model presentations {
   @@index([organization_id, project_id])
 }
 
+// ============================================================================
+// SUPPORT TICKETS (Help Center)
+// ============================================================================
 
+model support_tickets {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String   @db.Uuid
+  user_id         String   @db.Uuid
+  subject         String
+  description     String   @db.Text
+  category        String   // facturacion, tecnico, solar, general
+  status          String   @default("open") // open, in_progress, resolved, closed
+  priority        String   @default("normal") // low, normal, high, urgent
+  source_page     String?  // /dashboard/calculator, /dashboard/projects, etc.
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @updatedAt @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, status])
+  @@index([user_id])
+}

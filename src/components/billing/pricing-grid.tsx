@@ -91,7 +91,7 @@ export function PricingGrid({ currentPlanId }: PricingGridProps) {
                                 </Button>
                             ) : isEnterprise ? (
                                 <Button className="w-full" variant="ghost" asChild>
-                                    <a href="mailto:ventas@solistech.pro">Contactar Ventas</a>
+                                    <a href="mailto:ventas@motorgap.es">Contactar Ventas</a>
                                 </Button>
                             ) : isFree ? (
                                 <Button className="w-full" variant="outline" disabled>

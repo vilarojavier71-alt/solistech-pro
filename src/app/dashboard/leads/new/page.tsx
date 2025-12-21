@@ -3,7 +3,7 @@ import { NewLeadForm } from '@/components/forms/new-lead-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-    title: 'Nuevo Lead | SolisTech PRO',
+    title: 'Nuevo Lead | MotorGap',
     description: 'Crear un nuevo lead',
 }
 

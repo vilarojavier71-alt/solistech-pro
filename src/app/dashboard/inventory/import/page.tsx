@@ -3,7 +3,7 @@ import { ExcelImporter } from '@/components/import/excel-importer'
 import { importStock } from '@/lib/actions/import'
 
 export const metadata: Metadata = {
-    title: 'Importar Inventario | SolisTech PRO',
+    title: 'Importar Inventario | MotorGap',
     description: 'Importa tus productos y stock masivamente'
 }
 

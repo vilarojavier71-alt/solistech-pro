@@ -121,28 +121,28 @@ export async function seedTestUsers() {
 
     const dummyUsers = [
         {
-            email: 'admin.test@solistech.pro',
+            email: 'admin.test@motorgap.es',
             full_name: 'Admin Test User',
             role: 'admin',
             organization_id: orgId,
             avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin'
         },
         {
-            email: 'tecnico.test@solistech.pro',
+            email: 'tecnico.test@motorgap.es',
             full_name: 'Técnico Test User',
             role: 'technician',
             organization_id: orgId,
             avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tech'
         },
         {
-            email: 'ingeniero.test@solistech.pro',
+            email: 'ingeniero.test@motorgap.es',
             full_name: 'Ingeniero Test User',
             role: 'engineer',
             organization_id: orgId,
             avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=eng'
         },
         {
-            email: 'pica.test@solistech.pro',
+            email: 'pica.test@motorgap.es',
             full_name: 'Pica (Ventas) Test',
             role: 'commercial',
             organization_id: orgId,

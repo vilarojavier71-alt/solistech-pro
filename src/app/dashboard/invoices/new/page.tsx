@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
-    title: 'Nueva Factura | SolisTech PRO',
+    title: 'Nueva Factura | MotorGap',
     description: 'Crear nueva factura con Verifactu',
 }
 

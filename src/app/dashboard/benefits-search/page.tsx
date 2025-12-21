@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Info } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Buscador de Ayudas Municipales | SolisTech PRO',
+    title: 'Buscador de Ayudas Municipales | MotorGap',
     description: 'Encuentra las bonificaciones IBI e ICIO disponibles en tu municipio',
 }
 

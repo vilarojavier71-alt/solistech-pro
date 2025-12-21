@@ -10,7 +10,7 @@ export interface TourStep {
 export const TOUR_STEPS: TourStep[] = [
     {
         id: 'welcome',
-        title: 'Bienvenido a SolisTech Pro',
+        title: 'Bienvenido a MotorGap',
         content: 'Tu plataforma integral para gestión de proyectos fotovoltaicos. Este breve tour te enseñará lo esencial.',
         // No target -> Modal Center
         route: '/dashboard',

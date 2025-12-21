@@ -13,11 +13,11 @@ export function ClientDetailsHeader({ client }: { client: any }) {
     return (
         <div className="flex items-center justify-between">
             <div>
-                <h2 className="text-2xl font-bold tracking-tight text-white">{client.name || client.full_name}</h2>
-                <p className="text-zinc-400">{client.company || 'Cliente Particular'}</p>
+                <h2 className="text-3xl font-bold tracking-tight">{client.name || client.full_name}</h2>
+                <p className="text-muted-foreground">{client.company || 'Cliente Particular'}</p>
             </div>
 
-            <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:text-white" onClick={() => setOpen(true)}>
+            <Button variant="outline" onClick={() => setOpen(true)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Editar Cliente
             </Button>

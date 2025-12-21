@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Receipt, Shield, HelpCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-    title: 'Facturación | SolisTech PRO',
+    title: 'Facturación | MotorGap',
     description: 'Gestiona tu suscripción y facturación'
 }
 

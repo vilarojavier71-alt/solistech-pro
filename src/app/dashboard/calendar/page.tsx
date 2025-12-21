@@ -12,14 +12,20 @@ export default async function CalendarPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, full_name: true }
     })
 
-    // STUB: appointments table not in current Prisma schema
-    // TODO: Add appointments model to Prisma schema and implement
-    const appointments: any[] = []
+    // Fetch real appointments from database
+    const appointments = profile?.organization_id ? await prisma.appointments.findMany({
+        where: { organization_id: profile.organization_id },
+        include: {
+            customer: { select: { name: true, phone: true } },
+            assignee: { select: { full_name: true } }
+        },
+        orderBy: { start_time: 'asc' }
+    }) : []
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -44,13 +50,13 @@ export default async function CalendarPage() {
                                 {/* Date Box */}
                                 <div className="flex flex-col items-center justify-center p-3 bg-slate-100 rounded-lg min-w-[80px]">
                                     <span className="text-xs text-slate-500 uppercase font-bold">
-                                        {format(new Date(apt.start_time), 'MMM', { locale: es })}
+                                        {apt.start_time ? format(new Date(apt.start_time), 'MMM', { locale: es }) : '-'}
                                     </span>
                                     <span className="text-2xl font-bold text-slate-800">
-                                        {format(new Date(apt.start_time), 'dd')}
+                                        {apt.start_time ? format(new Date(apt.start_time), 'dd') : '--'}
                                     </span>
                                     <span className="text-xs text-slate-500">
-                                        {format(new Date(apt.start_time), 'HH:mm')}
+                                        {apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '--:--'}
                                     </span>
                                 </div>
 
@@ -60,7 +66,7 @@ export default async function CalendarPage() {
                                     <div className="flex items-center gap-4 text-sm text-slate-500">
                                         <div className="flex items-center gap-1">
                                             <User className="h-4 w-4" />
-                                            {apt.customers?.full_name || 'Cliente Potencial'} ({apt.customers?.phone})
+                                            {apt.customer?.name || 'Cliente Potencial'} {apt.customer?.phone && `(${apt.customer.phone})`}
                                         </div>
                                         {apt.address && (
                                             <div className="flex items-center gap-1">
@@ -70,7 +76,7 @@ export default async function CalendarPage() {
                                         )}
                                     </div>
                                     <div className="text-sm text-slate-500 mt-2">
-                                        Asignado a: <span className="font-medium text-sky-700">{apt.assigned_user?.full_name || 'Sin asignar'}</span>
+                                        Asignado a: <span className="font-medium text-sky-700">{apt.assignee?.full_name || 'Sin asignar'}</span>
                                     </div>
                                 </div>
 

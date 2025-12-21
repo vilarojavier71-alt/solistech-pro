@@ -9,6 +9,12 @@ export interface PresentationData {
     customerEmail?: string
     projectAddress?: string
 
+    // Narrativa IA
+    executiveSummary?: string
+    environmentalImpact?: string
+    financialAnalysis?: string
+    technicalDetails?: string
+
     // Sistema técnico
     systemSizeKwp: number
     panelCount: number
@@ -101,6 +107,11 @@ export async function generatePresentation(data: PresentationData): Promise<Buff
 
     // 1. PORTADA
     addCoverSlide(pptx, data, colors)
+
+    // 1.5. RESUMEN EJECUTIVO (IA)
+    if (data.executiveSummary) {
+        addExecutiveSummarySlide(pptx, data, colors)
+    }
 
     // 2. PROPUESTA TÉCNICA
     addTechnicalSlide(pptx, data, colors)
@@ -649,5 +660,113 @@ function addClosingSlide(pptx: pptxgen, data: PresentationData, colors: any) {
         fontSize: 12,
         color: 'CCCCCC',
         align: 'center'
+    })
+}
+
+// DIAPOSITIVA 1.5: Resumen Ejecutivo (IA)
+function addExecutiveSummarySlide(pptx: pptxgen, data: PresentationData, colors: any) {
+    const slide = pptx.addSlide()
+
+    slide.addText('RESUMEN EJECUTIVO', {
+        x: 0.5,
+        y: 0.5,
+        fontSize: 32,
+        bold: true,
+        color: colors.primary
+    })
+
+    // Contenedor principal
+    const startY = 1.2
+
+    // 1. Visión General (Executive Summary)
+    slide.addText('Visión General', {
+        x: 0.5,
+        y: startY,
+        w: 4,
+        fontSize: 18,
+        bold: true,
+        color: colors.secondary
+    })
+
+    slide.addText(data.executiveSummary || '', {
+        x: 0.5,
+        y: startY + 0.4,
+        w: 9,
+        h: 1.2,
+        fontSize: 14,
+        color: colors.text,
+        align: 'justify'
+    })
+
+    // 2. Impacto Ambiental
+    slide.addText('Impacto Ambiental', {
+        x: 0.5,
+        y: startY + 1.8,
+        w: 4,
+        fontSize: 18,
+        bold: true,
+        color: colors.accent
+    })
+
+    slide.addText(data.environmentalImpact || '', {
+        x: 0.5,
+        y: startY + 2.2,
+        w: 9,
+        h: 1,
+        fontSize: 14,
+        color: colors.text,
+        align: 'justify'
+    })
+
+    // 3. Análisis Financiero
+    slide.addShape(pptx.ShapeType.rect, {
+        x: 0.5,
+        y: startY + 3.4,
+        w: 4.4,
+        h: 2,
+        fill: { color: 'F3F4F6' }
+    })
+
+    slide.addText('Análisis Financiero', {
+        x: 0.7,
+        y: startY + 3.6,
+        w: 4,
+        fontSize: 16,
+        bold: true,
+        color: colors.primary
+    })
+
+    slide.addText(data.financialAnalysis || '', {
+        x: 0.7,
+        y: startY + 4,
+        w: 4,
+        fontSize: 12,
+        color: colors.text
+    })
+
+    // 4. Detalles Técnicos
+    slide.addShape(pptx.ShapeType.rect, {
+        x: 5.1,
+        y: startY + 3.4,
+        w: 4.4,
+        h: 2,
+        fill: { color: 'F3F4F6' }
+    })
+
+    slide.addText('Especificaciones Técnicas', {
+        x: 5.3,
+        y: startY + 3.6,
+        w: 4,
+        fontSize: 16,
+        bold: true,
+        color: colors.primary
+    })
+
+    slide.addText(data.technicalDetails || '', {
+        x: 5.3,
+        y: startY + 4,
+        w: 4,
+        fontSize: 12,
+        color: colors.text
     })
 }

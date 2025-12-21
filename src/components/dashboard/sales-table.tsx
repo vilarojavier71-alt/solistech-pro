@@ -1,7 +1,6 @@
 ﻿'use client'
 
 import { useState } from 'react'
-import { Sale } from '@/types/portal'
 import {
     Table,
     TableBody,
@@ -24,8 +23,9 @@ import {
 import { Search, MoreHorizontal, FileText, DollarSign } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
+// Use flexible type to accept raw Prisma data
 interface SalesTableProps {
-    data: Sale[]
+    data: any[]
 }
 
 export function SalesTable({ data: initialData }: SalesTableProps) {
@@ -45,11 +45,12 @@ export function SalesTable({ data: initialData }: SalesTableProps) {
         }).format(amount)
     }
 
-    const getPaymentBadge = (sale: Sale) => {
+    const getPaymentBadge = (sale: any) => {
         // Lógica simplificada visualizar estado global
         if (sale.payment_final_status === 'received') return <Badge className="bg-green-600">Pagado 100%</Badge>
         if (sale.payment_60_status === 'received') return <Badge className="bg-lime-600">Pagado 60%</Badge>
         if (sale.payment_20_status === 'received') return <Badge className="bg-sky-600">Pagado 20%</Badge>
+        if (sale.payment_status === 'confirmed') return <Badge className="bg-green-600">Confirmado</Badge>
         return <Badge variant="outline" className="text-slate-500">Pendiente</Badge>
     }
 

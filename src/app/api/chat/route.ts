@@ -46,7 +46,7 @@ setInterval(() => {
 // Powered by OpenAI (o proveedor configurado)
 // ============================================================================
 
-const SYSTEM_PROMPT = `Eres un asistente experto en energía solar de SolisTech.
+const SYSTEM_PROMPT = `Eres un asistente experto en energía solar de MotorGap.
 Tu tono es profesional, empático y resolutivo.
 
 REGLAS:

@@ -4,12 +4,13 @@ import { prisma } from '@/lib/db'
 import { getCurrentUserWithRole } from '@/lib/session'
 import { generatePresentation, type PresentationData } from '@/lib/powerpoint/generator'
 import { generateSolarSimulation } from './ai-generation'
+import { generatePresentationText } from './ai-text-generation'
 
 async function getPresentationContext() {
     const user = await getCurrentUserWithRole()
     if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: user.id },
         select: { organization_id: true }
     })
@@ -21,7 +22,7 @@ async function getPresentationContext() {
 
 export async function createPresentation(
     customerId: string,
-    projectId: string,
+    projectId: string | undefined, // Optional
     calculationId: string,
     originalPhotoUrl?: string
 ) {
@@ -50,7 +51,7 @@ export async function createPresentation(
             try {
                 const aiResult = await generateSolarSimulation(organizationId, {
                     originalPhotoUrl,
-                    systemSizeKwp: calc.system_size_kwp || 0,
+                    systemSizeKwp: Number(calc.system_size_kwp || 0),
                     panelCount: (calc.components as any)?.panels?.count || 0
                 })
                 if (aiResult.success && aiResult.imageUrl) {
@@ -81,23 +82,50 @@ export async function createPresentation(
         const components = calc.components as any || {}
         const pvgisData = (calc as any).pvgis_data || {}
 
+        // Generate AI Text Content
+        let aiTextContent = {
+            executiveSummary: undefined,
+            environmentalImpact: undefined,
+            financialAnalysis: undefined,
+            technicalDetails: undefined
+        } as any
+
+        try {
+            console.log('[PRESENTATION] Generating AI text content...')
+            aiTextContent = await generatePresentationText(organizationId, {
+                customerName: calc.project?.customer?.name || 'Cliente',
+                systemSize: Number(calc.system_size_kwp || 0),
+                production: Number(calc.estimated_production_kwh || 0),
+                savings: Number(calc.estimated_savings || 0),
+                roi: (calc.components as any)?.financials?.roi || 0,
+                location: (calc.location as any)?.name || 'Ubicación'
+            })
+        } catch (textError) {
+            console.error('AI Text Gen Error:', textError)
+        }
+
         const presentationData: PresentationData = {
             customerName: calc.project?.customer?.name || 'Cliente',
             customerEmail: calc.project?.customer?.email || '',
             projectAddress: (calc.location as any)?.address || 'Dirección no especificada',
-            systemSizeKwp: calc.system_size_kwp || 0,
+            systemSizeKwp: Number(calc.system_size_kwp || 0),
             panelCount: components.panels?.count || 0,
             panelModel: components.panels?.model || 'Panel solar estándar',
             inverterModel: components.inverter?.model || 'Inversor estándar',
-            annualProductionKwh: calc.estimated_production_kwh || 0,
+            annualProductionKwh: Number(calc.estimated_production_kwh || 0),
             monthlyProduction: pvgisData.monthly || Array(12).fill(0),
             currentBillEuros: components.current_bill || 100,
-            estimatedSavings: (calc as any).estimated_savings || 0,
+            estimatedSavings: Number((calc as any).estimated_savings || 0),
             totalCost: components.total_cost || 0,
             fiscalDeductionType: fiscalDeductionType as '20' | '40' | '60',
             simulatedPhotoUrl,
-            companyName: calc.organization?.name || 'SolisTech',
-            companyLogo: calc.organization?.logo_url || undefined
+            companyName: calc.organization?.name || 'MotorGap',
+            companyLogo: calc.organization?.logo_url || undefined,
+            // AI Content
+            executiveSummary: aiTextContent.executiveSummary,
+            environmentalImpact: aiTextContent.environmentalImpact,
+            financialAnalysis: aiTextContent.financialAnalysis,
+            technicalDetails: aiTextContent.technicalDetails
         }
 
         // Generate PowerPoint
@@ -107,7 +135,7 @@ export async function createPresentation(
         } catch (genError: any) {
             await prisma.presentations.update({
                 where: { id: presentation.id },
-                data: { status: 'error', generation_error: genError.message }
+                data: { status: 'failed' }
             })
             return { error: `Error al generar PowerPoint: ${genError.message}` }
         }
@@ -119,16 +147,16 @@ export async function createPresentation(
         await prisma.presentations.update({
             where: { id: presentation.id },
             data: {
-                status: 'generated',
-                pptx_file_size: pptxBuffer.length,
-                generated_at: new Date()
+                status: 'completed',
+                updated_at: new Date()
             }
         })
 
         return {
             success: true,
             presentationId: presentation.id,
-            hasSimulatedImage: !!simulatedPhotoUrl
+            hasSimulatedImage: !!simulatedPhotoUrl,
+            buffer: pptxBuffer.toString('base64')
         }
 
     } catch (error: any) {
@@ -162,8 +190,8 @@ export async function markPresentationAsSent(presentationId: string, sentToEmail
             where: { id: presentationId },
             data: {
                 status: 'sent',
-                sent_at: new Date(),
-                sent_to_email: sentToEmail
+                // sent_at: new Date(),
+                // sent_to_email: sentToEmail
             }
         })
         return { success: true }

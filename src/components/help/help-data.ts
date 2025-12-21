@@ -83,7 +83,7 @@ export const HELP_TOPICS: HelpTopic[] = [
         troubleshooting: [
             {
                 problem: '"Ubicación no disponible"',
-                solution: 'Ve a Ajustes > Privacidad > Ubicación > Solistech Pro > "Siempre"'
+                solution: 'Ve a Ajustes > Privacidad > Ubicación > MotorGap > "Siempre"'
             },
             {
                 problem: '"Fuera del área permitida"',

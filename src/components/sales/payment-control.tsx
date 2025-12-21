@@ -31,7 +31,7 @@ Importe a abonar: €${amount.toLocaleString('es-ES')}%0D%0A
 Concepto: ${concept}%0D%0A%0D%0A
 Por favor, realice la transferencia a la cuenta ESXX XXXX XXXX XXXX XXXX.%0D%0A%0D%0A
 Gracias,%0D%0A
-El equipo de SolisTech.`
+El equipo de MotorGap.`
 
         window.open(`mailto:${sale.customer_email}?subject=${subject}&body=${body}`, '_blank')
 

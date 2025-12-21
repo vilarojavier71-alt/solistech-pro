@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
-    title: 'Presentaciones | SolisTech PRO',
+    title: 'Presentaciones | MotorGap',
     description: 'Gestión de presentaciones PowerPoint',
 }
 

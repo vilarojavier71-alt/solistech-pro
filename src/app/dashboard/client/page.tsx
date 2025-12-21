@@ -138,7 +138,7 @@ export default async function ClientDashboardPage() {
                                 </a>
                             </Button>
                             <Button variant="outline" className="w-full justify-start" asChild>
-                                <a href="mailto:soporte@solistech.es">
+                                <a href="mailto:soporte@motorgap.es">
                                     <Mail className="w-4 h-4 mr-2" />
                                     Enviar Email
                                 </a>

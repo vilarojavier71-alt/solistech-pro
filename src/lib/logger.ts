@@ -1,5 +1,5 @@
 /**
- * Centralized Logger - SolisTech Pro
+ * Centralized Logger - MotorGap
  * 
  * Formato JSON estricto para stdout/stderr compatible con:
  * - Datadog
@@ -25,7 +25,7 @@ interface LogEntry {
 }
 
 // Configuración
-const SERVICE_NAME = 'solistech-pro'
+const SERVICE_NAME = 'motorgap'
 const ENVIRONMENT = process.env.NODE_ENV || 'development'
 const LOG_LEVEL = (process.env.LOG_LEVEL || 'info') as LogLevel
 

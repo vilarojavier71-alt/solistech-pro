@@ -127,7 +127,7 @@ export function AddEmployeeDialog() {
                             id="email"
                             type="email"
                             {...register('email')}
-                            placeholder="juan@solistech.com"
+                            placeholder="juan@motorgap.es"
                             autoComplete="email"
                         />
                         {errors.email && (

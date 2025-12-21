@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Suspense } from 'react'
 
 export const metadata: Metadata = {
-    title: 'Nuevo Cliente | SolisTech PRO',
+    title: 'Nuevo Cliente | MotorGap',
     description: 'Crear un nuevo cliente',
 }
 

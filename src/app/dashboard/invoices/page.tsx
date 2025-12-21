@@ -8,7 +8,7 @@ import { PageShell } from "@/components/ui/page-shell"
 import { InvoicesTable } from "@/components/finance/invoices-table"
 
 export const metadata: Metadata = {
-    title: 'Facturas | SolisTech PRO',
+    title: 'Facturas | MotorGap',
     description: 'Gestión de facturas con Verifactu',
 }
 

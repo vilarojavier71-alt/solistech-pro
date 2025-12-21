@@ -54,7 +54,7 @@ export function QuoteBuilder() {
         setQuoteNumber(`PRE-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`)
 
         // Mock data - replace with actual server action calls
-        setOrgProfile({ name: 'SolisTech', email: '', phone: '' })
+        setOrgProfile({ name: 'MotorGap', email: '', phone: '' })
         console.log('[QuoteBuilder] TODO: Load leads and customers from server actions')
     }
 
@@ -109,7 +109,7 @@ export function QuoteBuilder() {
             quote_number: quoteNumber,
             created_at: new Date().toLocaleDateString('es-ES'),
             valid_until: new Date(validUntil).toLocaleDateString('es-ES'),
-            org_name: orgProfile?.name || 'SolisTech',
+            org_name: orgProfile?.name || 'MotorGap',
             org_email: orgProfile?.email,
             org_phone: orgProfile?.phone,
             customer_name: clientName,

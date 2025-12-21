@@ -9,7 +9,7 @@ import { LeadsFilters } from '@/components/dashboard/leads-filters'
 import { getLeads } from '@/lib/actions/leads'
 
 export const metadata: Metadata = {
-    title: 'Leads | SolisTech PRO',
+    title: 'Leads | MotorGap',
     description: 'Gestiona tus leads y oportunidades de venta',
 }
 

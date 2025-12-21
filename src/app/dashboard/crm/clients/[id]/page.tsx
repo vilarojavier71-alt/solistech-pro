@@ -40,7 +40,7 @@ export default async function ClientDetailsPage({ params }: { params: Promise<{ 
             <ClientDetailsHeader client={client} />
 
             <Tabs defaultValue="overview" className="w-full">
-                <TabsList className="bg-zinc-800 text-zinc-400 border-zinc-700">
+                <TabsList>
                     <TabsTrigger value="overview">Visión General</TabsTrigger>
                     <TabsTrigger value="contacts">Contactos ({contactsRes.data?.length || 0})</TabsTrigger>
                     <TabsTrigger value="opportunities">Oportunidades ({oppsRes.data?.length || 0})</TabsTrigger>
@@ -48,37 +48,37 @@ export default async function ClientDetailsPage({ params }: { params: Promise<{ 
 
                 <TabsContent value="overview" className="space-y-6 mt-6">
                     <div className="grid gap-6 md:grid-cols-2">
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-base">Información de Contacto</CardTitle>
+                                <CardTitle>Información de Contacto</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <Mail className="h-4 w-4 text-zinc-500" />
+                                <div className="flex items-center gap-3 text-sm">
+                                    <Mail className="h-4 w-4 text-muted-foreground" />
                                     <span>{client.email || 'No email'}</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <Phone className="h-4 w-4 text-zinc-500" />
+                                <div className="flex items-center gap-3 text-sm">
+                                    <Phone className="h-4 w-4 text-muted-foreground" />
                                     <span>{client.phone || 'No phone'}</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-zinc-300">
-                                    <MapPin className="h-4 w-4 text-zinc-500" />
+                                <div className="flex items-center gap-3 text-sm">
+                                    <MapPin className="h-4 w-4 text-muted-foreground" />
                                     <span>
-                                        {[client.address?.city, client.address?.province, client.address?.country].filter(Boolean).join(', ') || 'No address'}
+                                        {[client.address?.city, client.address?.province, client.address?.country].filter(Boolean).join(', ') || 'Dirección no disponible'}
                                     </span>
                                 </div>
                                 {client.nif && (
-                                    <div className="flex items-center gap-3 text-zinc-300">
-                                        <FileText className="h-4 w-4 text-zinc-500" />
+                                    <div className="flex items-center gap-3 text-sm">
+                                        <FileText className="h-4 w-4 text-muted-foreground" />
                                         <span>{client.nif}</span>
                                     </div>
                                 )}
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-zinc-900 border-zinc-800">
+                        <Card>
                             <CardHeader>
-                                <CardTitle className="text-white text-base">Actividad Reciente</CardTitle>
+                                <CardTitle>Actividad Reciente</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <ActivitiesFeed activities={activitiesRes.data || []} />

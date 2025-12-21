@@ -40,7 +40,7 @@ export async function getProjectTechnicalData(projectId: string) {
         performance_ratio: 0.82,
         monthly_production: [],
 
-        org_name: 'SolisTech Pro', // Should get from Organization Settings
+        org_name: organization?.name || 'MotorGap', // Should get from Organization Settings
     }
 }
 

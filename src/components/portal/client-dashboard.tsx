@@ -153,7 +153,7 @@ export function ClientDashboard() {
             {/* Navbar simplificado */}
             <nav className="bg-white/80 backdrop-blur-md border-b border-sky-100 sticky top-0 z-50">
                 <div className="container max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <span className="font-bold text-xl text-sky-900 tracking-tight">SolisTech<span className="text-sky-500">PRO</span></span>
+                    <span className="font-bold text-xl text-sky-900 tracking-tight">Motor<span className="text-sky-500">Gap</span></span>
                     <Button variant="ghost" size="sm" onClick={handleLogout} className="text-sky-700 hover:text-sky-900 hover:bg-sky-50">
                         <LogOut className="mr-2 h-4 w-4" />
                         Salir

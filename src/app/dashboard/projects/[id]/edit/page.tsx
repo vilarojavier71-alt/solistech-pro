@@ -6,7 +6,7 @@ import { EditProjectForm } from '@/components/forms/edit-project-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const metadata: Metadata = {
-    title: 'Editar Proyecto | SolisTech PRO',
+    title: 'Editar Proyecto | MotorGap',
 }
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {

@@ -68,7 +68,7 @@ export async function generateTechnicalMemory(calculationId: string) {
             engineeringNotes: calc.engineering_notes || '',
 
             // Datos de la organización
-            companyName: calc.organization?.name || 'SolisTech',
+            companyName: calc.organization?.name || 'MotorGap',
             companyLogo: calc.organization?.logo_url,
 
             // Fecha

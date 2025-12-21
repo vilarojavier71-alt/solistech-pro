@@ -35,16 +35,22 @@ export interface ProjectsListResult {
 
 const CreateProjectSchema = z.object({
     name: z.string().min(1, "El nombre del proyecto es obligatorio"),
-    customer_id: z.string().uuid("Debes seleccionar un cliente válido"),
+    // Relaxed customer_id to allow optional/empty
+    customer_id: z.string().optional().nullable().or(z.literal('')),
     installation_type: z.enum(['residential', 'commercial', 'industrial']).default('residential'),
     status: z.enum(['quote', 'approved', 'installation', 'completed']).default('quote'),
-    system_size_kwp: z.number().positive().optional().nullable(),
-    estimated_production_kwh: z.number().positive().optional().nullable(),
-    estimated_savings: z.number().positive().optional().nullable(),
+    // Coerce numbers to handle string inputs safely
+    system_size_kwp: z.coerce.number().positive().optional().nullable(),
+    estimated_production_kwh: z.coerce.number().positive().optional().nullable(),
+    estimated_savings: z.coerce.number().positive().optional().nullable(),
     street: z.string().optional(),
     city: z.string().optional(),
     postal_code: z.string().optional(),
-    notes: z.string().optional()
+    notes: z.string().optional(),
+    // Technical fields from Calculator
+    pvtechchoice: z.string().optional(),
+    mountingplace: z.string().optional(),
+    aspect: z.string().optional()
 })
 
 const UpdateProjectSchema = CreateProjectSchema.partial()
@@ -156,6 +162,7 @@ export async function createProject(input: unknown) {
 
         const validationResult = CreateProjectSchema.safeParse(input)
         if (!validationResult.success) {
+            console.error('[PROJECTS ACTION] Validation Error:', validationResult.error.flatten())
             return { success: false, error: "Datos inválidos", details: validationResult.error.flatten().fieldErrors }
         }
 
@@ -163,41 +170,68 @@ export async function createProject(input: unknown) {
         const user = await getCurrentUserWithRole()
         if (!user) return { success: false, error: 'Sesión expirada' }
 
+        if (!user.organizationId) {
+            console.error('[PROJECTS ACTION] User has no organizationId:', user.id)
+            return { success: false, error: 'Usuario sin organización asignada' }
+        }
+
+        // Handle client_id safely (mapped from customer_id)
+        let client_id: string | null = null
+        if (data.customer_id && data.customer_id.trim() !== '') {
+            client_id = data.customer_id
+        }
+
+        // Store address AND extra technical fields in location JSON
         const location = {
             address: data.street || null,
             city: data.city || null,
             postal_code: data.postal_code || null,
+            // Extra fields from Calculator integration
+            pvtechchoice: data.pvtechchoice || null,
+            mountingplace: data.mountingplace || null,
+            aspect: data.aspect || null
         }
-
 
         console.log('[PROJECTS ACTION] Creating project with data:', {
             organization_id: user.organizationId,
-            client_id: data.customer_id || null,
+            client_id,
             name: data.name
         })
 
+        // Ensure proper types for DB
         const newProject = await prisma.projects.create({
             data: {
                 organization_id: user.organizationId,
-                client_id: data.customer_id || null,
+                client_id: client_id,
                 name: data.name,
                 installation_type: data.installation_type,
                 status: data.status,
-                system_size_kwp: data.system_size_kwp,
-                estimated_production_kwh: data.estimated_production_kwh,
-                estimated_savings: data.estimated_savings,
-                location: location,
+                // Ensure numbers are handled
+                system_size_kwp: data.system_size_kwp ? data.system_size_kwp : null,
+                estimated_production_kwh: data.estimated_production_kwh ? data.estimated_production_kwh : null,
+                estimated_savings: data.estimated_savings ? data.estimated_savings : null,
+                location: location as any, // Explicit cast for JSON
                 description: data.notes || null,
                 created_by: user.id
             }
         })
 
         revalidatePath('/dashboard/projects')
-        return { success: true, data: newProject }
 
-    } catch (error) {
+        // Serialize Prisma result to standard JSON to avoid "Decimal" serialization errors
+        const serializedProject = {
+            ...newProject,
+            system_size_kwp: newProject.system_size_kwp ? Number(newProject.system_size_kwp) : null,
+            estimated_production_kwh: newProject.estimated_production_kwh ? Number(newProject.estimated_production_kwh) : null,
+            estimated_savings: newProject.estimated_savings ? Number(newProject.estimated_savings) : null,
+        }
+
+        return { success: true, data: serializedProject }
+
+    } catch (error: any) {
         console.error('Error in createProject:', error)
-        return { success: false, error: 'Error inesperado del servidor' }
+        // Return explicit error for debugging
+        return { success: false, error: `Error al crear proyecto: ${error.message}` }
     }
 }
 
