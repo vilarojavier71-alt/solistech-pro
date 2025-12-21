@@ -93,7 +93,7 @@ export function TeamTable({ users, currentUserRole }: TeamTableProps) {
                                     <Select
                                         defaultValue={user.role}
                                         onValueChange={(val) => handleRoleChange(user.id, val)}
-                                        disabled={updating === user.id}
+                                        disabled={updating === user.id || user.role === 'owner'}
                                     >
                                         <SelectTrigger className="w-[140px] ml-auto">
                                             <SelectValue />

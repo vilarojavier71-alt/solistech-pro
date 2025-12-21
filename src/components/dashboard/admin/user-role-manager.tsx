@@ -200,7 +200,7 @@ export function UserRoleManager({ users: initialUsers, currentUserRole }: Props)
                                                 <Select
                                                     value={user.role}
                                                     onValueChange={(val) => handleRoleChange(user.id, val)}
-                                                    disabled={updatingId === user.id || (user.role === 'owner' && currentUserRole !== 'owner')}
+                                                    disabled={updatingId === user.id || user.role === 'owner'}
                                                 >
                                                     <SelectTrigger className="w-[140px] h-8 text-xs">
                                                         <SelectValue />

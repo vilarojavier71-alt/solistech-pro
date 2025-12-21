@@ -18,7 +18,7 @@ export async function getOrganizationUsers() {
     if (!session?.user) return []
 
     // Get current user's org
-    const currentUserProfile = await prisma.User.findUnique({
+    const currentUserProfile = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -26,7 +26,7 @@ export async function getOrganizationUsers() {
     if (!currentUserProfile?.organization_id) return []
 
     // Fetch users in that org
-    const users = await prisma.User.findMany({
+    const users = await prisma.users.findMany({
         where: { organization_id: currentUserProfile.organization_id },
         select: {
             id: true,
@@ -53,7 +53,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
 
     try {
         // 2. Permission Check: requester must be admin/owner
-        const requesterProfile = await prisma.User.findUnique({
+        const requesterProfile = await prisma.users.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -63,7 +63,7 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
         }
 
         // 3. Safety Check: Target user must be in same org
-        const targetProfile = await prisma.User.findUnique({
+        const targetProfile = await prisma.users.findUnique({
             where: { id: targetUserId },
             select: { organization_id: true, role: true }
         })
@@ -76,8 +76,13 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
             return { success: false, message: "El usuario no pertenece a tu organización." }
         }
 
+        // [SECURITY CRITICAL] Prevent changing the role of an Owner
+        if (targetProfile.role === 'owner') {
+            return { success: false, message: "Operación no permitida: El rol del propietario es inmutable." }
+        }
+
         // 4. Update Role
-        await prisma.User.update({
+        await prisma.users.update({
             where: { id: targetUserId },
             data: { role: newRole }
         })
@@ -102,7 +107,7 @@ export async function seedTestUsers() {
 
     if (!session?.user) return { success: false, message: "No autorizado" }
 
-    const requester = await prisma.User.findUnique({
+    const requester = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { role: true, organization_id: true }
     })
@@ -146,7 +151,7 @@ export async function seedTestUsers() {
     ]
 
     try {
-        await prisma.User.createMany({
+        await prisma.users.createMany({
             data: dummyUsers,
             skipDuplicates: true
         })

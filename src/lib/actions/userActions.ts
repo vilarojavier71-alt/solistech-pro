@@ -20,7 +20,8 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
 
     try {
         // Permission Check: Requester must be admin, owner, or cto
-        const requesterProfile = await prisma.User.findUnique({
+        // [FIX] Use prisma.users
+        const requesterProfile = await prisma.users.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -41,9 +42,10 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
         }
 
         // Safety Check: Target user must be in same org
-        const targetProfile = await prisma.User.findUnique({
+        // We fetch role as well to check if target is owner
+        const targetProfile = await prisma.users.findUnique({
             where: { id: targetUserId },
-            select: { organization_id: true }
+            select: { organization_id: true, role: true }
         })
 
         if (!targetProfile) {
@@ -54,8 +56,13 @@ export async function updateUserRole(targetUserId: string, newRole: string): Pro
             return { success: false, message: "El usuario no pertenece a tu organización." }
         }
 
+        // [SECURITY CRITICAL] Prevent changing the role of an Owner
+        if (targetProfile.role === 'owner') {
+            return { success: false, message: "Operación no permitida: El rol del propietario es inmutable." }
+        }
+
         // Execution - Update role
-        await prisma.User.update({
+        await prisma.users.update({
             where: { id: targetUserId },
             data: { role: newRole }
         })
