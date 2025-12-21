@@ -5,11 +5,28 @@ import { ClientActions } from "@/components/crm/client-actions"
 import { PageShell } from "@/components/ui/page-shell"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
+
 export default async function CRMClientsPage() {
     const { data: customers, error } = await getCustomers()
 
     if (error) {
-        return <div className="text-destructive">Error cargando clientes: {error}</div>
+        return (
+            <PageShell
+                title="Clientes y Leads"
+                description="Gestiona tu cartera de clientes y oportunidades de venta."
+                action={<ClientActions />}
+            >
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        No se pudieron cargar los clientes: {error}
+                    </AlertDescription>
+                </Alert>
+            </PageShell>
+        )
     }
 
     // Map backend legacy customer shape to new ClientData shape if needed

@@ -14,6 +14,21 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface Customer {
     id: string
@@ -101,23 +116,58 @@ export function NewProjectForm({ customers }: { customers: Customer[] }) {
 
                 <div className="col-span-2 space-y-2">
                     <Label htmlFor="customer_id">Cliente *</Label>
-                    <Select
-                        value={formData.customer_id}
-                        onValueChange={(value) => setFormData({ ...formData, customer_id: value })}
-                        disabled={loading}
-                        required
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un cliente" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {customers.map((customer) => (
-                                <SelectItem key={customer.id} value={customer.id}>
-                                    {customer.name} {customer.company && `(${customer.company})`}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                    "w-full justify-between",
+                                    !formData.customer_id && "text-muted-foreground"
+                                )}
+                                disabled={loading}
+                            >
+                                {formData.customer_id
+                                    ? customers.find((customer) => customer.id === formData.customer_id)?.name
+                                    : "Selecciona un cliente..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0">
+                            <Command>
+                                <CommandInput placeholder="Buscar cliente..." />
+                                <CommandList>
+                                    <CommandEmpty>No se encontraron clientes.</CommandEmpty>
+                                    <CommandGroup>
+                                        {customers.map((customer) => (
+                                            <CommandItem
+                                                value={customer.name}
+                                                key={customer.id}
+                                                onSelect={() => {
+                                                    setFormData({ ...formData, customer_id: customer.id })
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        customer.id === formData.customer_id
+                                                            ? "opacity-100"
+                                                            : "opacity-0"
+                                                    )}
+                                                />
+                                                <div className="flex flex-col">
+                                                    <span>{customer.name}</span>
+                                                    {customer.company && (
+                                                        <span className="text-xs text-muted-foreground">{customer.company}</span>
+                                                    )}
+                                                </div>
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
                 </div>
 
                 <div className="space-y-2">

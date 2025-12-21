@@ -17,7 +17,7 @@ export default function TimeTrackingPage() {
                 </div>
 
                 <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-white">Historial Reciente</h3>
+                    <h3 className="text-xl font-semibold text-foreground tracking-tight">Historial Reciente</h3>
                     <Suspense fallback={<div>Cargando historial...</div>}>
                         <TimeHistory />
                     </Suspense>

@@ -7,6 +7,51 @@ import QRCode from 'qrcode'
 import type { InvoiceHashInput } from '@/lib/types/import-types'
 import { z } from 'zod'
 
+// Helper para corregir codificación corrupta (Mojibake)
+function fixMojibake(str: string | undefined | null): any {
+    if (!str) return str;
+    if (typeof str !== 'string') return str;
+
+    // Si contiene caracteres típicos de doble codificación UTF-8 -> Latin1
+    // Ã (0xC3) es el primer byte de muchos caracteres comunes en español
+    if (str.includes('Ã') || str.includes('Â')) {
+        try {
+            return Buffer.from(str, 'binary').toString('utf-8');
+        } catch (e) {
+            return str;
+        }
+    }
+    return str;
+}
+
+// Helper para limpiar objetos completos (recursivo superficial para listas)
+function cleanInvoiceData(invoice: any) {
+    if (!invoice) return invoice
+
+    // Campos de texto directo en la factura
+    if (invoice.customer_name) invoice.customer_name = fixMojibake(invoice.customer_name)
+    if (invoice.customer_address) invoice.customer_address = fixMojibake(invoice.customer_address)
+    if (invoice.customer_city) invoice.customer_city = fixMojibake(invoice.customer_city)
+    if (invoice.customer_province) invoice.customer_province = fixMojibake(invoice.customer_province) // si existe
+    if (invoice.notes) invoice.notes = fixMojibake(invoice.notes)
+
+    // Limpiar relación customer si viene incluida
+    if (invoice.customer) {
+        if (invoice.customer.name) invoice.customer.name = fixMojibake(invoice.customer.name)
+        if (invoice.customer.address) invoice.customer.address = fixMojibake(invoice.customer.address)
+    }
+
+    // Limpiar líneas
+    if (invoice.lines && Array.isArray(invoice.lines)) {
+        invoice.lines = invoice.lines.map((line: any) => ({
+            ...line,
+            description: fixMojibake(line.description)
+        }))
+    }
+
+    return invoice
+}
+
 // --- ZOD SCHEMAS ---
 const InvoiceLineSchema = z.object({
     description: z.string().min(1, "La descripción es obligatoria"),
@@ -116,7 +161,7 @@ export async function createInvoice(rawData: InvoiceData) {
 
         return {
             line_order: index + 1,
-            description: line.description,
+            description: fixMojibake(line.description) || line.description,
             quantity: line.quantity,
             unit_price: line.unitPrice,
             discount_percentage: line.discountPercentage || 0,
@@ -138,10 +183,11 @@ export async function createInvoice(rawData: InvoiceData) {
                 invoice_number: invoiceNumber,
                 sequential_number: sequentialNumber,
                 customer_id: customer.id,
-                customer_name: customer.name,
+                // Aplicar fixMojibake al copiar datos del cliente
+                customer_name: fixMojibake(customer.name) || customer.name,
                 customer_nif: customer.nif || customer.email,
-                customer_address: customer.address,
-                customer_city: customer.city,
+                customer_address: fixMojibake(customer.address) || customer.address,
+                customer_city: fixMojibake(customer.city) || customer.city,
                 customer_postal_code: customer.postal_code,
                 customer_email: customer.email,
                 issue_date: new Date(data.issueDate),
@@ -149,7 +195,7 @@ export async function createInvoice(rawData: InvoiceData) {
                 subtotal,
                 tax_amount: taxAmount,
                 total,
-                notes: data.notes,
+                notes: fixMojibake(data.notes) || data.notes,
                 project_id: data.projectId,
                 status: 'issued'
             }
@@ -205,7 +251,7 @@ export async function listInvoices(filters?: {
         where.issue_date = { ...where.issue_date, lte: new Date(filters.dateTo) }
     }
 
-    const data = await prisma.invoices.findMany({
+    const rawData = await prisma.invoices.findMany({
         where,
         include: {
             customer: { select: { id: true, name: true, email: true } },
@@ -214,18 +260,23 @@ export async function listInvoices(filters?: {
         orderBy: { created_at: 'desc' }
     })
 
+    // Limpiar datos visualmente antes de enviarlos (lectura)
+    const data = rawData.map(cleanInvoiceData)
+
     return { data, error: null }
 }
 
 // Obtener factura por ID
 export async function getInvoiceById(invoiceId: string) {
-    const data = await prisma.invoices.findUnique({
+    const rawData = await prisma.invoices.findUnique({
         where: { id: invoiceId },
         include: {
             customer: true,
             lines: true
         }
     })
+
+    const data = cleanInvoiceData(rawData)
 
     return { data, error: data ? null : 'Factura no encontrada' }
 }

@@ -129,13 +129,13 @@ export function TimeTracker() {
     }
 
     return (
-        <Card className="w-full max-w-md mx-auto bg-zinc-900 border-zinc-800">
+        <Card className="w-full max-w-md mx-auto bg-card border-border shadow-md">
             <CardContent className="p-6 space-y-6">
 
                 {/* Timer Display */}
                 <div className="text-center space-y-2">
-                    <h2 className="text-zinc-400 text-sm uppercase tracking-wider">Tiempo Transcurrido</h2>
-                    <div className="text-5xl font-mono font-bold text-white tracking-widest">
+                    <h2 className="text-muted-foreground text-sm uppercase tracking-wider font-semibold">Tiempo Transcurrido</h2>
+                    <div className="text-5xl font-mono font-bold text-foreground tracking-widest tabular-nums antialiased">
                         {timer}
                     </div>
                 </div>
@@ -143,10 +143,12 @@ export function TimeTracker() {
                 {/* Status Indicator */}
                 <div className="flex justify-center">
                     <div className={cn(
-                        "px-4 py-1 rounded-full text-xs font-medium flex items-center gap-2",
-                        status === 'active' ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-800 text-zinc-400"
+                        "px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 border",
+                        status === 'active'
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                            : "bg-muted text-muted-foreground border-transparent"
                     )}>
-                        <div className={cn("w-2 h-2 rounded-full", status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-zinc-500")} />
+                        <div className={cn("w-2 h-2 rounded-full", status === 'active' ? "bg-emerald-500 animate-pulse" : "bg-zinc-400")} />
                         {status === 'active' ? 'JORNADA ACTIVA' : 'JORNADA INACTIVA'}
                     </div>
                 </div>
@@ -154,12 +156,12 @@ export function TimeTracker() {
                 {/* Project Selector (Only if Idle) */}
                 {status === 'idle' && (
                     <div className="space-y-2">
-                        <label className="text-sm text-zinc-400">Seleccionar Proyecto (Opcional)</label>
+                        <label className="text-sm font-medium text-foreground">Seleccionar Proyecto (Opcional)</label>
                         <Select value={selectedProject} onValueChange={setSelectedProject}>
-                            <SelectTrigger className="bg-zinc-950 border-zinc-800">
+                            <SelectTrigger className="bg-background border-input">
                                 <SelectValue placeholder="Sin proyecto específico" />
                             </SelectTrigger>
-                            <SelectContent className="bg-zinc-900 border-zinc-800">
+                            <SelectContent>
                                 <SelectItem value="unassigned">Sin proyecto</SelectItem>
                                 {projects
                                     .filter(p => p.id && p.id !== '')
@@ -173,9 +175,9 @@ export function TimeTracker() {
 
                 {/* Active Info */}
                 {status === 'active' && activeEntry?.projects && (
-                    <div className="text-center p-3 bg-zinc-800/30 rounded-lg border border-zinc-800">
-                        <p className="text-sm text-zinc-500">Trabajando en:</p>
-                        <p className="text-white font-medium">{activeEntry.projects.name}</p>
+                    <div className="text-center p-3 bg-muted/50 rounded-lg border border-border">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Trabajando en</p>
+                        <p className="text-foreground font-bold text-lg">{activeEntry.projects.name}</p>
                     </div>
                 )}
 
@@ -185,8 +187,8 @@ export function TimeTracker() {
                     className={cn(
                         "w-full h-24 text-xl font-bold transition-all shadow-lg hover:shadow-xl",
                         status === 'active'
-                            ? "bg-red-600 hover:bg-red-700 shadow-red-900/20"
-                            : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-900/20"
+                            ? "bg-red-600 hover:bg-red-700 text-white shadow-red-900/20"
+                            : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-900/20"
                     )}
                     onClick={status === 'active' ? handleCheckOut : handleCheckIn}
                     disabled={status === 'loading'}
@@ -207,7 +209,7 @@ export function TimeTracker() {
                 </Button>
 
                 {/* Geo Hint */}
-                <div className="text-center text-xs text-zinc-500 flex items-center justify-center gap-1">
+                <div className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1">
                     <MapPin className="h-3 w-3" />
                     Se registrará tu ubicación actual
                 </div>

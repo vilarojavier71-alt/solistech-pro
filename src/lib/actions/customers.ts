@@ -66,10 +66,13 @@ export async function updateClient(id: string, input: unknown) {
         const customFields: Record<string, any> = {}
 
         Object.entries(validatedData).forEach(([key, value]) => {
+            // Aplicar corrección de encoding si es string
+            const fixedValue = typeof value === 'string' ? fixMojibake(value) : value;
+
             if (SQL_FIELDS.includes(key)) {
-                sqlFields[key] = value
+                sqlFields[key] = fixedValue ?? value
             } else {
-                customFields[key] = value
+                customFields[key] = fixedValue ?? value
             }
         })
 
@@ -144,6 +147,22 @@ const CreateCustomerSchema = z.object({
 /**
  * Crea un nuevo cliente con validación completa
  */
+// Helper para corregir codificación corrupta (Mojibake)
+function fixMojibake(str: string | undefined | null): string | undefined {
+    if (!str) return undefined;
+    // Si contiene caracteres típicos de doble codificación UTF-8 -> Latin1
+    // Ã (0xC3) es el primer byte de muchos caracteres comunes en español (á, é, í, ó, ú, ñ)
+    if (str.includes('Ã') || str.includes('Â')) {
+        try {
+            // Intenta revertir la interpretación Latin1 de bytes UTF-8
+            return Buffer.from(str, 'binary').toString('utf-8');
+        } catch (e) {
+            return str;
+        }
+    }
+    return str;
+}
+
 export async function addNewClient(input: unknown) {
     try {
         const validatedData = CreateCustomerSchema.parse(input)
@@ -168,22 +187,25 @@ export async function addNewClient(input: unknown) {
         }
         // ========================================================
 
-        // Separar campos SQL vs JSONB
+        // Separar campos SQL vs JSONB y Saneamiento de Encoding
         const sqlFields: Record<string, any> = {}
         const customFields: Record<string, any> = {}
 
         Object.entries(validatedData).forEach(([key, value]) => {
+            // Aplicar corrección de encoding si es string
+            const fixedValue = typeof value === 'string' ? fixMojibake(value) : value;
+
             if (SQL_FIELDS.includes(key)) {
-                sqlFields[key] = value
+                sqlFields[key] = fixedValue ?? value // Fallback to original if undefined returned (though fixMojibake returns undefined for undefined)
             } else {
-                customFields[key] = value
+                customFields[key] = fixedValue ?? value
             }
         })
 
         const newClient = await prisma.customers.create({
             data: {
                 ...sqlFields,
-                name: validatedData.name, // Explicitly provide name for TS
+                name: fixMojibake(validatedData.name) || validatedData.name, // Explicitly provide name for TS
                 organization_id: user.organizationId,
                 custom_attributes: Object.keys(customFields).length > 0 ? customFields : undefined,
                 created_by: user.id,
@@ -203,6 +225,24 @@ export async function addNewClient(input: unknown) {
     }
 }
 
+// Helper para limpiar objeto cliente completo
+function cleanCustomerData(customer: any) {
+    if (!customer) return customer
+
+    // Lista de campos de texto susceptibles a corrupción
+    const textFields = ['name', 'address', 'city', 'province', 'country', 'notes', 'nif']
+
+    const cleaned = { ...customer }
+
+    textFields.forEach(field => {
+        if (typeof cleaned[field] === 'string') {
+            cleaned[field] = fixMojibake(cleaned[field])
+        }
+    })
+
+    return cleaned
+}
+
 /**
  * Obtiene todos los clientes de la organización
  */
@@ -211,13 +251,15 @@ export async function getCustomers() {
     if (!user) return { data: null, error: 'No autenticado' }
 
     try {
-        const data = await prisma.customers.findMany({
+        const rawData = await prisma.customers.findMany({
             where: {
                 organization_id: user.organizationId,
                 is_active: true
             },
             orderBy: { created_at: 'desc' }
         })
+
+        const data = rawData.map(cleanCustomerData)
 
         return { data, error: null }
     } catch (error) {

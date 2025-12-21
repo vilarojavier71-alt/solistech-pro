@@ -35,7 +35,7 @@ export interface ProjectsListResult {
 
 const CreateProjectSchema = z.object({
     name: z.string().min(1, "El nombre del proyecto es obligatorio"),
-    customer_id: z.string().uuid("ID de cliente inválido").optional(),
+    customer_id: z.string().uuid("Debes seleccionar un cliente válido"),
     installation_type: z.enum(['residential', 'commercial', 'industrial']).default('residential'),
     status: z.enum(['quote', 'approved', 'installation', 'completed']).default('quote'),
     system_size_kwp: z.number().positive().optional().nullable(),

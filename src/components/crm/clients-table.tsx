@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { DataTablePremium, DataTableColumn } from '@/components/premium'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +25,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { deleteClient } from '@/lib/actions/customers'
+import { ClientEditSheet } from '@/components/customers/client-edit-sheet'
 
 interface ClientData {
     id: string
@@ -40,11 +42,46 @@ interface ClientData {
 export function ClientsTable({ clients }: { clients: ClientData[] }) {
     const router = useRouter()
     const [editingClient, setEditingClient] = useState<ClientData | null>(null)
+    const [isPending, startTransition] = useTransition()
+    const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
     const handleDelete = async (id: string) => {
-        if (!confirm('¿Estás seguro de que quieres eliminar este cliente?')) return
-        toast.info('Funcionalidad de eliminar en desarrollo')
+        // Optimistic UI for delete is tricky with server components list, 
+        // but we can show a loading state on the row or toast.
+        setIsDeleting(id)
+
+        toast.promise(
+            new Promise(async (resolve, reject) => {
+                const result = await deleteClient(id)
+                if (result.error) reject(result.error)
+                else resolve(result)
+            }),
+            {
+                loading: 'Eliminando cliente...',
+                success: () => {
+                    startTransition(() => {
+                        router.refresh()
+                    })
+                    return 'Cliente eliminado correctamente'
+                },
+                error: (err) => `Error al eliminar: ${err}`
+            }
+        )
+
+        setIsDeleting(null)
     }
+
+    // Adapt ClientData to Customer interface for the Sheet
+    const customerForSheet = editingClient ? {
+        ...editingClient,
+        full_name: editingClient.name,
+        // Ensure address fields are mapped correctly if they come differently
+        address: typeof editingClient.address === 'string' ? editingClient.address : editingClient.address?.street,
+        city: editingClient.address?.city,
+        province: editingClient.address?.province,
+        postal_code: editingClient.address?.postal_code,
+        country: editingClient.address?.country
+    } : undefined
 
     // Definir columnas para DataTablePremium
     const columns: DataTableColumn<ClientData>[] = [
@@ -152,6 +189,7 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
                             variant="ghost"
                             className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                             onClick={(e) => e.stopPropagation()}
+                            disabled={isDeleting === client.id}
                         >
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
@@ -208,20 +246,32 @@ export function ClientsTable({ clients }: { clients: ClientData[] }) {
     }
 
     return (
-        <DataTablePremium
-            columns={columns}
-            data={clients}
-            features={{
-                virtualScroll: false, // Desactivar para usar paginación normal
-                stickyHeader: true,
-                compactView: true,
-                export: true,
-                search: true,
-                sort: true
-            }}
-            onRowClick={(client) => router.push(`/dashboard/crm/clients/${client.id}`)}
-            maxHeight="calc(100vh - 300px)"
-            rowHeight={80}
-        />
+        <>
+            <DataTablePremium
+                columns={columns}
+                data={clients}
+                features={{
+                    virtualScroll: false, // Desactivar para usar paginación normal
+                    stickyHeader: true,
+                    compactView: true,
+                    export: true,
+                    search: true,
+                    sort: true
+                }}
+                onRowClick={(client) => router.push(`/dashboard/crm/clients/${client.id}`)}
+                maxHeight="calc(100vh - 300px)"
+                rowHeight={80}
+            />
+
+            <ClientEditSheet
+                open={!!editingClient}
+                onOpenChange={(open) => !open && setEditingClient(null)}
+                client={customerForSheet as any} // Cast as any because of interface mismatch complexity
+                onSuccess={() => {
+                    setEditingClient(null)
+                    router.refresh()
+                }}
+            />
+        </>
     )
 }
