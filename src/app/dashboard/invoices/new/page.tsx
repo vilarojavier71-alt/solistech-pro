@@ -14,7 +14,8 @@ export default async function NewInvoicePage() {
 
     if (!session?.user) redirect('/auth/login')
 
-    const userData = await prisma.User.findUnique({
+    // [FIX] Use prisma.users instead of prisma.User to avoid TS errors and potential runtime issues
+    const userData = await prisma.users.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -22,11 +23,17 @@ export default async function NewInvoicePage() {
     if (!userData?.organization_id) redirect('/auth/login')
 
     // Get customers
-    const customers = await prisma.customers.findMany({
+    const customersRaw = await prisma.customers.findMany({
         where: { organization_id: userData.organization_id },
         select: { id: true, name: true, email: true },
         orderBy: { name: 'asc' }
     })
+
+    // [FIX] Ensure email is string (not null) to match component props
+    const customers = customersRaw.map(c => ({
+        ...c,
+        email: c.email || ''
+    }))
 
     return (
         <div className="space-y-6">
@@ -37,7 +44,7 @@ export default async function NewInvoicePage() {
                 </p>
             </div>
 
-            <CreateInvoiceForm customers={customers || []} />
+            <CreateInvoiceForm customers={customers} />
         </div>
     )
 }
