@@ -79,6 +79,7 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
             section: "Herramientas",
             items: [
                 { href: "/dashboard/calculator", label: "Calculadora Solar", icon: Calculator, permission: "calculator:use" as const },
+                { href: "/dashboard/catastro", label: "Consulta Catastral", icon: Search, permission: "calculator:use" as const },
                 { href: "/dashboard/solar-brain", label: "SolarBrain AI", icon: BrainCircuit, highlight: true, locked: !isPro, permission: "solar-brain:use" as const },
                 { href: "/dashboard/presentations", label: "Presentaciones", icon: Presentation, permission: "projects:view" as const },
                 { href: "/dashboard/mail", label: "Correo", icon: Mail, permission: "dashboard:view" as const },
