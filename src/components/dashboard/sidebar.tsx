@@ -96,7 +96,7 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
         {
             section: "Administración",
             items: [
-                { href: "/dashboard/settings", label: "Configuración", icon: Settings, permission: "settings:view" as const },
+                { href: "/dashboard/settings", label: "Configuración", icon: Settings, permission: "settings:view" as const, dataTour: "settings-nav" },
                 { href: "/dashboard/admin/users", label: "Gestión Usuarios", icon: Shield, permission: "users:view" as const },
             ]
         }
@@ -170,6 +170,7 @@ export function Sidebar({ userRole, plan = 'basic' }: SidebarProps) {
                                     <Link
                                         key={item.href}
                                         href={item.href}
+                                        data-tour={(item as any).dataTour || undefined}
                                         className={cn(
                                             "flex items-center rounded-lg transition-all duration-200 group relative",
                                             isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-2",
@@ -220,6 +221,7 @@ export function Sidebar({ userRole, plan = 'basic' }: SidebarProps) {
 
                 <Link
                     href="/dashboard/help"
+                    data-tour="help-nav"
                     className={cn(
                         "flex items-center rounded-lg transition-all border border-transparent hover:border-emerald-500/20",
                         isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-3",

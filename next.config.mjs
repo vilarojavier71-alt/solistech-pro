@@ -57,8 +57,8 @@ const nextConfig = {
 // Wrapper de Sentry - solo aplica si existe DSN
 const sentryConfig = {
   // Organización y proyecto (configurar en .env)
-  org: process.env.SENTRY_ORG || 'solistech',
-  project: process.env.SENTRY_PROJECT || 'solistech-pro',
+  org: process.env.SENTRY_ORG || 'motorgap',
+  project: process.env.SENTRY_PROJECT || 'motorgap-pro',
 
   // Solo subir source maps, no exponerlos al cliente
   silent: true,
