@@ -89,10 +89,19 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
         setLoading(true)
 
         // Combinar campos estándar + custom
+        // Mapear full_name -> name para el backend
         const allData = {
-            ...data,
+            name: data.full_name, // El backend espera 'name', no 'full_name'
+            email: data.email,
+            phone: data.phone,
+            nif: data.nif,
+            address: data.address,
+            city: data.city,
+            postal_code: data.postal_code,
+            province: data.province,
+            country: data.country,
+            notes: data.notes,
             ...customFields,
-            full_name: data.name, // Ensure full_name is present for type compatibility
         }
 
         const result = client
@@ -105,7 +114,12 @@ export function ClientEditSheet({ client, open, onOpenChange, onSuccess }: Clien
             })
         } else {
             toast.success(client ? 'Cliente actualizado' : 'Cliente creado')
-            onSuccess(result.data!)
+            // Mapear name -> full_name para el tipo Customer
+            const customerData = {
+                ...result.data!,
+                full_name: result.data!.name || '',
+            } as Customer
+            onSuccess(customerData)
         }
 
         setLoading(false)
