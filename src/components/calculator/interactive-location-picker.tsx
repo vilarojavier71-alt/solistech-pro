@@ -90,6 +90,10 @@ export function InteractiveLocationPicker({
     const [isLocating, setIsLocating] = useState(false)
     const markerRef = useRef<L.Marker>(null)
 
+    // Store callback in ref to avoid useEffect dependency issues
+    const onLocationChangeRef = useRef(onLocationChange)
+    onLocationChangeRef.current = onLocationChange
+
     // Debounce position for geocoding
     const debouncedPosition = useDebounce(position, 500)
 
@@ -110,8 +114,8 @@ export function InteractiveLocationPicker({
                     const displayName = data.display_name || `${debouncedPosition.lat.toFixed(4)}, ${debouncedPosition.lng.toFixed(4)}`
                     setAddress(displayName)
 
-                    // Notify parent with full data
-                    onLocationChange({
+                    // Notify parent with full data (using ref to avoid dependency issues)
+                    onLocationChangeRef.current?.({
                         lat: debouncedPosition.lat,
                         lng: debouncedPosition.lng,
                         address: displayName,
@@ -126,7 +130,7 @@ export function InteractiveLocationPicker({
         }
 
         reverseGeocode()
-    }, [debouncedPosition, isConfirmed, onLocationChange])
+    }, [debouncedPosition, isConfirmed])
 
     // Handle location selection from map click
     const handleLocationSelect = useCallback((lat: number, lng: number) => {
