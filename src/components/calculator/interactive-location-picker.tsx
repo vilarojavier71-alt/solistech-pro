@@ -47,8 +47,16 @@ function MapClickHandler({
 }) {
     useMapEvents({
         click: (e) => {
-            onLocationSelect(e.latlng.lat, e.latlng.lng)
-            setIsConfirmed(true)
+            try {
+                if (typeof onLocationSelect === 'function') {
+                    onLocationSelect(e.latlng.lat, e.latlng.lng)
+                }
+                if (typeof setIsConfirmed === 'function') {
+                    setIsConfirmed(true)
+                }
+            } catch (error) {
+                console.error('MapClickHandler error:', error)
+            }
         }
     })
     return null
@@ -59,8 +67,14 @@ function FlyToLocation({ location }: { location: { lat: number; lng: number } })
     const map = useMap()
 
     useEffect(() => {
-        map.flyTo([location.lat, location.lng], 18, { duration: 1 })
-    }, [location.lat, location.lng, map])
+        try {
+            if (map && location?.lat && location?.lng) {
+                map.flyTo([location.lat, location.lng], 18, { duration: 1 })
+            }
+        } catch (error) {
+            console.error('FlyToLocation error:', error)
+        }
+    }, [location?.lat, location?.lng, map])
 
     return null
 }
