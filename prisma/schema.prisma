@@ -48,9 +48,9 @@ model User {
   client_portal_project  projects?               @relation("client_portal_project")
   support_tickets        support_tickets[]
 
-  @@map("users")
   @@index([organization_id, role])
   @@index([email])
+  @@map("users")
 }
 
 model organizations {
@@ -88,13 +88,17 @@ model organizations {
   sales               sales[]
   appointment         appointments[]
 
-  invitations         invitations[]
-  
+  invitations invitations[]
+
   // New stabilization tables
-  payment_methods     payment_methods[]
-  calculations        calculations[]
-  presentations       presentations[]
-  support_tickets     support_tickets[]
+  payment_methods payment_methods[]
+  calculations    calculations[]
+  presentations   presentations[]
+  support_tickets support_tickets[]
+
+  // Leave management tables
+  employee_leave_balances employee_leave_balances[]
+  leave_requests          leave_requests[]
 
   @@index([subscription_plan, subscription_status])
 }
@@ -198,8 +202,8 @@ model customers {
   created_at        DateTime @default(now()) @db.Timestamptz(6)
   updated_at        DateTime @default(now()) @db.Timestamptz(6)
 
-  organization    organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  created_by_user User?         @relation(fields: [created_by], references: [id], onDelete: SetNull)
+  organization    organizations?  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_by_user User?           @relation(fields: [created_by], references: [id], onDelete: SetNull)
   projects        projects[]
   invoices        invoices[]
   appointments    appointments[]
@@ -226,7 +230,7 @@ model leads {
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
   organization  organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  assigned_user User?        @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
+  assigned_user User?         @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
 
   @@index([organization_id, status])
 }
@@ -271,9 +275,9 @@ model projects {
 
   organization        organizations?          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   customer            customers?              @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  created_by_user     User?                  @relation(fields: [created_by], references: [id])
-  assigned_technician User?                  @relation("assigned_projects", fields: [assigned_technician_id], references: [id])
-  portal_user         User?                  @relation("client_portal_project", fields: [portal_user_id], references: [id])
+  created_by_user     User?                   @relation(fields: [created_by], references: [id])
+  assigned_technician User?                   @relation("assigned_projects", fields: [assigned_technician_id], references: [id])
+  portal_user         User?                   @relation("client_portal_project", fields: [portal_user_id], references: [id])
   time_entries        time_entries[]
   invoices            invoices[]
   phase_history       project_phase_history[]
@@ -306,7 +310,7 @@ model time_entries {
   status             String?   @default("active")
   created_at         DateTime  @default(now()) @db.Timestamptz(6)
 
-  user    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
   project projects? @relation(fields: [project_id], references: [id], onDelete: SetNull)
 }
 
@@ -339,7 +343,7 @@ model invoices {
   organization    organizations?  @relation(fields: [organization_id], references: [id])
   customer        customers?      @relation(fields: [customer_id], references: [id], onDelete: Restrict)
   project         projects?       @relation(fields: [project_id], references: [id], onDelete: SetNull)
-  created_by_user User?          @relation(fields: [created_by], references: [id])
+  created_by_user User?           @relation(fields: [created_by], references: [id])
   lines           invoice_lines[]
 
   @@unique([organization_id, invoice_number])
@@ -417,7 +421,6 @@ model permissions {
   roles RolePermission[]
 }
 
-
 model RolePermission {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   role            String // e.g. "admin", "owner", "ingeniero"
@@ -426,11 +429,10 @@ model RolePermission {
 
   permission permissions @relation(fields: [permission_slug], references: [slug], onDelete: Cascade)
 
-  @@map("role_permissions")
   @@unique([role, permission_slug])
   @@index([role])
+  @@map("role_permissions")
 }
-
 
 // ============================================================================
 // ACCOUNTING / DOUBLE-ENTRY BOOKKEEPING
@@ -469,7 +471,7 @@ model accounting_journals {
   created_by      String?  @db.Uuid
 
   organization    organizations             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  created_by_user User?                    @relation(fields: [created_by], references: [id])
+  created_by_user User?                     @relation(fields: [created_by], references: [id])
   transactions    accounting_transactions[]
 
   @@index([organization_id, date])
@@ -525,7 +527,7 @@ model project_phase_history {
   created_at DateTime @default(now()) @db.Timestamptz(6)
 
   project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [changed_by], references: [id])
+  user    User     @relation(fields: [changed_by], references: [id])
 
   @@index([project_id, created_at(sort: Desc)])
 }
@@ -545,7 +547,7 @@ model project_transactions {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
 
   project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  user    User    @relation("processed_transactions", fields: [processed_by], references: [id])
+  user    User     @relation("processed_transactions", fields: [processed_by], references: [id])
 
   @@index([project_id, created_at(sort: Desc)])
 }
@@ -570,8 +572,8 @@ model project_documents {
   updated_at       DateTime  @default(now()) @db.Timestamptz(6)
 
   project  projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
-  uploader User?   @relation("uploaded_documents", fields: [uploaded_by], references: [id])
-  reviewer User?   @relation("reviewed_documents", fields: [reviewed_by], references: [id])
+  uploader User?    @relation("uploaded_documents", fields: [uploaded_by], references: [id])
+  reviewer User?    @relation("reviewed_documents", fields: [reviewed_by], references: [id])
 
   @@index([project_id, type])
   @@index([project_id, status])
@@ -582,39 +584,39 @@ model project_documents {
 // ============================================================================
 
 model sales {
-  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organization_id     String?  @db.Uuid
-  customer_id         String?  @db.Uuid
-  customer_name       String?
-  dni                 String?
-  customer_email      String?
-  customer_phone      String?
-  sale_number         String?
-  amount              Decimal? @db.Decimal(12, 2)
-  material            String?
-  created_by          String?  @db.Uuid
-  sale_date           DateTime? @db.Timestamptz(6)
-  payment_method      String?
-  payment_terms       String?
-  payment_status      String?   @default("pending")
-  documentation_status String?  @default("pending")
-  engineering_status   String?  @default("pending")
-  process_status       String?  @default("not_started")
-  installation_status  String?  @default("pending")
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id      String?   @db.Uuid
+  customer_id          String?   @db.Uuid
+  customer_name        String?
+  dni                  String?
+  customer_email       String?
+  customer_phone       String?
+  sale_number          String?
+  amount               Decimal?  @db.Decimal(12, 2)
+  material             String?
+  created_by           String?   @db.Uuid
+  sale_date            DateTime? @db.Timestamptz(6)
+  payment_method       String?
+  payment_terms        String?
+  payment_status       String?   @default("pending")
+  documentation_status String?   @default("pending")
+  engineering_status   String?   @default("pending")
+  process_status       String?   @default("not_started")
+  installation_status  String?   @default("pending")
   documentation_notes  String?
   access_code          String?
   canvasser_id         String?
-  created_at           DateTime @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime @default(now()) @db.Timestamptz(6)
+  created_at           DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization    organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([organization_id, sale_number])
 }
 
 model appointments {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organization_id String?  @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String?   @db.Uuid
   title           String?
   description     String?
   start_time      DateTime? @db.Timestamptz(6)
@@ -627,27 +629,27 @@ model appointments {
   created_at      DateTime  @default(now()) @db.Timestamptz(6)
   updated_at      DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization  organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  customer      customers?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  assignee      User?         @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
+  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer     customers?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  assignee     User?          @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
 
   @@index([organization_id, start_time])
 }
 
 model client_notifications {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sale_id           String   @db.Uuid
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sale_id           String    @db.Uuid
   title             String
   message           String
-  notification_type String   // info, success, warning, error, action_required
+  notification_type String // info, success, warning, error, action_required
   action_label      String?
   action_url        String?
-  read              Boolean  @default(false)
+  read              Boolean   @default(false)
   read_at           DateTime? @db.Timestamptz(6)
-  sent_email        Boolean  @default(false)
-  sent_sms          Boolean  @default(false)
-  sent_push         Boolean  @default(false)
-  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  sent_email        Boolean   @default(false)
+  sent_sms          Boolean   @default(false)
+  sent_push         Boolean   @default(false)
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
 
   @@map("client_notifications")
 }
@@ -668,7 +670,7 @@ model invitations {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
 
   organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  creator      User         @relation(fields: [created_by], references: [id], onDelete: Cascade)
+  creator      User          @relation(fields: [created_by], references: [id], onDelete: Cascade)
 
   @@index([organization_id, status])
   @@index([token])
@@ -743,26 +745,26 @@ model presentations {
 // ============================================================================
 
 model support_tickets {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  organization_id String   @db.Uuid
-  user_id         String   @db.Uuid
-  customer_id     String?  @db.Uuid // Link to customer if incident from import
-  subject         String
-  description     String   @db.Text
-  category        String   // facturacion, tecnico, solar, general, import_incident
-  status          String   @default("open") // open, in_analysis, intervention, resolved, closed
-  priority        String   @default("normal") // low, normal, high, urgent
-  source_page     String?  // /dashboard/calculator, /dashboard/projects, etc.
-  source_type     String?  // manual, import_excel, system_alert
-  assigned_to     String?  @db.Uuid // Technician assigned
-  sla_deadline    DateTime? @db.Timestamptz(6) // SLA deadline for response
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id   String    @db.Uuid
+  user_id           String    @db.Uuid
+  customer_id       String?   @db.Uuid // Link to customer if incident from import
+  subject           String
+  description       String    @db.Text
+  category          String // facturacion, tecnico, solar, general, import_incident
+  status            String    @default("open") // open, in_analysis, intervention, resolved, closed
+  priority          String    @default("normal") // low, normal, high, urgent
+  source_page       String? // /dashboard/calculator, /dashboard/projects, etc.
+  source_type       String? // manual, import_excel, system_alert
+  assigned_to       String?   @db.Uuid // Technician assigned
+  sla_deadline      DateTime? @db.Timestamptz(6) // SLA deadline for response
   first_response_at DateTime? @db.Timestamptz(6) // When first response was sent
-  resolved_at     DateTime? @db.Timestamptz(6) // When marked as resolved
-  created_at      DateTime @default(now()) @db.Timestamptz(6)
-  updated_at      DateTime @updatedAt @db.Timestamptz(6)
+  resolved_at       DateTime? @db.Timestamptz(6) // When marked as resolved
+  created_at        DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime  @updatedAt @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  organization organizations     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   messages     ticket_messages[]
 
   @@index([organization_id, status])
@@ -773,15 +775,15 @@ model support_tickets {
 }
 
 model ticket_messages {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ticket_id   String   @db.Uuid
-  sender_id   String   @db.Uuid
-  sender_role String   // client, technician, admin, system
-  content     String   @db.Text
-  is_internal Boolean  @default(false) // Internal notes not visible to client
-  attachments Json?    // Array of attachment URLs
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticket_id   String    @db.Uuid
+  sender_id   String    @db.Uuid
+  sender_role String // client, technician, admin, system
+  content     String    @db.Text
+  is_internal Boolean   @default(false) // Internal notes not visible to client
+  attachments Json? // Array of attachment URLs
   read_at     DateTime? @db.Timestamptz(6)
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
 
   ticket support_tickets @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
 
@@ -794,31 +796,31 @@ model ticket_messages {
 // ============================================================================
 
 model employee_leave_balances {
-  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id              String   @unique @db.Uuid
-  organization_id      String   @db.Uuid
-  year                 Int      // Año fiscal del saldo
-  
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String @unique @db.Uuid
+  organization_id String @db.Uuid
+  year            Int // Año fiscal del saldo
+
   // Vacaciones reglamentarias (días laborables)
-  vacation_days_total  Decimal  @default(22) @db.Decimal(5, 2)  // Total anual según convenio
-  vacation_days_used   Decimal  @default(0) @db.Decimal(5, 2)   // Días gastados
-  vacation_days_pending Decimal @default(0) @db.Decimal(5, 2)   // Días en solicitudes pendientes
-  
+  vacation_days_total   Decimal @default(22) @db.Decimal(5, 2) // Total anual según convenio
+  vacation_days_used    Decimal @default(0) @db.Decimal(5, 2) // Días gastados
+  vacation_days_pending Decimal @default(0) @db.Decimal(5, 2) // Días en solicitudes pendientes
+
   // Días de libre disposición / Asuntos propios
-  personal_days_total  Decimal  @default(3) @db.Decimal(5, 2)
-  personal_days_used   Decimal  @default(0) @db.Decimal(5, 2)
-  
+  personal_days_total Decimal @default(3) @db.Decimal(5, 2)
+  personal_days_used  Decimal @default(0) @db.Decimal(5, 2)
+
   // Días remunerados adicionales (permisos por convenio)
-  paid_days_total      Decimal  @default(0) @db.Decimal(5, 2)
-  paid_days_used       Decimal  @default(0) @db.Decimal(5, 2)
-  
+  paid_days_total Decimal @default(0) @db.Decimal(5, 2)
+  paid_days_used  Decimal @default(0) @db.Decimal(5, 2)
+
   // Metadatos
-  hire_date            DateTime? @db.Date           // Fecha de alta (para cálculo proporcional)
-  contract_type        String?                       // indefinido, temporal, parcial
-  notes                String?   @db.Text
-  
-  created_at           DateTime @default(now()) @db.Timestamptz(6)
-  updated_at           DateTime @updatedAt @db.Timestamptz(6)
+  hire_date     DateTime? @db.Date // Fecha de alta (para cálculo proporcional)
+  contract_type String? // indefinido, temporal, parcial
+  notes         String?   @db.Text
+
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
 
   organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
@@ -827,30 +829,30 @@ model employee_leave_balances {
 }
 
 model leave_requests {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id           String   @db.Uuid
-  organization_id   String   @db.Uuid
-  
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id         String @db.Uuid
+  organization_id String @db.Uuid
+
   // Tipo de ausencia
-  leave_type        String   // vacation, personal, paid, sick, unpaid, other
-  
+  leave_type String // vacation, personal, paid, sick, unpaid, other
+
   // Período solicitado
-  start_date        DateTime @db.Date
-  end_date          DateTime @db.Date
-  days_requested    Decimal  @db.Decimal(5, 2)  // Puede ser 0.5 para medias jornadas
-  
+  start_date     DateTime @db.Date
+  end_date       DateTime @db.Date
+  days_requested Decimal  @db.Decimal(5, 2) // Puede ser 0.5 para medias jornadas
+
   // Estado y aprobación
-  status            String   @default("pending") // pending, approved, rejected, cancelled
-  reason            String?  @db.Text            // Motivo de la solicitud
-  rejection_reason  String?  @db.Text            // Motivo del rechazo
-  
+  status           String  @default("pending") // pending, approved, rejected, cancelled
+  reason           String? @db.Text // Motivo de la solicitud
+  rejection_reason String? @db.Text // Motivo del rechazo
+
   // Aprobación
-  approved_by       String?  @db.Uuid
-  approved_at       DateTime? @db.Timestamptz(6)
-  
+  approved_by String?   @db.Uuid
+  approved_at DateTime? @db.Timestamptz(6)
+
   // Auditoría
-  created_at        DateTime @default(now()) @db.Timestamptz(6)
-  updated_at        DateTime @updatedAt @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
 
   organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
@@ -858,5 +860,3 @@ model leave_requests {
   @@index([organization_id, status])
   @@index([start_date, end_date])
 }
-
-
