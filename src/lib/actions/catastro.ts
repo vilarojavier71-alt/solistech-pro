@@ -2,6 +2,47 @@
 
 import { fetchCadastralData } from "@/lib/services/catastro"; // Usaremos solo la API de Coordenadas
 
+// Geocode address to coordinates using Nominatim
+export async function geocodeAddress(address: string) {
+    if (!address || address.trim().length < 5) {
+        return { success: false, message: "Dirección demasiado corta" };
+    }
+
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&countrycodes=es&limit=1&accept-language=es`,
+            {
+                headers: { 'User-Agent': 'MotorGap/1.0' },
+                next: { revalidate: 3600 } // Cache for 1 hour
+            }
+        );
+
+        if (!response.ok) {
+            return { success: false, message: "Error al geocodificar" };
+        }
+
+        const results = await response.json();
+
+        if (!results || results.length === 0) {
+            return { success: false, message: "Dirección no encontrada" };
+        }
+
+        const first = results[0];
+        return {
+            success: true,
+            data: {
+                lat: parseFloat(first.lat),
+                lng: parseFloat(first.lon),
+                display_name: first.display_name
+            }
+        };
+
+    } catch (error: any) {
+        console.error("Geocoding error:", error);
+        return { success: false, message: "Error de conexión" };
+    }
+}
+
 export async function searchCadastreByCoordinates(lat: number, lng: number, addressHint?: string) {
 
     if (isNaN(lat) || isNaN(lng)) {
