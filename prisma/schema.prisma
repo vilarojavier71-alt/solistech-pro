@@ -789,3 +789,74 @@ model ticket_messages {
   @@index([sender_id])
 }
 
+// ============================================================================
+// LEAVE MANAGEMENT (Gestión de Vacaciones y Días Libres)
+// ============================================================================
+
+model employee_leave_balances {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id              String   @unique @db.Uuid
+  organization_id      String   @db.Uuid
+  year                 Int      // Año fiscal del saldo
+  
+  // Vacaciones reglamentarias (días laborables)
+  vacation_days_total  Decimal  @default(22) @db.Decimal(5, 2)  // Total anual según convenio
+  vacation_days_used   Decimal  @default(0) @db.Decimal(5, 2)   // Días gastados
+  vacation_days_pending Decimal @default(0) @db.Decimal(5, 2)   // Días en solicitudes pendientes
+  
+  // Días de libre disposición / Asuntos propios
+  personal_days_total  Decimal  @default(3) @db.Decimal(5, 2)
+  personal_days_used   Decimal  @default(0) @db.Decimal(5, 2)
+  
+  // Días remunerados adicionales (permisos por convenio)
+  paid_days_total      Decimal  @default(0) @db.Decimal(5, 2)
+  paid_days_used       Decimal  @default(0) @db.Decimal(5, 2)
+  
+  // Metadatos
+  hire_date            DateTime? @db.Date           // Fecha de alta (para cálculo proporcional)
+  contract_type        String?                       // indefinido, temporal, parcial
+  notes                String?   @db.Text
+  
+  created_at           DateTime @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime @updatedAt @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, year])
+  @@index([organization_id, year])
+}
+
+model leave_requests {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id           String   @db.Uuid
+  organization_id   String   @db.Uuid
+  
+  // Tipo de ausencia
+  leave_type        String   // vacation, personal, paid, sick, unpaid, other
+  
+  // Período solicitado
+  start_date        DateTime @db.Date
+  end_date          DateTime @db.Date
+  days_requested    Decimal  @db.Decimal(5, 2)  // Puede ser 0.5 para medias jornadas
+  
+  // Estado y aprobación
+  status            String   @default("pending") // pending, approved, rejected, cancelled
+  reason            String?  @db.Text            // Motivo de la solicitud
+  rejection_reason  String?  @db.Text            // Motivo del rechazo
+  
+  // Aprobación
+  approved_by       String?  @db.Uuid
+  approved_at       DateTime? @db.Timestamptz(6)
+  
+  // Auditoría
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @updatedAt @db.Timestamptz(6)
+
+  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, status])
+  @@index([organization_id, status])
+  @@index([start_date, end_date])
+}
+
+
