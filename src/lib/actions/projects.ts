@@ -69,87 +69,92 @@ export async function getProjectsList(params: {
     sortBy?: string
     sortOrder?: 'asc' | 'desc'
 }): Promise<ProjectsListResult> {
-    console.log('[PROJECTS ACTION] getProjectsList called')
+    const emptyResult = { data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
+
     try {
-        console.log('[PROJECTS ACTION] Inspecting prisma.projects:', typeof prisma.projects)
-    } catch (e) {
-        console.error('[PROJECTS ACTION] Error inspecting prisma:', e)
-    }
+        console.log('[PROJECTS ACTION] getProjectsList called')
 
-    const user = await getCurrentUserWithRole()
-    if (!user) {
-        return { data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
-    }
+        const user = await getCurrentUserWithRole()
+        if (!user) {
+            console.warn('[PROJECTS] No authenticated user')
+            return emptyResult
+        }
 
-    const {
-        page = 1,
-        pageSize = 10,
-        search = '',
-        status = '',
-        sortBy = 'created_at',
-        sortOrder = 'desc'
-    } = params
+        const {
+            page = 1,
+            pageSize = 10,
+            search = '',
+            status = '',
+            sortBy = 'created_at',
+            sortOrder = 'desc'
+        } = params
 
-    if (!user.organizationId || user.organizationId.length === 0) {
-        console.warn('Invalid Organization UUID in getProjectsList', user.organizationId)
-        return { data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
-    }
+        if (!user.organizationId || user.organizationId.length === 0) {
+            console.warn('[PROJECTS] Invalid Organization UUID', user.organizationId)
+            return emptyResult
+        }
 
-    const skip = (page - 1) * pageSize
+        const skip = (page - 1) * pageSize
 
-    // Build where clause
-    const where: any = {
-        organization_id: user.organizationId,
-    }
+        // Build where clause
+        const where: any = {
+            organization_id: user.organizationId,
+        }
 
-    if (search) {
-        where.OR = [
-            { name: { contains: search, mode: 'insensitive' } },
-            { customer: { name: { contains: search, mode: 'insensitive' } } },
-        ]
-    }
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { customer: { name: { contains: search, mode: 'insensitive' } } },
+            ]
+        }
 
-    if (status && status !== 'all') {
-        where.status = status
-    }
+        if (status && status !== 'all') {
+            where.status = status
+        }
 
-    // Get total count
-    const total = await prisma.projects.count({ where })
+        // Get total count
+        const total = await prisma.projects.count({ where })
 
-    // Get paginated data
-    const data = await prisma.projects.findMany({
-        where,
-        include: {
-            customer: {
-                select: { name: true, email: true }
-            }
-        },
-        orderBy: { [sortBy]: sortOrder },
-        skip,
-        take: pageSize,
-    })
+        // Get paginated data
+        const data = await prisma.projects.findMany({
+            where,
+            include: {
+                customer: {
+                    select: { name: true, email: true }
+                }
+            },
+            orderBy: { [sortBy]: sortOrder },
+            skip,
+            take: pageSize,
+        })
 
-    // Transform data
-    const transformedData: ProjectListItem[] = data.map(p => ({
-        id: p.id,
-        name: p.name,
-        status: p.status || 'quote',
-        installation_type: p.installation_type,
-        customer_name: p.customer?.name || null,
-        customer_email: p.customer?.email || null,
-        system_size_kwp: p.system_size_kwp ? Number(p.system_size_kwp) : null,
-        created_at: p.created_at,
-        location: p.location,
-    }))
+        // Transform data
+        const transformedData: ProjectListItem[] = data.map(p => ({
+            id: p.id,
+            name: p.name,
+            status: p.status || 'quote',
+            installation_type: p.installation_type,
+            customer_name: p.customer?.name || null,
+            customer_email: p.customer?.email || null,
+            system_size_kwp: p.system_size_kwp ? Number(p.system_size_kwp) : null,
+            created_at: p.created_at,
+            location: p.location,
+        }))
 
-    return {
-        data: transformedData,
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
+        return {
+            data: transformedData,
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+        }
+    } catch (error) {
+        console.error('[PROJECTS ACTION] Fatal error in getProjectsList:', error)
+        // Return empty result instead of throwing to prevent 500
+        return { data: [], total: 0, page: params.page || 1, pageSize: params.pageSize || 10, totalPages: 0 }
     }
 }
+
 
 // ============================================================================
 // CRUD OPERATIONS
