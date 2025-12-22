@@ -35,7 +35,8 @@ import {
     UsersRound,
     Sparkles,
     BarChart3,
-    Briefcase
+    Briefcase,
+    Headphones
 } from "lucide-react"
 
 import { Lock } from "lucide-react"
@@ -92,6 +93,7 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
                 { href: "/dashboard/inventory", label: "Inventario", icon: Package, permission: "inventory:view" as const },
                 { href: "/dashboard/time-tracking", label: "Control Horario", icon: Clock, permission: "time-tracking:view" as const },
                 { href: "/dashboard/team", label: "Equipo", icon: UsersRound, locked: !isPro, permission: "users:view" as const },
+                { href: "/dashboard/support", label: "Soporte", icon: Headphones, permission: "dashboard:view" as const },
             ]
         },
         {
