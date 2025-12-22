@@ -459,7 +459,7 @@ export const VisitImportConfig: ImportConfigDefinition = {
     targetModel: 'appointments',
     label: 'Importación de Visitas Técnicas',
     identityFields: ['customer_name', 'visit_date'], // Detectar duplicados por cliente+fecha
-    defaultDuplicateStrategy: 'ask', // Preguntar si es segunda visita
+    defaultDuplicateStrategy: 'skip', // Si mismo cliente+fecha, se omite (puede ser segunda visita manual)
     fields: [
         // ─────────────────────────────────────────────────────────────────────────
         // IDENTIFICACIÓN DEL CLIENTE
@@ -610,6 +610,144 @@ export const VisitImportConfig: ImportConfigDefinition = {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG: IMPORTACIÓN DE INCIDENCIAS/TICKETS DE SOPORTE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Validador de prioridad
+const priorityValidator = z.enum(['low', 'normal', 'high', 'urgent', ''])
+    .transform(val => val || 'normal')
+
+// Validador de categoría
+const categoryValidator = z.enum(['facturacion', 'tecnico', 'solar', 'general', 'import_incident', ''])
+    .transform(val => val || 'general')
+
+export const IncidentImportConfig: ImportConfigDefinition = {
+    id: 'import_incidents_v1',
+    targetModel: 'support_tickets',
+    label: 'Importación de Incidencias',
+    identityFields: ['customer_name', 'subject'], // Evitar duplicados por cliente+asunto
+    defaultDuplicateStrategy: 'skip',
+    fields: [
+        // ─────────────────────────────────────────────────────────────────────────
+        // IDENTIFICACIÓN
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'customer_name',
+            label: 'Nombre Cliente',
+            type: 'string',
+            required: true,
+            aliases: ['nombre', 'cliente', 'nombre_cliente', 'contacto'],
+            validation: z.string().min(2)
+        },
+        {
+            key: 'customer_phone',
+            label: 'Teléfono Cliente',
+            type: 'phone',
+            required: false,
+            aliases: ['telefono', 'movil', 'tlf', 'tel'],
+            validation: phoneValidator.optional()
+        },
+        {
+            key: 'customer_email',
+            label: 'Email Cliente',
+            type: 'email',
+            required: false,
+            aliases: ['email', 'correo', 'mail']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATOS DE LA INCIDENCIA
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'subject',
+            label: 'Asunto / Título',
+            type: 'string',
+            required: true,
+            aliases: ['asunto', 'titulo', 'problema', 'incidencia'],
+            validation: z.string().min(5, "El asunto debe tener al menos 5 caracteres")
+        },
+        {
+            key: 'description',
+            label: 'Descripción Detallada',
+            type: 'string',
+            required: false,
+            aliases: ['descripcion', 'detalle', 'notas', 'observaciones']
+        },
+        {
+            key: 'category',
+            label: 'Categoría',
+            type: 'select',
+            required: false,
+            defaultValue: 'general',
+            options: [
+                { label: 'Facturación', value: 'facturacion' },
+                { label: 'Técnico', value: 'tecnico' },
+                { label: 'Solar/Instalación', value: 'solar' },
+                { label: 'General', value: 'general' }
+            ],
+            aliases: ['categoria', 'tipo', 'area'],
+            validation: categoryValidator
+        },
+        {
+            key: 'priority',
+            label: 'Prioridad',
+            type: 'select',
+            required: false,
+            defaultValue: 'normal',
+            options: [
+                { label: 'Baja', value: 'low' },
+                { label: 'Normal', value: 'normal' },
+                { label: 'Alta', value: 'high' },
+                { label: 'Urgente', value: 'urgent' }
+            ],
+            aliases: ['prioridad', 'urgencia', 'importancia'],
+            validation: priorityValidator
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // FECHAS Y TIEMPOS
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'reported_date',
+            label: 'Fecha Reporte',
+            type: 'date',
+            required: false,
+            aliases: ['fecha', 'fecha_reporte', 'fecha_incidencia', 'date'],
+            validation: dateValidator
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // ASIGNACIÓN
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'technician_name',
+            label: 'Técnico Asignado',
+            type: 'string',
+            required: false,
+            aliases: ['tecnico', 'asignado', 'responsable', 'agente']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // UBICACIÓN (para incidencias de campo)
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'address',
+            label: 'Dirección',
+            type: 'string',
+            required: false,
+            aliases: ['direccion', 'ubicacion', 'domicilio']
+        },
+        {
+            key: 'town',
+            label: 'Pueblo / Localidad',
+            type: 'string',
+            required: false,
+            aliases: ['pueblo', 'localidad', 'ciudad', 'municipio']
+        }
+    ]
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // REGISTRO DE CONFIGURACIONES
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -618,11 +756,13 @@ export const IMPORT_REGISTRY: Record<string, ImportConfigDefinition> = {
     [LeadImportConfig.id]: LeadImportConfig,
     [ComponentImportConfig.id]: ComponentImportConfig,
     [VisitImportConfig.id]: VisitImportConfig,
+    [IncidentImportConfig.id]: IncidentImportConfig,
 }
 
 // Helper para obtener config por modelo
 export function getImportConfigByModel(model: string): ImportConfigDefinition | undefined {
     return Object.values(IMPORT_REGISTRY).find(config => config.targetModel === model)
 }
+
 
 

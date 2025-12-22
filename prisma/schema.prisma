@@ -746,18 +746,46 @@ model support_tickets {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   user_id         String   @db.Uuid
+  customer_id     String?  @db.Uuid // Link to customer if incident from import
   subject         String
   description     String   @db.Text
-  category        String   // facturacion, tecnico, solar, general
-  status          String   @default("open") // open, in_progress, resolved, closed
+  category        String   // facturacion, tecnico, solar, general, import_incident
+  status          String   @default("open") // open, in_analysis, intervention, resolved, closed
   priority        String   @default("normal") // low, normal, high, urgent
   source_page     String?  // /dashboard/calculator, /dashboard/projects, etc.
+  source_type     String?  // manual, import_excel, system_alert
+  assigned_to     String?  @db.Uuid // Technician assigned
+  sla_deadline    DateTime? @db.Timestamptz(6) // SLA deadline for response
+  first_response_at DateTime? @db.Timestamptz(6) // When first response was sent
+  resolved_at     DateTime? @db.Timestamptz(6) // When marked as resolved
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @updatedAt @db.Timestamptz(6)
 
   organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  messages     ticket_messages[]
 
   @@index([organization_id, status])
   @@index([user_id])
+  @@index([customer_id])
+  @@index([assigned_to])
+  @@index([status, priority])
 }
+
+model ticket_messages {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticket_id   String   @db.Uuid
+  sender_id   String   @db.Uuid
+  sender_role String   // client, technician, admin, system
+  content     String   @db.Text
+  is_internal Boolean  @default(false) // Internal notes not visible to client
+  attachments Json?    // Array of attachment URLs
+  read_at     DateTime? @db.Timestamptz(6)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  ticket support_tickets @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@index([ticket_id, created_at])
+  @@index([sender_id])
+}
+
