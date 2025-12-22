@@ -1,26 +1,64 @@
 import { z } from "zod"
 import { ImportConfigDefinition } from "../lib/import-engine/types"
 
-// Reusable Validators
-const phoneValidator = z.string().transform(val => val.replace(/[\s\-\(\)]/g, '')).refine(val => /^[\+]?[\d]{9,15}$/.test(val), "Teléfono inválido")
-const nifValidator = z.string().transform(val => val.toUpperCase().trim()) // Add strict NIF algorithm if needed
+// ═══════════════════════════════════════════════════════════════════════════════
+// VALIDADORES REUTILIZABLES
+// ═══════════════════════════════════════════════════════════════════════════════
 
-/**
- * CONFIG: CUSTOMER IMPORT
- */
+const phoneValidator = z.string()
+    .transform(val => val.replace(/[\s\-\(\)]/g, ''))
+    .refine(val => /^[\+]?[\d]{9,15}$/.test(val), "Teléfono inválido")
+
+const nifValidator = z.string()
+    .transform(val => val.toUpperCase().trim())
+    .refine(val => /^[0-9A-Z]{8,12}[A-Z]?$/i.test(val), "NIF/CIF inválido")
+
+const currencyValidator = z.string()
+    .transform(val => {
+        // Convertir "1.500,00 €" o "1500" a número
+        const cleaned = val.replace(/[€$\s]/g, '').replace('.', '').replace(',', '.')
+        return parseFloat(cleaned) || 0
+    })
+
+const dateValidator = z.string()
+    .transform(val => {
+        // Intentar parsear DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD
+        if (!val) return null
+        const parts = val.split(/[\/\-]/)
+        if (parts.length === 3) {
+            // Si el primer elemento tiene 4 dígitos, es YYYY-MM-DD
+            if (parts[0].length === 4) {
+                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+            }
+            // Si no, es DD/MM/YYYY
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+        }
+        return val
+    })
+
+const documentStatusValidator = z.enum(['pendiente', 'guardado', 'enviado', 'aprobado', 'rechazado', ''])
+    .transform(val => val || 'pendiente')
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG: IMPORTACIÓN COMPLETA DE CLIENTES/EXPEDIENTES
+// ═══════════════════════════════════════════════════════════════════════════════
+
 export const CustomerImportConfig: ImportConfigDefinition = {
-    id: 'import_customers_v1',
+    id: 'import_customers_v2',
     targetModel: 'customers',
-    label: 'Importación de Clientes',
-    identityFields: ['email'], // Primary key for duplicates
+    label: 'Importación de Clientes y Expedientes',
+    identityFields: ['vat_number', 'email'], // Deduplicación por DNI o Email
     defaultDuplicateStrategy: 'skip',
     fields: [
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATOS PERSONALES
+        // ─────────────────────────────────────────────────────────────────────────
         {
             key: 'full_name',
             label: 'Nombre Completo',
             type: 'string',
             required: true,
-            aliases: ['nombre', 'name', 'cliente', 'razon_social'],
+            aliases: ['nombre', 'name', 'cliente', 'razon_social', 'nombre_cliente'],
             validation: z.string().min(2, "El nombre es muy corto")
         },
         {
@@ -28,52 +66,386 @@ export const CustomerImportConfig: ImportConfigDefinition = {
             label: 'Correo Electrónico',
             type: 'email',
             required: false,
-            aliases: ['correo', 'mail', 'e-mail'],
+            aliases: ['correo', 'mail', 'e-mail', 'email_cliente'],
             validation: z.string().email("Email inválido").or(z.literal(''))
         },
         {
             key: 'phone',
             label: 'Teléfono',
             type: 'phone',
-            required: false,
-            aliases: ['telefono', 'celular', 'movil'],
-            validation: phoneValidator.optional().or(z.literal(''))
+            required: true,
+            aliases: ['telefono', 'celular', 'movil', 'tlf', 'tel'],
+            validation: phoneValidator
         },
         {
             key: 'vat_number',
-            label: 'NIF/CIF',
+            label: 'DNI/NIF/CIF',
             type: 'string',
-            required: false,
-            aliases: ['nif', 'cif', 'dni', 'identificacion'],
-            validation: nifValidator.optional()
+            required: true,
+            aliases: ['nif', 'cif', 'dni', 'identificacion', 'documento'],
+            validation: nifValidator
         },
         {
             key: 'address',
             label: 'Dirección',
             type: 'string',
             required: false,
-            aliases: ['direccion', 'domicilio', 'calle']
+            aliases: ['direccion', 'domicilio', 'calle', 'direccion_completa']
+        },
+        {
+            key: 'postal_code',
+            label: 'Código Postal',
+            type: 'string',
+            required: false,
+            aliases: ['cp', 'codigo_postal', 'zip']
+        },
+        {
+            key: 'city',
+            label: 'Ciudad',
+            type: 'string',
+            required: false,
+            aliases: ['ciudad', 'localidad', 'poblacion', 'municipio']
+        },
+        {
+            key: 'province',
+            label: 'Provincia',
+            type: 'string',
+            required: false,
+            aliases: ['provincia', 'state', 'region']
         },
         {
             key: 'type',
             label: 'Tipo de Cliente',
             type: 'select',
-            required: true,
+            required: false,
             defaultValue: 'residential',
             options: [
                 { label: 'Residencial', value: 'residential' },
                 { label: 'Empresa', value: 'business' },
                 { label: 'Industrial', value: 'industrial' }
             ],
-            validation: z.enum(['residential', 'business', 'industrial'])
+            aliases: ['tipo', 'tipo_cliente', 'categoria']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATOS TÉCNICOS
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'has_electric_charger',
+            label: 'Cargador Eléctrico',
+            type: 'boolean',
+            required: false,
+            aliases: ['cargador_electrico', 'cargador', 'ev_charger', 'wallbox'],
+            validation: z.boolean().optional()
+        },
+        {
+            key: 'moves_needed',
+            label: 'Moves Necesarios',
+            type: 'boolean',
+            required: false,
+            aliases: ['moves_necesarios', 'moves', 'traslados'],
+            validation: z.boolean().optional()
+        },
+        {
+            key: 'engineer_name',
+            label: 'Ingeniero Asignado',
+            type: 'string',
+            required: false,
+            aliases: ['ingeniero', 'engineer', 'tecnico_responsable']
+        },
+        {
+            key: 'installer_name',
+            label: 'Instalador Asignado',
+            type: 'string',
+            required: false,
+            aliases: ['instalador', 'installer', 'empresa_instaladora']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // ESTADOS DOCUMENTALES (CEE, CIE, DROU)
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'cee_1_status',
+            label: '1º CEE Estado',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Pendiente', value: 'pendiente' },
+                { label: 'Guardado', value: 'guardado' },
+                { label: 'Enviado', value: 'enviado' },
+                { label: 'Aprobado', value: 'aprobado' }
+            ],
+            aliases: ['1_cee', 'cee1', 'primer_cee', 'certificado_1'],
+            validation: documentStatusValidator
+        },
+        {
+            key: 'cee_2_status',
+            label: '2º CEE Estado',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Pendiente', value: 'pendiente' },
+                { label: 'Guardado', value: 'guardado' },
+                { label: 'Enviado', value: 'enviado' },
+                { label: 'Aprobado', value: 'aprobado' }
+            ],
+            aliases: ['2_cee', 'cee2', 'segundo_cee', 'certificado_2'],
+            validation: documentStatusValidator
+        },
+        {
+            key: 'cie_status',
+            label: 'CIE Estado',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Pendiente', value: 'pendiente' },
+                { label: 'Guardado', value: 'guardado' },
+                { label: 'Enviado', value: 'enviado' },
+                { label: 'Aprobado', value: 'aprobado' }
+            ],
+            aliases: ['cie', 'certificado_instalacion', 'cie_estado'],
+            validation: documentStatusValidator
+        },
+        {
+            key: 'drou_status',
+            label: 'DROU Estado',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Pendiente', value: 'pendiente' },
+                { label: 'Guardado', value: 'guardado' },
+                { label: 'Enviado', value: 'enviado' },
+                { label: 'Aprobado', value: 'aprobado' }
+            ],
+            aliases: ['drou', 'declaracion_responsable', 'drou_estado'],
+            validation: documentStatusValidator
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // DATOS FINANCIEROS
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'budget_amount',
+            label: 'Importe Presupuesto',
+            type: 'currency',
+            required: false,
+            aliases: ['importe_presupuesto', 'presupuesto', 'budget', 'precio_total', 'importe'],
+            validation: currencyValidator
+        },
+        {
+            key: 'amount_pending',
+            label: 'Importe Pendiente',
+            type: 'currency',
+            required: false,
+            aliases: ['importe_pendiente', 'pendiente', 'a_deber', 'deuda', 'saldo'],
+            validation: currencyValidator
+        },
+        {
+            key: 'payment_status',
+            label: 'Estado de Pago',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Pendiente', value: 'pending' },
+                { label: 'Parcial', value: 'partial' },
+                { label: 'Pagado', value: 'paid' }
+            ],
+            aliases: ['estado_pago', 'pago', 'cobrado'],
+            validation: z.enum(['pending', 'partial', 'paid', '']).transform(v => v || 'pending')
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // FECHAS
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'installation_date',
+            label: 'Fecha Instalación',
+            type: 'date',
+            required: false,
+            aliases: ['fecha_instalacion', 'fecha_install', 'install_date', 'fecha'],
+            validation: dateValidator
+        },
+        {
+            key: 'contract_date',
+            label: 'Fecha Contrato',
+            type: 'date',
+            required: false,
+            aliases: ['fecha_contrato', 'contract_date', 'fecha_firma'],
+            validation: dateValidator
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // OTROS
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'expedient_number',
+            label: 'Nº Expediente',
+            type: 'string',
+            required: false,
+            aliases: ['expediente', 'numero_expediente', 'ref', 'referencia']
+        },
+        {
+            key: 'notes',
+            label: 'Notas / Observaciones',
+            type: 'string',
+            required: false,
+            aliases: ['notas', 'observaciones', 'comentarios', 'notes']
         }
     ]
 }
 
-/**
- * REGISTRY OF ALL CONFIGS
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG: IMPORTACIÓN DE LEADS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const LeadImportConfig: ImportConfigDefinition = {
+    id: 'import_leads_v1',
+    targetModel: 'leads',
+    label: 'Importación de Leads',
+    identityFields: ['email', 'phone'],
+    defaultDuplicateStrategy: 'skip',
+    fields: [
+        {
+            key: 'name',
+            label: 'Nombre',
+            type: 'string',
+            required: true,
+            aliases: ['nombre', 'cliente', 'contacto'],
+            validation: z.string().min(2)
+        },
+        {
+            key: 'email',
+            label: 'Email',
+            type: 'email',
+            required: false,
+            aliases: ['correo', 'mail']
+        },
+        {
+            key: 'phone',
+            label: 'Teléfono',
+            type: 'phone',
+            required: false,
+            aliases: ['telefono', 'movil', 'tlf'],
+            validation: phoneValidator.optional()
+        },
+        {
+            key: 'source',
+            label: 'Origen',
+            type: 'select',
+            required: false,
+            options: [
+                { label: 'Web', value: 'web' },
+                { label: 'Referido', value: 'referral' },
+                { label: 'Publicidad', value: 'ads' },
+                { label: 'Otro', value: 'other' }
+            ],
+            aliases: ['origen', 'fuente', 'canal']
+        },
+        {
+            key: 'status',
+            label: 'Estado',
+            type: 'select',
+            required: false,
+            defaultValue: 'new',
+            options: [
+                { label: 'Nuevo', value: 'new' },
+                { label: 'Contactado', value: 'contacted' },
+                { label: 'Calificado', value: 'qualified' },
+                { label: 'Propuesta', value: 'proposal' },
+                { label: 'Ganado', value: 'won' },
+                { label: 'Perdido', value: 'lost' }
+            ],
+            aliases: ['estado', 'fase']
+        },
+        {
+            key: 'estimated_value',
+            label: 'Valor Estimado',
+            type: 'currency',
+            required: false,
+            aliases: ['valor', 'importe', 'presupuesto'],
+            validation: currencyValidator
+        },
+        {
+            key: 'notes',
+            label: 'Notas',
+            type: 'string',
+            required: false,
+            aliases: ['notas', 'comentarios', 'observaciones']
+        }
+    ]
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG: IMPORTACIÓN DE COMPONENTES/INVENTARIO
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const ComponentImportConfig: ImportConfigDefinition = {
+    id: 'import_components_v1',
+    targetModel: 'components',
+    label: 'Importación de Componentes',
+    identityFields: ['manufacturer', 'model'],
+    defaultDuplicateStrategy: 'update',
+    fields: [
+        {
+            key: 'manufacturer',
+            label: 'Fabricante',
+            type: 'string',
+            required: true,
+            aliases: ['fabricante', 'marca', 'brand']
+        },
+        {
+            key: 'model',
+            label: 'Modelo',
+            type: 'string',
+            required: true,
+            aliases: ['modelo', 'referencia', 'ref']
+        },
+        {
+            key: 'type',
+            label: 'Tipo',
+            type: 'select',
+            required: true,
+            options: [
+                { label: 'Panel', value: 'panel' },
+                { label: 'Inversor', value: 'inverter' },
+                { label: 'Batería', value: 'battery' },
+                { label: 'Estructura', value: 'mounting' },
+                { label: 'Optimizador', value: 'optimizer' },
+                { label: 'Otro', value: 'other' }
+            ],
+            aliases: ['tipo', 'categoria', 'category']
+        },
+        {
+            key: 'price',
+            label: 'Precio',
+            type: 'currency',
+            required: true,
+            aliases: ['precio', 'pvp', 'coste'],
+            validation: currencyValidator
+        },
+        {
+            key: 'stock_quantity',
+            label: 'Stock',
+            type: 'number',
+            required: false,
+            aliases: ['stock', 'cantidad', 'unidades'],
+            validation: z.number().int().min(0).optional()
+        }
+    ]
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REGISTRO DE CONFIGURACIONES
+// ═══════════════════════════════════════════════════════════════════════════════
+
 export const IMPORT_REGISTRY: Record<string, ImportConfigDefinition> = {
     [CustomerImportConfig.id]: CustomerImportConfig,
-    // Add more configs here...
+    [LeadImportConfig.id]: LeadImportConfig,
+    [ComponentImportConfig.id]: ComponentImportConfig,
 }
+
+// Helper para obtener config por modelo
+export function getImportConfigByModel(model: string): ImportConfigDefinition | undefined {
+    return Object.values(IMPORT_REGISTRY).find(config => config.targetModel === model)
+}
+
