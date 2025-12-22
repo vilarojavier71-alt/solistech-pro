@@ -79,10 +79,11 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export function InteractiveLocationPicker({
     initialLocation = { lat: 40.4168, lng: -3.7038 },
-    onLocationChange,
+    onLocationChange = () => { }, // Default empty function to prevent TypeError
     height = '350px',
     className
 }: LocationPickerProps) {
+    const [mounted, setMounted] = useState(false)
     const [position, setPosition] = useState(initialLocation)
     const [address, setAddress] = useState<string>('')
     const [isLoading, setIsLoading] = useState(false)
@@ -93,6 +94,11 @@ export function InteractiveLocationPicker({
     // Store callback in ref to avoid useEffect dependency issues
     const onLocationChangeRef = useRef(onLocationChange)
     onLocationChangeRef.current = onLocationChange
+
+    // Mounted check to prevent hydration mismatch
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     // Debounce position for geocoding
     const debouncedPosition = useDebounce(position, 500)
@@ -176,6 +182,20 @@ export function InteractiveLocationPicker({
             { enableHighAccuracy: true, timeout: 10000 }
         )
     }, [])
+
+    // Show loading skeleton until mounted to prevent hydration mismatch
+    if (!mounted) {
+        return (
+            <Card className={cn("overflow-hidden relative", className)}>
+                <div style={{ height }} className="flex items-center justify-center bg-muted/50">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                        <span className="text-sm">Cargando mapa...</span>
+                    </div>
+                </div>
+            </Card>
+        )
+    }
 
     return (
         <Card className={cn("overflow-hidden relative", className)}>
