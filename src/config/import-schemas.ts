@@ -435,6 +435,181 @@ export const ComponentImportConfig: ImportConfigDefinition = {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// CONFIG: IMPORTACIÓN DE VISITAS/CITAS TÉCNICAS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Validador de hora (HH:MM o H:MM)
+const timeValidator = z.string()
+    .transform(val => {
+        if (!val) return null
+        // Normalizar "9:30" a "09:30"
+        const match = val.match(/^(\d{1,2}):(\d{2})$/)
+        if (match) {
+            return `${match[1].padStart(2, '0')}:${match[2]}`
+        }
+        return val
+    })
+
+// Validador de estado de visita
+const visitStatusValidator = z.enum(['scheduled', 'in_progress', 'completed', 'cancelled', 'incident', ''])
+    .transform(val => val || 'scheduled')
+
+export const VisitImportConfig: ImportConfigDefinition = {
+    id: 'import_visits_v1',
+    targetModel: 'appointments',
+    label: 'Importación de Visitas Técnicas',
+    identityFields: ['customer_name', 'visit_date'], // Detectar duplicados por cliente+fecha
+    defaultDuplicateStrategy: 'ask', // Preguntar si es segunda visita
+    fields: [
+        // ─────────────────────────────────────────────────────────────────────────
+        // IDENTIFICACIÓN DEL CLIENTE
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'customer_name',
+            label: 'Nombre Cliente',
+            type: 'string',
+            required: true,
+            aliases: ['nombre', 'cliente', 'nombre_cliente', 'contacto'],
+            validation: z.string().min(2, "El nombre es muy corto")
+        },
+        {
+            key: 'customer_phone',
+            label: 'Teléfono Cliente',
+            type: 'phone',
+            required: false,
+            aliases: ['telefono', 'movil', 'tlf', 'tel', 'phone'],
+            validation: phoneValidator.optional()
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // UBICACIÓN / LOGÍSTICA
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'town',
+            label: 'Pueblo / Localidad',
+            type: 'string',
+            required: true,
+            aliases: ['pueblo', 'localidad', 'ciudad', 'poblacion', 'municipio'],
+            validation: z.string().min(2)
+        },
+        {
+            key: 'address',
+            label: 'Dirección Exacta',
+            type: 'string',
+            required: false,
+            aliases: ['direccion', 'calle', 'domicilio', 'ubicacion']
+        },
+        {
+            key: 'postal_code',
+            label: 'Código Postal',
+            type: 'string',
+            required: false,
+            aliases: ['cp', 'codigo_postal', 'zip']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // TEMPORALIDAD
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'visit_date',
+            label: 'Fecha de Visita',
+            type: 'date',
+            required: true,
+            aliases: ['fecha', 'fecha_visita', 'dia', 'date'],
+            validation: dateValidator
+        },
+        {
+            key: 'scheduled_time',
+            label: 'Hora Programada',
+            type: 'string',
+            required: false,
+            aliases: ['hora', 'hora_visita', 'hora_programada', 'time'],
+            validation: timeValidator
+        },
+        {
+            key: 'check_in_time',
+            label: 'Hora Pica (Llegada)',
+            type: 'string',
+            required: false,
+            aliases: ['hora_pica', 'hora_llegada', 'check_in', 'pica'],
+            validation: timeValidator
+        },
+        {
+            key: 'check_out_time',
+            label: 'Hora Salida',
+            type: 'string',
+            required: false,
+            aliases: ['hora_salida', 'check_out', 'fin'],
+            validation: timeValidator
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // ESTADO Y TIPO
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'status',
+            label: 'Estado Visita',
+            type: 'select',
+            required: false,
+            defaultValue: 'scheduled',
+            options: [
+                { label: 'Agendada', value: 'scheduled' },
+                { label: 'En Curso', value: 'in_progress' },
+                { label: 'Realizada', value: 'completed' },
+                { label: 'Cancelada', value: 'cancelled' },
+                { label: 'Incidencia', value: 'incident' }
+            ],
+            aliases: ['estado', 'estado_visita', 'situacion'],
+            validation: visitStatusValidator
+        },
+        {
+            key: 'visit_type',
+            label: 'Tipo de Visita',
+            type: 'select',
+            required: false,
+            defaultValue: 'technical',
+            options: [
+                { label: 'Técnica', value: 'technical' },
+                { label: 'Comercial', value: 'commercial' },
+                { label: 'Instalación', value: 'installation' },
+                { label: 'Revisión', value: 'review' },
+                { label: 'Incidencia', value: 'incident' }
+            ],
+            aliases: ['tipo', 'tipo_visita', 'motivo']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // ASIGNACIÓN
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'technician_name',
+            label: 'Técnico Asignado',
+            type: 'string',
+            required: false,
+            aliases: ['tecnico', 'instalador', 'asignado', 'responsable']
+        },
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // OBSERVACIONES
+        // ─────────────────────────────────────────────────────────────────────────
+        {
+            key: 'notes',
+            label: 'Notas / Observaciones',
+            type: 'string',
+            required: false,
+            aliases: ['notas', 'observaciones', 'comentarios', 'descripcion']
+        },
+        {
+            key: 'incident_description',
+            label: 'Descripción Incidencia',
+            type: 'string',
+            required: false,
+            aliases: ['incidencia', 'problema', 'issue']
+        }
+    ]
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // REGISTRO DE CONFIGURACIONES
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -442,10 +617,12 @@ export const IMPORT_REGISTRY: Record<string, ImportConfigDefinition> = {
     [CustomerImportConfig.id]: CustomerImportConfig,
     [LeadImportConfig.id]: LeadImportConfig,
     [ComponentImportConfig.id]: ComponentImportConfig,
+    [VisitImportConfig.id]: VisitImportConfig,
 }
 
 // Helper para obtener config por modelo
 export function getImportConfigByModel(model: string): ImportConfigDefinition | undefined {
     return Object.values(IMPORT_REGISTRY).find(config => config.targetModel === model)
 }
+
 
