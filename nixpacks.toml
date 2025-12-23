@@ -25,8 +25,11 @@ cmds = [
 [phases.build]
 # Prisma generate + Build with 4GB memory limit
 # Then copy static assets to correct locations for standalone mode
+# Fix npm permissions and run migrations
 cmds = [
+    "mkdir -p /tmp/.npm",
     "npx prisma generate",
+    "npx prisma migrate deploy",
     "NODE_OPTIONS='--max-old-space-size=4096' npm run build",
     "mkdir -p .next/standalone/.next",
     "cp -r .next/static .next/standalone/.next/static",

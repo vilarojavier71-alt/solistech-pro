@@ -1,13 +1,3 @@
-Dockerfile
-.dockerignore
-node_modules
-npm-debug.log
-README.md
-.next
-.git
-.env*
-!.env.production
-.vscode
-public/uploads
-playwright-report
-test-results
+# Force Coolify to use Nixpacks instead of Dockerfile
+# Dockerfile has been renamed to Dockerfile.backup
+# Coolify will auto-detect nixpacks.toml when no Dockerfile is present
