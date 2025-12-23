@@ -39,14 +39,13 @@ import { CreateOrganizationForm } from '@/components/onboarding/create-organizat
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { SPANISH_CITIES, searchCities, type CityLocation } from '@/lib/data/spanish-cities'
-import { saveCalculation } from '@/lib/actions/calculator'
 import { calculateFullROI } from '@/lib/actions/roi-calculator'
-import { generateTechnicalMemory } from '@/lib/actions/technical-memory'
 import { ProductionChart } from './production-chart'
 import { SubsidiesPanel } from './subsidies-panel'
 import { TooltipInfo, CommonTooltips } from '@/components/ui/tooltip-info'
 import { SaveProjectDialog } from './save-project-dialog'
 import { createPresentation } from '@/lib/actions/presentation-generator' // AI Presentation
+import { useCalculator } from '@/hooks/use-calculator'
 
 // ============================================
 // SOLAR CALCULATOR PREMIUM - FULL FEATURED
@@ -215,59 +214,30 @@ export function SolarCalculatorPremium({ isPro = false, customers = [] }: { isPr
         }
     }
 
+    // Hook centralizado para cálculos
+    const { calculate, generatePDF, isCalculating, isGeneratingPDF } = useCalculator()
+
     const handleCalculate = async () => {
         setLoading(true)
         try {
-            const response = await fetch('/api/calculate-solar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    consumption,
-                    installationType,
-                    location,
-                    roofOrientation,
-                    roofTilt
-                })
-            })
-
-            if (!response.ok) throw new Error('Error en el cálculo')
-
-            const data = await response.json()
-            setResult(data)
-
-            // Save calculation automatically
-            const savedCalc = await saveCalculation({
-                systemSize: data.systemSize,
-                panels: data.panels,
-                production: data.production,
+            const result = await calculate({
                 consumption,
-                location: { lat: location.lat, lng: location.lng, name: locationName },
+                installationType,
+                location,
                 roofOrientation,
                 roofTilt,
-                savings: data.savings,
-                roi: data.roi,
-                payback: data.payback,
-                monthlyProduction: data.monthlyProduction,
-                availableArea: availableArea || undefined
+                locationName,
+                availableArea
             })
 
-            // CHECK ERROR FIRST
-            if (savedCalc?.error) {
-                if (savedCalc.code === 'ORGANIZATION_REQUIRED') {
-                    setShowOrgModal(true)
-                    return // Stop execution, show modal
-                }
-                console.error('Server Action Error:', savedCalc.error)
-                throw new Error(savedCalc.error)
-            }
-
-            if (savedCalc?.id) {
-                setSavedCalculationId(savedCalc.id)
+            if (result.savedId) {
+                setSavedCalculationId(result.savedId)
+                setResult(result.calculation)
 
                 // Calculate ROI with subsidies
                 if (showSubsidies) {
                     setIsCalculatingROI(true)
-                    const roiResult = await calculateFullROI(savedCalc.id)
+                    const roiResult = await calculateFullROI(result.savedId)
 
                     if (roiResult.success && roiResult.data) {
                         setFullCalculation(roiResult.data)
@@ -282,9 +252,13 @@ export function SolarCalculatorPremium({ isPro = false, customers = [] }: { isPr
             }
 
             toast.success('Cálculo completado y guardado')
-        } catch (error: any) {
-            console.error('Error:', error)
-            toast.error(error.message || 'Error al calcular')
+        } catch (error: unknown) {
+            const err = error instanceof Error ? error : new Error('Error desconocido')
+            if (err.message === 'ORGANIZATION_REQUIRED') {
+                setShowOrgModal(true)
+                return
+            }
+            toast.error(err.message || 'Error al calcular')
         } finally {
             setLoading(false)
         }
@@ -321,17 +295,10 @@ export function SolarCalculatorPremium({ isPro = false, customers = [] }: { isPr
         }
 
         try {
-            const pdfBlob = await generateTechnicalMemory(savedCalculationId)
-            const url = URL.createObjectURL(pdfBlob as unknown as Blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `memoria-tecnica-${savedCalculationId}.pdf`
-            a.click()
-            URL.revokeObjectURL(url)
-            toast.success('PDF generado correctamente')
+            await generatePDF(savedCalculationId)
+            // El hook maneja la descarga automáticamente
         } catch (error) {
-            console.error('Error generating PDF:', error)
-            toast.error('Error al generar PDF')
+            // El hook ya muestra el error con toast
         }
     }
 
@@ -589,7 +556,7 @@ Cada panel ocupa ~2 m². Ejemplo: 10 paneles = 20 m²"
                                 border: 'none',
                                 boxShadow: '0 4px 6px -1px rgba(8, 145, 178, 0.3), 0 2px 4px -1px rgba(8, 145, 178, 0.2)'
                             }}
-                            disabled={loading}
+                            disabled={loading || isCalculating}
                         >
                             <Zap className="mr-2 h-5 w-5" />
                             {loading ? 'Calculando...' : 'Calcular Instalación'}
@@ -774,10 +741,10 @@ Cada panel ocupa ~2 m². Ejemplo: 10 paneles = 20 m²"
                         <Button
                             variant="outline"
                             onClick={handleGeneratePDF}
-                            disabled={!savedCalculationId}
+                            disabled={!savedCalculationId || isGeneratingPDF}
                         >
                             <FileText className="mr-2 h-4 w-4" />
-                            Generar Memoria Técnica PDF
+                            {isGeneratingPDF ? 'Generando PDF...' : 'Generar Memoria Técnica PDF'}
                         </Button>
                         <Button
                             variant="outline"
