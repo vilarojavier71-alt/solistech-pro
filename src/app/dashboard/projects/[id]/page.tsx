@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ArrowLeft, FileText, Download, Hammer, Edit } from 'lucide-react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { TechnicalMemoryPDF } from '@/components/pdf/technical-memory-pdf'
+import { getProjectById } from '@/lib/actions/projects'
 import { getProjectTechnicalData } from '@/lib/actions/documents'
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
@@ -28,29 +29,45 @@ export default function ProjectDetailsPage() {
 
     useEffect(() => {
         const fetchProject = async () => {
-            // STUB: Use API route or server action to fetch project
-            // TODO: Create /api/projects/[id] route with Prisma
-            setProject({
-                id: params.id,
-                name: 'Proyecto de ejemplo',
-                status: 'in_progress',
-                address: 'Calle Principal 123, Madrid',
-                coordinates: { lat: 40.4168, lng: -3.7038 },
-                system_size: '5.5',
-                budget: 15000,
-                customers: {
-                    full_name: 'Cliente ejemplo',
-                    email: 'cliente@ejemplo.com',
-                    phone: '+34 600 000 000'
-                }
-            })
-            // Fetch technical data for PDF
-            if (params.id) {
-                getProjectTechnicalData(params.id as string).then(tech => {
+            try {
+                if (!params.id) return
+
+                // Fetch real project data from database
+                const projectData = await getProjectById(params.id as string)
+
+                if (projectData) {
+                    // Parse location JSON if present
+                    const location = projectData.location as any
+
+                    setProject({
+                        id: projectData.id,
+                        name: projectData.name || 'Proyecto sin nombre',
+                        status: projectData.status || 'quote',
+                        address: location?.address || `${location?.street || ''} ${location?.number || ''}, ${location?.city || ''}`.trim() || 'Sin dirección',
+                        coordinates: location?.lat && location?.lng
+                            ? { lat: location.lat, lng: location.lng }
+                            : null,
+                        system_size: projectData.system_size_kwp ? Number(projectData.system_size_kwp) : null,
+                        budget: projectData.total_amount ? Number(projectData.total_amount) : null,
+                        customer: projectData.customer,
+                        portal_user: (projectData as any).portal_user,
+                        installation_type: projectData.installation_type,
+                        solar_phase: projectData.solar_phase,
+                        payment_status: projectData.payment_status,
+                    })
+
+                    // Fetch technical data for PDF
+                    const tech = await getProjectTechnicalData(params.id as string)
                     if (tech) setTechnicalData(tech)
-                })
+                } else {
+                    toast.error('Proyecto no encontrado')
+                }
+            } catch (error) {
+                console.error('Error fetching project:', error)
+                toast.error('Error al cargar el proyecto')
+            } finally {
+                setLoading(false)
             }
-            setLoading(false)
         }
         fetchProject()
     }, [params.id])
@@ -66,7 +83,7 @@ export default function ProjectDetailsPage() {
                 </Button>
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
-                    <p className="text-muted-foreground">{project.customers?.full_name}</p>
+                    <p className="text-muted-foreground">{project.customer?.name || project.customer?.email || 'Sin cliente asignado'}</p>
                 </div>
                 <div className="ml-auto flex gap-2">
                     <Button variant="outline" onClick={() => router.push(`/dashboard/projects/${project.id}/edit`)}>
