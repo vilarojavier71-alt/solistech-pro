@@ -1,47 +1,51 @@
 import Stripe from 'stripe';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+// Lazy-loaded singleton to avoid build-time initialization errors
+let _stripe: Stripe | null = null;
+let _stripeInitialized = false;
 
 /**
- * Valida que STRIPE_SECRET_KEY esté configurado
- * En producción, falla si no está presente (no usa dummy keys)
+ * Obtiene el cliente de Stripe con inicialización lazy
+ * Evita errores durante el build de Next.js
  */
-function validateStripeKey(): string {
+export function getStripe(): Stripe | null {
+    if (_stripeInitialized) {
+        return _stripe;
+    }
+
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
     if (!stripeSecretKey) {
         if (process.env.NODE_ENV === 'production') {
-            throw new Error(
-                'STRIPE_SECRET_KEY is required in production. ' +
-                'Please set it in your environment variables.'
-            );
+            console.error('STRIPE_SECRET_KEY is required in production.');
         }
-        // En desarrollo, permite continuar pero con advertencia clara
-        console.warn(
-            '⚠️  STRIPE_SECRET_KEY is missing. ' +
-            'Stripe functionality will not work. ' +
-            'Set STRIPE_SECRET_KEY in .env.local for development.'
-        );
-        // Retornar string vacío - Stripe fallará en runtime si se intenta usar
-        return '';
+        _stripeInitialized = true;
+        return null;
     }
-    return stripeSecretKey;
+
+    _stripe = new Stripe(stripeSecretKey, {
+        apiVersion: '2024-12-18.acacia',
+        typescript: true,
+    });
+    _stripeInitialized = true;
+    return _stripe;
 }
 
-const validatedKey = validateStripeKey();
-
 /**
- * Cliente de Stripe - Solo se inicializa si la key está presente
- * En producción, falla si la key no está configurada
+ * Export for backwards compatibility - aliased to getStripe()
+ * @deprecated Use getStripe() instead
  */
-export const stripe = validatedKey 
-    ? new Stripe(validatedKey, {
-          apiVersion: '2024-12-18.acacia',
-          typescript: true,
-      })
-    : null;
+export const stripe = {
+    get webhooks() { return getStripe()?.webhooks; },
+    get subscriptions() { return getStripe()?.subscriptions; },
+    get checkout() { return getStripe()?.checkout; },
+} as unknown as Stripe | null;
 
 export async function createCheckoutSession(priceId: string, userId: string): Promise<string | null> {
-    // Validación estricta - no permite operaciones sin key válida
-    if (!stripe || !stripeSecretKey) {
+    const stripeClient = getStripe();
+
+    // Validación estricta - no permite operaciones sin cliente válido
+    if (!stripeClient) {
         const errorMsg = process.env.NODE_ENV === 'production'
             ? 'Stripe is not configured. Contact support.'
             : 'Stripe Secret Key missing. Set STRIPE_SECRET_KEY in .env.local';
@@ -50,7 +54,7 @@ export async function createCheckoutSession(priceId: string, userId: string): Pr
     }
 
     try {
-        const session = await stripe.checkout.sessions.create({
+        const session = await stripeClient.checkout.sessions.create({
             mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [

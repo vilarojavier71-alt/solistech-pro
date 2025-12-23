@@ -7,14 +7,7 @@ import { mapSolarPhaseToUI } from '@/lib/utils/solar-status-mapper'
 // RATE LIMITER (Centralizado - Anti-Ban 2.0)
 // ============================================================================
 
-import { checkRateLimit, RATE_LIMIT_PRESETS } from '@/lib/security/rate-limiter'(() => {
-    const now = Date.now()
-    for (const [key, value] of rateLimitStore.entries()) {
-        if (now > value.resetAt) {
-            rateLimitStore.delete(key)
-        }
-    }
-}, 60000) // Limpiar cada minuto
+import { checkRateLimit, RATE_LIMIT_PRESETS } from '@/lib/security/rate-limiter'
 
 // ============================================================================
 // SOLAR ASSISTANT - AI Chat Endpoint
@@ -78,31 +71,31 @@ export async function POST(request: NextRequest) {
                 return `chat:${session.user.id || session.user.email}`;
             }
         });
-        
+
         if (!rateLimitResult.allowed) {
             const response = NextResponse.json(
-                { 
+                {
                     error: 'Demasiadas solicitudes. Por favor espera un momento.',
                     retryAfter: rateLimitResult.retryAfter
                 },
                 { status: 429 }
             );
-            
+
             response.headers.set('X-RateLimit-Limit', '10');
             response.headers.set('X-RateLimit-Remaining', '0');
             if (rateLimitResult.retryAfter) {
                 response.headers.set('Retry-After', rateLimitResult.retryAfter.toString());
             }
-            
+
             return response;
         }
 
         // ✅ Validar tamaño de payload (Resource Exhaustion Prevention)
         const MAX_MESSAGES = 100
         const MAX_MESSAGE_LENGTH = 10000
-        
+
         const { messages } = await request.json()
-        
+
         if (!Array.isArray(messages) || messages.length === 0) {
             return NextResponse.json(
                 { error: 'Mensajes inválidos' },

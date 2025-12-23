@@ -16,11 +16,17 @@ export async function POST(req: Request) {
         if (!webhookSecret) {
             throw new Error('STRIPE_WEBHOOK_SECRET is missing')
         }
+        if (!stripe) {
+            throw new Error('Stripe client not initialized - STRIPE_SECRET_KEY may be missing')
+        }
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err: any) {
         console.error(`Webhook Error: ${err.message}`)
         return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 })
     }
+
+    // TypeScript type narrowing - stripe is guaranteed non-null after the check above
+    const stripeClient = stripe!
 
     try {
         switch (event.type) {
@@ -33,7 +39,7 @@ export async function POST(req: Request) {
 
                 if (organizationId && session.subscription) {
                     // Fetch the full subscription details (using any to avoid Stripe type issues)
-                    const subscription = await stripe.subscriptions.retrieve(
+                    const subscription = await stripeClient.subscriptions.retrieve(
                         session.subscription as string
                     ) as any
 
@@ -170,7 +176,7 @@ export async function POST(req: Request) {
                 const subscriptionId = invoice.subscription as string | null
 
                 if (subscriptionId) {
-                    const sub = await stripe.subscriptions.retrieve(subscriptionId)
+                    const sub = await stripeClient.subscriptions.retrieve(subscriptionId)
                     const organizationId = sub.metadata?.organizationId
 
                     if (organizationId) {

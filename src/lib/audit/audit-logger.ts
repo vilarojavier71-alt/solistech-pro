@@ -98,7 +98,7 @@ export async function auditLog(data: AuditLogData): Promise<string | null> {
         return auditEntry.id
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-        
+
         // Logging de error crítico (no debe fallar silenciosamente)
         logger.error('Failed to create audit log', {
             source: 'audit-logger',
@@ -124,40 +124,40 @@ export async function auditLog(data: AuditLogData): Promise<string | null> {
 function sanitizeMetadata(metadata: Record<string, unknown>): Record<string, unknown> {
     const sensitiveKeys = ['password', 'token', 'secret', 'apiKey', 'api_key', 'authorization', 'cookie', 'credit_card', 'ssn', 'dni', 'nif']
     const sanitized: Record<string, unknown> = {}
-    
+
     for (const [key, value] of Object.entries(metadata)) {
         const lowerKey = key.toLowerCase()
-        
+
         // Ocultar claves sensibles
         if (sensitiveKeys.some(s => lowerKey.includes(s))) {
             sanitized[key] = '[REDACTED]'
             continue
         }
-        
+
         // Recursión para objetos anidados
         if (value && typeof value === 'object' && !Array.isArray(value) && value.constructor === Object) {
             sanitized[key] = sanitizeMetadata(value as Record<string, unknown>)
             continue
         }
-        
+
         sanitized[key] = value
     }
-    
+
     return sanitized
 }
 
 /**
  * Helper para obtener contexto de request (IP, User-Agent)
  */
-export function getRequestContext(request?: {
+export async function getRequestContext(request?: {
     ip?: string | null
     headers?: Headers | Record<string, string>
-}): { ipAddress?: string; userAgent?: string } {
-    const ipAddress = request?.ip || 
-        (request?.headers instanceof Headers 
-            ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-            : request?.headers?.['x-forwarded-for']?.split(',')[0]?.trim()) ||
-        request?.headers?.['x-real-ip'] ||
+}): Promise<{ ipAddress?: string; userAgent?: string }> {
+    const ipAddress = request?.ip ||
+        (request?.headers instanceof Headers
+            ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || undefined
+            : (request?.headers as Record<string, string> | undefined)?.['x-forwarded-for']?.split(',')[0]?.trim() ||
+            (request?.headers as Record<string, string> | undefined)?.['x-real-ip']) ||
         undefined
 
     const userAgent = request?.headers instanceof Headers
@@ -183,10 +183,10 @@ export async function auditLogAction(
     }
 ): Promise<void> {
     const context = options?.request ? getRequestContext(options.request) : {}
-    
+
     // Sanitizar metadata para evitar PII
     const sanitizedMetadata = options?.metadata ? sanitizeMetadata(options.metadata) : undefined
-    
+
     await auditLog({
         eventType,
         userId,
