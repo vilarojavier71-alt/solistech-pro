@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useState } from 'react'
+import { usePermissionsSafe } from '@/hooks/use-permissions-safe'
 
 import {
     Table,
@@ -34,7 +35,9 @@ export function TeamTable({ users, currentUserRole }: TeamTableProps) {
     const router = useRouter()
     const [updating, setUpdating] = useState<string | null>(null)
 
-    const canEdit = currentUserRole === 'owner' || currentUserRole === 'admin'
+    // ✅ Permission Masking: Usar permisos booleanos en lugar de roles
+    const { permissions } = usePermissionsSafe()
+    const canEdit = permissions.manage_users || permissions.manage_team
 
     const handleRoleChange = async (userId: string, newRole: string) => {
         setUpdating(userId)

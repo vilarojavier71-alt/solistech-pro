@@ -12,6 +12,7 @@ const authConfig = {
         async jwt({ token, user }: { token: any; user?: any }) {
             if (user) {
                 token.id = user.id
+                // ✅ Permission Masking: role solo en token (servidor), nunca se expone al cliente
                 token.role = user.role || "employee"
                 token.organizationId = user.organizationId
             }
@@ -20,9 +21,12 @@ const authConfig = {
         async session({ session, token }: { session: any; token: any }) {
             if (session.user) {
                 session.user.id = token.id
-                session.user.role = token.role
+                // ✅ Permission Masking: NO exponer role al cliente (Zero-Flag Policy)
+                // session.user.role = token.role // ❌ REMOVIDO
                 session.user.organizationId = token.organizationId
-                session.user.plan = token.plan || "basic" // Map plan from token
+                session.user.plan = token.plan || "basic"
+                // ✅ Solo permisos booleanos, nunca roles internos
+                session.user.permissions = token.permissions || []
             }
             return session
         },
@@ -74,38 +78,41 @@ export default auth((req) => {
         // --------------------------------------------------------------------
         const permissions = user?.permissions || []
 
+        // ✅ Permission Masking: Usar solo permisos booleanos, nunca roles
+        // El token.role se mantiene para lógica del servidor, pero NO se expone al cliente
+        
         // Admin Actions
         if (pathname.startsWith("/dashboard/admin")) {
-            // Keep role check as fallback/superuser bypass
-            if (user?.role !== "admin" && user?.role !== "owner" && !permissions.includes("users:view")) {
+            // Usar permisos booleanos en lugar de roles
+            if (!permissions.includes("users:view") && !permissions.includes("manage_users")) {
                 return NextResponse.redirect(new URL("/dashboard", req.url))
             }
         }
 
         // Finance
         if (pathname.startsWith("/dashboard/finance")) {
-            if (user?.role !== "admin" && user?.role !== "owner" && !permissions.includes("finance:view")) {
+            if (!permissions.includes("finance:view") && !permissions.includes("view_financials")) {
                 return NextResponse.redirect(new URL("/dashboard", req.url))
             }
         }
 
         // CRM
         if (pathname.startsWith("/dashboard/crm")) {
-            if (user?.role !== "admin" && user?.role !== "owner" && !permissions.includes("crm:view")) {
+            if (!permissions.includes("crm:view")) {
                 return NextResponse.redirect(new URL("/dashboard", req.url))
             }
         }
 
         // Inventory
         if (pathname.startsWith("/dashboard/inventory")) {
-            if (user?.role !== "admin" && user?.role !== "owner" && !permissions.includes("inventory:view")) {
+            if (!permissions.includes("inventory:view")) {
                 return NextResponse.redirect(new URL("/dashboard", req.url))
             }
         }
 
         // Projects
         if (pathname.startsWith("/dashboard/projects")) {
-            if (user?.role !== "admin" && user?.role !== "owner" && !permissions.includes("projects:view")) {
+            if (!permissions.includes("projects:view") && !permissions.includes("view_projects_financials")) {
                 return NextResponse.redirect(new URL("/dashboard", req.url))
             }
         }

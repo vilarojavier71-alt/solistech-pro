@@ -135,6 +135,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Initial login - set basic user data
             if (user) {
                 token.id = user.id
+                // ✅ Permission Masking: role solo en token (servidor), nunca se expone al cliente
                 token.role = (user as any).role || "user"
                 token.organizationId = (user as any).organizationId
             }
@@ -142,7 +143,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // CRITICAL FIX: Always re-hydrate organization_id from DB
             // This ensures session reflects changes made after login (e.g., creating org)
             if (token.id) {
-                console.log('[AUTH] JWT Callback -> Fetching user data for:', token.id)
                 const dbUser = await prisma.User.findUnique({
                     where: { id: token.id as string },
                     select: {
@@ -155,16 +155,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 })
 
                 if (dbUser) {
-                    console.log('[AUTH] DB User Found. Org ID:', dbUser.organization_id)
                     token.organizationId = dbUser.organization_id || undefined
+                    // ✅ Role solo en token (servidor), nunca se expone al cliente
                     token.role = dbUser.role || token.role
                     token.plan = dbUser.organization?.subscription_plan || 'basic'
-                } else {
-                    console.error('[AUTH] CRITICAL: User not found in DB during JWT refresh:', token.id)
                 }
             }
 
             // Fetch Permissions if role is present and not yet loaded
+            // ✅ Permission Masking: Solo permisos booleanos, nunca roles
             if (token.role && !token.permissions) {
                 const rolePermissions = await prisma.RolePermission.findMany({
                     where: { role: token.role as string },

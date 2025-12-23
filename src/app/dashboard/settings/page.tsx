@@ -46,9 +46,11 @@ export default async function SettingsPage() {
         user_metadata: { full_name: profile.full_name }
     } as any
 
-    // Get employees if admin/owner
-    const isAdmin = profile.role === 'admin' || profile.role === 'owner' || !profile.organization_id
-    const { data: employees } = (profile.role === 'admin' || profile.role === 'owner') ? await getEmployees() : { data: null }
+    // ✅ Permission Masking: Usar permisos booleanos en lugar de roles
+    const { getUserPermissions } = await import('@/lib/actions/permissions')
+    const permissions = await getUserPermissions()
+    const isAdmin = permissions.manage_users || permissions.edit_settings || !profile.organization_id
+    const { data: employees } = (permissions.manage_users || permissions.manage_team) ? await getEmployees() : { data: null }
 
     // Get subscription for billing tab
     const { getOrganizationSubscription } = await import('@/lib/actions/subscriptions')
