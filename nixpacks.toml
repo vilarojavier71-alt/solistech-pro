@@ -16,7 +16,11 @@ nixPkgs = ["nodejs_20"]
 aptPkgs = ["openssl", "ca-certificates"]
 
 [phases.install]
-cmds = ["npm ci --legacy-peer-deps --no-audit --no-fund"]
+# Fix npm permissions in containerized environments
+cmds = [
+    "mkdir -p /tmp/.npm",
+    "NPM_CONFIG_CACHE=/tmp/.npm NPM_CONFIG_TMP=/tmp HOME=/app npm ci --legacy-peer-deps --no-audit --no-fund"
+]
 
 [phases.build]
 # Prisma generate + Build with 4GB memory limit
