@@ -165,7 +165,8 @@ export async function validateInfrastructureScaling(
 }
 
 /**
- * Registra un costo de infraestructura
+ * Registra un costo de infraestructura y genera asiento contable 622x automático
+ * ISO 27001: FinOps Guardrails + Accounting Automation
  */
 export async function recordInfrastructureCost(
     organizationId: string,
@@ -174,8 +175,7 @@ export async function recordInfrastructureCost(
     metadata?: Record<string, unknown>
 ): Promise<void> {
     try {
-        // TODO: Implementar tabla de costos de infraestructura
-        // Por ahora, solo loguear
+        // 1. Logging estructurado
         logger.info('Infrastructure cost recorded', {
             source: 'finops',
             action: 'cost_recorded',
@@ -185,7 +185,7 @@ export async function recordInfrastructureCost(
             ...metadata
         })
 
-        // Audit log
+        // 2. Audit log
         await auditLogAction(
             'infrastructure.scaled',
             'system',
@@ -200,7 +200,86 @@ export async function recordInfrastructureCost(
                     ...metadata
                 }
             }
-        )
+        ).catch(() => {})
+
+        // 3. Accounting 622x: Generar asiento contable automático
+        if (cost > 0) {
+            try {
+                const { createJournalEntry } = await import('@/lib/actions/accounting')
+                const { getCurrentUserWithRole } = await import('@/lib/session')
+                
+                const user = await getCurrentUserWithRole()
+                if (user?.organizationId === organizationId) {
+                    // Buscar cuenta 622x (Gastos de infraestructura)
+                    const { prisma } = await import('@/lib/db')
+                    const expenseAccount = await prisma.accounting_accounts.findFirst({
+                        where: {
+                            organization_id: organizationId,
+                            code: { startsWith: '622' },
+                            type: 'expense',
+                            is_active: true
+                        },
+                        orderBy: { code: 'asc' }
+                    })
+
+                    // Buscar cuenta 4000 (Proveedores)
+                    const supplierAccount = await prisma.accounting_accounts.findFirst({
+                        where: {
+                            organization_id: organizationId,
+                            code: { startsWith: '400' },
+                            type: 'liability',
+                            is_active: true
+                        },
+                        orderBy: { code: 'asc' }
+                    })
+
+                    if (expenseAccount && supplierAccount) {
+                        await createJournalEntry({
+                            date: new Date().toISOString().split('T')[0],
+                            description: `Gasto de infraestructura: ${resource.name}`,
+                            reference: `INFRA-${resource.name}-${Date.now()}`,
+                            lines: [
+                                {
+                                    accountId: expenseAccount.id,
+                                    debit: cost,
+                                    credit: 0,
+                                    description: `${resource.name} - ${resource.unit}`
+                                },
+                                {
+                                    accountId: supplierAccount.id,
+                                    debit: 0,
+                                    credit: cost,
+                                    description: `Proveedor: ${resource.name}`
+                                }
+                            ]
+                        }).catch((err) => {
+                            logger.warn('Failed to create accounting entry for infrastructure cost', {
+                                source: 'finops',
+                                action: 'accounting_entry_failed',
+                                organizationId,
+                                error: err instanceof Error ? err.message : 'Unknown'
+                            })
+                        })
+                    } else {
+                        logger.warn('Accounting accounts not found for infrastructure cost', {
+                            source: 'finops',
+                            action: 'accounts_not_found',
+                            organizationId,
+                            expenseAccount: !!expenseAccount,
+                            supplierAccount: !!supplierAccount
+                        })
+                    }
+                }
+            } catch (accountingError) {
+                // No bloquear si falla el accounting, solo loguear
+                logger.error('Failed to create accounting entry', {
+                    source: 'finops',
+                    action: 'accounting_error',
+                    organizationId,
+                    error: accountingError instanceof Error ? accountingError.message : 'Unknown'
+                })
+            }
+        }
     } catch (error) {
         logger.error('Failed to record infrastructure cost', {
             source: 'finops',
@@ -210,4 +289,5 @@ export async function recordInfrastructureCost(
         })
     }
 }
+
 
