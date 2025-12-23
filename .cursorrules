@@ -1,0 +1,158 @@
+🌌 MPE-OS V3.0.0 ELITE QUANTUM-SENTINEL - ROOT RULESET
+
+Prioridad Máxima: ISO 27001, Pentesting Red Team, Seguridad Cuántica (PQC), FinOps Guardrails y Excelencia UX/A11y.
+
+---
+
+🧠 1. GENERAL AI BEHAVIOR & AGENTIC ARCHITECTURE
+
+Context & MCP Awareness:
+- Antes de proponer cambios, usa @Codebase y servidores MCP para verificar dependencias y documentación en tiempo real.
+- Consulta la estructura del proyecto y archivos relacionados antes de modificar código.
+
+Think First:
+- Analiza el impacto arquitectónico aplicando SOLID, Clean Architecture y GoF antes de escribir una sola línea.
+- Evalúa el impacto en módulos relacionados y dependencias.
+
+Simulación Crítica:
+- Realiza simulaciones (dry-run) obligatorias antes de ejecutar cambios que afecten al núcleo del sistema.
+- Valida cambios en transacciones financieras, autenticación y autorización.
+
+Regla de Refactorización (20 Líneas):
+- Si una función supera las 20 líneas, sugiere refactorizar automáticamente para mantener la modularidad.
+- Extrae lógica de negocio a funciones puras, hooks personalizados o utilidades reutilizables.
+- Prioriza composición sobre herencia.
+
+Agentic Logic:
+- Diseña módulos con entradas claras y salidas JSON estructuradas para facilitar el consumo por otros agentes de IA.
+- Documenta interfaces y contratos de datos.
+
+Documentation "Why":
+- Genera JSDoc/Docstrings explicando el "por qué" de la decisión técnica, no solo el "qué".
+- El código debe ser auto-explicativo con nombres descriptivos.
+
+---
+
+🛡️ 2. ISO 27001 & MASTER CYBERSECURITY (ZERO TRUST)
+
+Cifrado PQC (Post-Quantum Cryptography):
+- Implementa AES-256-GCM en reposo y TLS 1.3 en tránsito.
+- Usa algoritmos resistentes a cuántica (ML-KEM/Kyber, ML-DSA/Dilithium) cuando sea técnicamente posible.
+- Prioriza librerías con soporte PQC para secretos de larga duración.
+
+Integridad de Datos:
+- Validación estricta con Zod o Valibot en cada punto de entrada de datos (API, Forms, DB).
+- Nunca confíes en datos del cliente sin validar.
+- Usa esquemas estrictos con `.strict()` en Zod.
+
+User Flag Protection (Zero-Flag Policy):
+- PROHIBIDO exponer flags de privilegios (isAdmin, role, isPremium) en el cliente o en respuestas de API.
+- El frontend solo debe recibir booleanos de "permiso de acción" (ej. canEdit: true).
+- Nunca expongas nombres de roles internos al cliente.
+
+Permission Masking:
+- Envía solo booleanos de "permiso de acción" (ej. canEdit: true, canDelete: false).
+- Nunca envíes el nombre del rol interno (admin, owner, god_mode).
+- Implementa checks de permisos en el servidor, no en el cliente.
+
+Secret Management:
+- Prohibido el hardcoding de secretos, API keys o tokens.
+- Usa variables de entorno con validación en runtime.
+- Para Prisma, usa ApiKeyVault para secretos cifrados, mostrando solo los últimos 4 caracteres como maskedValue.
+- Exige registro en .env.example (sin valores reales).
+
+Audit Trail:
+- Todo cambio crítico de estado debe generar un log estructurado e inmutable.
+- Incluye: timestamp, source, action, userId, resourceId, error (si aplica).
+- Usa formato JSON para logs estructurados.
+
+---
+
+📊 3. TYPESCRIPT & TYPE SAFETY
+
+TypeScript Strict Mode:
+- Configuración strict: true obligatoria.
+- Cero uso de `any`. Usa `unknown` y genéricos para tipado dinámico.
+- Valida tipos en runtime con Zod cuando sea necesario.
+
+Type Guards:
+- Implementa type guards para validar datos desconocidos.
+- Usa discriminated unions para estados complejos.
+
+---
+
+⚙️ 4. SQL & DATABASE BEST PRACTICES
+
+SQL Standards:
+- Palabras clave en MAYÚSCULAS (SELECT, INSERT, UPDATE, DELETE, WHERE, etc.).
+- Nombres de tablas/columnas en snake_case.
+- Usa Prisma ORM cuando sea posible, pero respeta estos estándares en queries raw.
+
+Optimización de Consultas:
+- Usa siempre EXPLAIN ANALYZE para evitar el problema N+1.
+- Selecciona solo los campos necesarios (evita SELECT *).
+- Implementa índices en campos de búsqueda frecuente.
+
+Race Conditions:
+- Usa SELECT FOR UPDATE en transacciones críticas que involucren balances o recursos compartidos.
+- Implementa transacciones atómicas con Prisma.$transaction para operaciones financieras.
+- Valida ownership de recursos antes de modificar.
+
+---
+
+💰 5. FINOPS GUARDRAILS
+
+Accounting Automático:
+- Cada acción de infraestructura debe disparar un asiento contable automático (ej. DEBIT 622x / CREDIT 4000).
+- Registra costos de recursos cloud, APIs externas y servicios de terceros.
+
+Cost Guardrails:
+- Bloquea escalados automáticos o acciones si gastoActual + costeEstimado > presupuestoMensual.
+- Implementa alertas cuando el gasto supere el 80% del presupuesto mensual.
+- Valida presupuesto antes de crear recursos costosos.
+
+---
+
+🧪 6. TESTING & QUALITY
+
+TDD & AAA:
+- El test se escribe antes que la función siguiendo el patrón Arrange-Act-Assert.
+- Prioriza tests unitarios para lógica de negocio.
+- Tests E2E para flujos críticos de usuario.
+
+Stress Testing:
+- Genera tests de carga para endpoints críticos.
+- Simula latencia o fallos de DB para verificar la autorrecuperación.
+
+Fuzzy Testing:
+- Envía inputs aleatorios y malformados para asegurar la robustez de los tipos y la validación.
+
+---
+
+🧹 7. LEGACY CLEANUP & SSOT
+
+Zombie Code Removal:
+- Elimina código comentado, funciones no utilizadas y archivos basura (.bak, _old, legacy/) sin piedad.
+- Usa herramientas de análisis estático para detectar código muerto.
+
+Single Source of Truth (SSOT):
+- Unifica READMEs y documentos de arquitectura.
+- Si el código y la documentación discrepan, el código es la verdad y la documentación se actualiza o borra.
+- Mantén un solo README principal en la raíz.
+
+---
+
+📝 8. AGENTIC WORKFLOW PROMPTS
+
+Auditoría Total:
+"Actúa como Pentester y Arquitecto. Escanea el codebase buscando vulnerabilidades PQC, brechas ISO 27001, fugas de secretos y fallos de lógica económica."
+
+Pentest Estricto:
+"Ataca este módulo buscando IDOR, SSRF e inyecciones lógicas. Revisa el árbol de dependencias para Supply Chain attacks."
+
+Limpieza Pre-V1:
+"Ejecuta el protocolo SSOT: unifica documentos, borra código zombie y purga archivos innecesarios para la v1.0 oficial."
+
+Análisis de Coste:
+"Revisa esta lógica buscando potenciales fugas económicas o de recursos (loops infinitos, llamadas API sin límite)."
+

@@ -23,15 +23,10 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { updateLeadStatus, deleteLead } from '@/lib/actions/leads'
 import { useTransition } from 'react'
+import { getStatusColor } from '@/styles/theme'
 
-const statusColors: Record<string, string> = {
-    new: 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:border-blue-800',
-    contacted: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-300 dark:border-yellow-800',
-    qualified: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900 dark:text-purple-300 dark:border-purple-800',
-    proposal: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900 dark:text-orange-300 dark:border-orange-800',
-    won: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-300 dark:border-green-800',
-    lost: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-300 dark:border-red-800',
-}
+// ✅ WCAG 2.1 AA/AAA Compliant - Using centralized theme
+const getLeadStatusColor = (status: string) => getStatusColor('lead', status)
 
 const statusLabels: Record<string, string> = {
     new: 'Nuevo',
@@ -113,21 +108,36 @@ export function LeadsTable({ leads }: { leads: any[] }) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('name')}>
+                        <TableHead 
+                            className="cursor-pointer hover:text-primary transition-colors" 
+                            onClick={() => handleSort('name')}
+                            role="columnheader"
+                            aria-sort={sortField === 'name' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+                        >
                             <div className="flex items-center gap-1">
-                                Nombre <ArrowUpDown className="h-3 w-3" />
+                                Nombre <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
                             </div>
                         </TableHead>
                         <TableHead>Empresa</TableHead>
                         <TableHead>Contacto</TableHead>
-                        <TableHead className="cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('status')}>
+                        <TableHead 
+                            className="cursor-pointer hover:text-primary transition-colors" 
+                            onClick={() => handleSort('status')}
+                            role="columnheader"
+                            aria-sort={sortField === 'status' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+                        >
                             <div className="flex items-center gap-1">
-                                Estado <ArrowUpDown className="h-3 w-3" />
+                                Estado <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
                             </div>
                         </TableHead>
-                        <TableHead className="cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('estimated_value')}>
+                        <TableHead 
+                            className="cursor-pointer hover:text-primary transition-colors" 
+                            onClick={() => handleSort('estimated_value')}
+                            role="columnheader"
+                            aria-sort={sortField === 'estimated_value' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+                        >
                             <div className="flex items-center gap-1">
-                                Valor <ArrowUpDown className="h-3 w-3" />
+                                Valor <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
                             </div>
                         </TableHead>
                         <TableHead>Origen</TableHead>
@@ -148,14 +158,14 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                                 <div className="flex flex-col gap-1.5">
                                     {lead.email && (
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                            <Mail className="h-3 w-3" />
-                                            {lead.email}
+                                            <Mail className="h-3 w-3" aria-hidden="true" />
+                                            <span>{lead.email}</span>
                                         </div>
                                     )}
                                     {lead.phone && (
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                            <Phone className="h-3 w-3" />
-                                            {lead.phone}
+                                            <Phone className="h-3 w-3" aria-hidden="true" />
+                                            <span>{lead.phone}</span>
                                         </div>
                                     )}
                                 </div>
@@ -164,7 +174,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Badge
-                                            className={`${statusColors[lead.status] || 'bg-gray-100'} cursor-pointer hover:opacity-80 transition-opacity border`}
+                                            className={`${getLeadStatusColor(lead.status)} cursor-pointer hover:opacity-80 transition-opacity border`}
                                             variant="outline"
                                         >
                                             {statusLabels[lead.status] || lead.status}
@@ -178,7 +188,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                                                 onClick={() => handleStatusUpdate(lead.id, key)}
                                                 disabled={lead.status === key}
                                             >
-                                                <Badge className={`${statusColors[key]} mr-2 w-2 h-2 rounded-full p-0 border-0`} />
+                                                <Badge className={`${getLeadStatusColor(key)} mr-2 w-2 h-2 rounded-full p-0 border-0`} />
                                                 {label}
                                             </DropdownMenuItem>
                                         ))}
@@ -200,8 +210,12 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted">
-                                            <MoreHorizontal className="h-4 w-4" />
+                                        <Button 
+                                            variant="ghost" 
+                                            className="h-8 w-8 p-0 hover:bg-muted"
+                                            aria-label={`Acciones para lead ${lead.name}`}
+                                        >
+                                            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">

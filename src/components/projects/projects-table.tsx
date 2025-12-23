@@ -35,12 +35,10 @@ import { toast } from 'sonner'
 
 const columnHelper = createColumnHelper<ProjectListItem>()
 
-const statusColors: Record<string, string> = {
-    quote: 'bg-blue-100 text-blue-800',
-    approved: 'bg-green-100 text-green-800',
-    installation: 'bg-yellow-100 text-yellow-800',
-    completed: 'bg-purple-100 text-purple-800',
-}
+// ✅ WCAG 2.1 AA/AAA Compliant - Using centralized theme
+import { getStatusColor } from '@/styles/theme'
+
+const getProjectStatusColor = (status: string) => getStatusColor('project', status)
 
 const statusLabels: Record<string, string> = {
     quote: 'Presupuesto',
@@ -104,7 +102,7 @@ export function ProjectsTable() {
         columnHelper.accessor('status', {
             header: 'Estado',
             cell: (info) => (
-                <Badge className={statusColors[info.getValue()] || 'bg-gray-100'}>
+                <Badge className={getProjectStatusColor(info.getValue())}>
                     {statusLabels[info.getValue()] || info.getValue()}
                 </Badge>
             ),

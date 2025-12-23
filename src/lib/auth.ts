@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: `__Secure-authjs.session-token`,
             options: {
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Strict en producción
                 path: '/',
                 secure: true,
             },
@@ -25,7 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         callbackUrl: {
             name: `__Secure-authjs.callback-url`,
             options: {
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 path: '/',
                 secure: true,
             },
@@ -34,7 +34,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: `__Host-authjs.csrf-token`,
             options: {
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 path: '/',
                 secure: true,
             },
@@ -43,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: `__Secure-authjs.pkce.code_verifier`,
             options: {
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 path: '/',
                 secure: true,
             },
@@ -52,7 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: `__Secure-authjs.state`,
             options: {
                 httpOnly: true,
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 path: '/',
                 secure: true,
             },
@@ -178,10 +178,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string
-                    ; (session.user as any).role = token.role || "user"
-                    ; (session.user as any).organizationId = token.organizationId || ""
-                    ; (session.user as any).permissions = token.permissions || []
-                    ; (session.user as any).plan = token.plan || "basic"
+                // ✅ Permission Masking: Solo permisos booleanos, nunca roles
+                // El rol se mantiene en el token para lógica del servidor, pero NO se expone al cliente
+                ; (session.user as any).organizationId = token.organizationId || ""
+                ; (session.user as any).permissions = token.permissions || []
+                ; (session.user as any).plan = token.plan || "basic"
+                // ❌ REMOVIDO: session.user.role - No exponer roles internos al cliente (Zero-Flag Policy)
             }
             return session
         },

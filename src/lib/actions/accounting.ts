@@ -79,33 +79,76 @@ export async function createJournalEntry(data: CreateJournalEntryData) {
     }
 
     try {
-        const journal = await prisma.accounting_journals.create({
-            data: {
-                organization_id: user.organizationId,
-                date: new Date(date),
-                description,
-                reference: reference || null,
-                status: 'draft',
-                created_by: user.id
-            }
+        // Transacción ACID con SELECT FOR UPDATE en cuentas afectadas
+        const journal = await prisma.$transaction(async (tx) => {
+            // Verificar y bloquear cuentas involucradas para prevenir race conditions
+            const accountIds = [...new Set(lines.map(line => line.accountId))]
+            
+            // Bloquear todas las cuentas involucradas
+            await tx.$queryRaw`
+                SELECT id, code, name, balance
+                FROM accounting_accounts
+                WHERE id = ANY(${accountIds}::uuid[])
+                  AND organization_id = ${user.organizationId}::uuid
+                FOR UPDATE
+            `
+
+            // Crear journal
+            const newJournal = await tx.accounting_journals.create({
+                data: {
+                    organization_id: user.organizationId,
+                    date: new Date(date),
+                    description,
+                    reference: reference || null,
+                    status: 'draft',
+                    created_by: user.id
+                }
+            })
+
+            // Crear transacciones
+            await tx.accounting_transactions.createMany({
+                data: lines.map(line => ({
+                    journal_id: newJournal.id,
+                    account_id: line.accountId,
+                    debit: line.debit,
+                    credit: line.credit,
+                    description: line.description || description
+                }))
+            })
+
+            return newJournal
+        }, {
+            isolationLevel: 'Serializable'
         })
 
-        // Create transactions
-        await prisma.accounting_transactions.createMany({
-            data: lines.map(line => ({
-                journal_id: journal.id,
-                account_id: line.accountId,
-                debit: line.debit,
-                credit: line.credit,
-                description: line.description || description
-            }))
+        // Audit log (ISO 27001 A.8.15)
+        const { auditLogAction } = await import('@/lib/audit/audit-logger')
+        await auditLogAction(
+            'journal_entry.created',
+            user.id,
+            'journal_entry',
+            journal.id,
+            `Journal entry created: ${description}`,
+            {
+                organizationId: user.organizationId || undefined,
+                metadata: {
+                    date: date,
+                    reference: reference || null,
+                    lineCount: lines.length,
+                    totalDebit: totalDebit,
+                    totalCredit: totalCredit
+                }
+            }
+        ).catch(err => {
+            console.error('Failed to create audit log:', err)
         })
 
         revalidatePath('/dashboard/finance/accounting')
         return { success: true, data: journal }
-    } catch (error: any) {
-        console.error('Create Journal Error:', error)
-        return { error: `Error al registrar asiento: ${error.message}` }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        console.error('Create Journal Error:', errorMessage)
+        return { error: `Error al registrar asiento: ${errorMessage}` }
     }
 }
 

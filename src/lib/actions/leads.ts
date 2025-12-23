@@ -57,7 +57,6 @@ export async function createLead(formData: FormData) {
         revalidatePath('/dashboard/leads')
         return { success: true }
     } catch (error) {
-        console.error("Error creating lead:", error)
         return { error: "Error al crear el lead" }
     }
 }
@@ -119,11 +118,31 @@ export async function getLeads(params?: {
     })
 }
 
+// ✅ SEGURO: Validación de ownership (IDOR Prevention)
 export async function updateLeadStatus(id: string, status: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
+    const user = await prisma.users.findUnique({
+        where: { id: session.user.id },
+        select: { organization_id: true }
+    })
+
+    if (!user?.organization_id) return { error: "No tienes organización asignada" }
+
     try {
+        // ✅ Validar ownership ANTES de actualizar
+        const lead = await prisma.leads.findFirst({
+            where: {
+                id,
+                organization_id: user.organization_id
+            }
+        })
+
+        if (!lead) {
+            return { error: "Lead no encontrado o no pertenece a tu organización" }
+        }
+
         await prisma.leads.update({
             where: { id },
             data: { status }
@@ -166,19 +185,36 @@ export async function deleteLead(id: string) {
         revalidatePath('/dashboard/leads')
         return { success: true }
     } catch (error) {
-        console.error("Error deleting lead:", error)
         return { error: "Error al eliminar el lead" }
     }
 }
 
+// ✅ SEGURO: Validación de ownership (IDOR Prevention)
 export async function updateLead(id: string, data: any) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    try {
-        // Allow partial updates
-        const validation = CreateLeadSchema.partial().safeParse(data)
+    const user = await prisma.users.findUnique({
+        where: { id: session.user.id },
+        select: { organization_id: true }
+    })
 
+    if (!user?.organization_id) return { error: "No tienes organización asignada" }
+
+    try {
+        // ✅ Validar ownership ANTES de actualizar
+        const lead = await prisma.leads.findFirst({
+            where: {
+                id,
+                organization_id: user.organization_id
+            }
+        })
+
+        if (!lead) {
+            return { error: "Lead no encontrado o no pertenece a tu organización" }
+        }
+
+        const validation = CreateLeadSchema.partial().safeParse(data)
         if (!validation.success) {
             return { error: validation.error.issues[0].message }
         }
@@ -190,7 +226,6 @@ export async function updateLead(id: string, data: any) {
         revalidatePath('/dashboard/leads')
         return { success: true }
     } catch (error) {
-        console.error("Error updating lead:", error)
         return { error: "Error al actualizar el lead" }
     }
 }

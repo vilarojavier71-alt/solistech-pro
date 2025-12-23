@@ -1,0 +1,190 @@
+🌌 MPE-OS V3.0.0 - INFRASTRUCTURE & DEVOPS RULESET
+
+Prioridad: Resiliencia, Seguridad, Anti-Ban, Docker Excellence.
+
+---
+
+🐳 1. DOCKER EXCELLENCE
+
+Multi-Stage Builds:
+- Usa multi-stage builds para reducir el tamaño de las imágenes finales.
+- Separa dependencias de build de dependencias de runtime.
+- Optimiza layers para mejor cacheo.
+
+Non-Root Execution:
+- Ejecuta contenedores como usuario no-root.
+- Crea usuario específico en Dockerfile (ej. `RUN adduser -D -u 1000 appuser`).
+- Usa `USER appuser` antes de ejecutar la aplicación.
+
+Base Images:
+- Prioriza imágenes Alpine o Distroless para reducir superficie de ataque.
+- Evita imágenes basadas en Ubuntu/Debian completas cuando sea posible.
+- Mantén imágenes base actualizadas (security patches).
+
+HEALTHCHECK Obligatorio:
+- Implementa HEALTHCHECK en todos los Dockerfiles.
+- Usa endpoints de health check ligeros (no dependientes de DB pesada).
+- Timeout razonable (30s-60s).
+
+Ejemplo:
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+FROM node:20-alpine
+RUN adduser -D -u 1000 appuser
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY . .
+USER appuser
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+CMD ["npm", "start"]
+```
+
+---
+
+🔄 2. RESILIENCE & FAILOVER
+
+Circuit Breaker:
+- Implementa failover automático entre proveedores (ej. Hetzner -> Netcup) tras 3 fallos consecutivos.
+- Timeout configurable para detección de fallos.
+- Estado de circuit breaker: CLOSED, OPEN, HALF_OPEN.
+
+Health Monitoring:
+- Endpoints de health check en todas las aplicaciones.
+- Monitoreo de recursos (CPU, memoria, disco).
+- Alertas automáticas cuando recursos superen umbrales (80% CPU, 90% memoria).
+
+Backup Strategy:
+- Formato de backup: `backup-[ID]-[VER]-[TS]` (ej. `backup-db-v1-20250120T120000Z`).
+- Cifrado con AES-256-GCM.
+- Política de poda automática por espacio (mantener últimos N backups o últimos X días).
+- Verificación de integridad de backups antes de eliminar.
+
+---
+
+🛡️ 3. ANTI-BAN 2.0
+
+Rate Limiting Dinámico:
+- Implementa rate limiting con ventana deslizante.
+- Límites por IP, usuario y endpoint.
+- Tarpitting: aumentar latencia progresivamente tras múltiples intentos.
+
+User-Agent Rotation:
+- Rota User-Agents en peticiones salientes a APIs externas.
+- Pool de User-Agents realistas (navegadores modernos).
+- Evita patrones detectables.
+
+ICMP Desactivación:
+- Desactiva respuestas ICMP (ping) en servidores de producción cuando sea posible.
+- Reduce la huella de ataque y dificulta el reconocimiento.
+
+Ejemplo de Rate Limiting:
+```typescript
+// Rate limiting con Redis o in-memory store
+const rateLimiter = new RateLimiter({
+  windowMs: 60 * 1000, // 1 minuto
+  max: 100, // 100 requests por minuto
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res) => {
+    logStructured({
+      timestamp: new Date().toISOString(),
+      source: 'rate_limiter',
+      action: 'rate_limit_exceeded',
+      ip: req.ip,
+      error: 'Too many requests'
+    })
+    res.status(429).json({ error: 'Too many requests' })
+  }
+})
+```
+
+---
+
+🔒 4. SECURITY HARDENING
+
+Secrets Management:
+- Nunca hardcodees secretos en Dockerfiles o código.
+- Usa Docker secrets o variables de entorno inyectadas en runtime.
+- Rotación periódica de secretos (cada 90 días recomendado).
+
+Network Security:
+- Aísla contenedores en redes internas cuando sea posible.
+- No expongas puertos innecesarios al host.
+- Usa reverse proxy (Caddy/Nginx) para TLS termination.
+
+Image Scanning:
+- Escanea imágenes Docker en busca de vulnerabilidades (Trivy, Snyk).
+- Integra escaneo en CI/CD pipeline.
+- Bloquea despliegues si se encuentran vulnerabilidades críticas.
+
+---
+
+📊 5. MONITORING & OBSERVABILITY
+
+Structured Logging:
+- Logs en formato JSON estructurado.
+- Incluye: timestamp, level, source, message, context.
+- Centraliza logs (ELK, Loki, CloudWatch).
+
+Metrics:
+- Métricas de aplicación (Prometheus format).
+- Métricas de infraestructura (CPU, memoria, disco, red).
+- Dashboards en Grafana o similar.
+
+Alerting:
+- Alertas para:
+  - Errores críticos (>5% error rate)
+  - Recursos agotados (CPU >80%, memoria >90%)
+  - Fallos de health check
+  - Anomalías de tráfico
+
+---
+
+🚀 6. CI/CD & DEPLOYMENT
+
+CI/CD Pipeline:
+- Tests automáticos en cada commit (unit, integration, E2E).
+- Linting y type checking obligatorios.
+- Build de imágenes Docker en CI.
+- Escaneo de seguridad antes de deploy.
+
+Deployment Strategy:
+- Blue-Green o Canary deployments para producción.
+- Rollback automático si health check falla tras deploy.
+- Feature flags para activación gradual de funcionalidades.
+
+---
+
+🧹 7. CLEANUP & OPTIMIZATION
+
+Resource Cleanup:
+- Elimina imágenes Docker no utilizadas periódicamente (`docker image prune`).
+- Limpia volúmenes huérfanos.
+- Poda de logs antiguos (retention policy).
+
+Optimization:
+- Minimiza número de layers en Dockerfile.
+- Usa .dockerignore para excluir archivos innecesarios.
+- Cachea dependencias eficientemente (package.json antes de código fuente).
+
+---
+
+📝 8. DOCUMENTATION
+
+Infrastructure as Code:
+- Documenta toda la infraestructura (Docker Compose, Kubernetes manifests).
+- Versiona configuraciones de infraestructura.
+- README con instrucciones de despliegue y troubleshooting.
+
+Runbooks:
+- Documenta procedimientos de:
+  - Despliegue
+  - Rollback
+  - Escalado
+  - Recuperación ante desastres
+

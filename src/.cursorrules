@@ -1,0 +1,160 @@
+🌌 MPE-OS V3.0.0 - FRONTEND RULESET (ATOMIC DESIGN + NO-RAW-FETCH)
+
+Prioridad: Arquitectura UI, Data Integrity, UX/A11y, Zero-Flag Policy.
+
+---
+
+🏗️ 1. ATOMIC DESIGN ESTRICTO
+
+Estructura de Componentes:
+- Atoms (src/components/ui/): Componentes base indivisibles y puramente visuales (Button, Input, Badge).
+  - Sin lógica de negocio, solo props y eventos.
+  - Reutilizables en cualquier contexto.
+
+- Molecules (src/components/): Componentes compuestos de atoms (FormField, Card, Modal).
+  - Pueden tener estado local simple.
+  - Sin llamadas a APIs directas.
+
+- Organisms (src/components/): Componentes con lógica de negocio que interactúan con Server Actions.
+  - Pueden usar hooks personalizados para datos.
+  - Coordinan múltiples molecules.
+
+- Templates/Pages (src/app/): Estructuras de página y fetching inicial vía Server Components.
+  - Usa React Server Components (RSC) cuando sea posible.
+  - Fetching inicial en Server Components, no en Client Components.
+
+React Server Components (RSC):
+- Separación estricta de 'use client'.
+- Los datos sensibles (keys, flags internas) nunca deben llegar al cliente.
+- Usa Server Components por defecto, Client Components solo cuando sea necesario (interactividad, hooks del navegador).
+
+---
+
+🚫 2. NO-RAW-FETCH POLICY (CRÍTICO)
+
+Prohibición de Fetch Directo:
+- PROHIBIDO usar fetch() o axios directamente en componentes React o páginas.
+- PROHIBIDO usar fetch() en Server Actions sin validación de URL (riesgo SSRF).
+
+Hooks Centralizados (src/hooks/):
+- Toda operación de datos debe pasar por hooks personalizados (ej. use-finance.ts, use-projects.ts).
+- Centraliza todas las peticiones HTTP en hooks reutilizables.
+- Implementa manejo de errores consistente y logging estructurado.
+
+Estándar de Fetching:
+- Usa useSWR o TanStack Query con bloques try/catch y logging estructurado.
+- Logging debe incluir: timestamp, source, action, error (si aplica).
+- Implementa retry logic y manejo de estados de carga.
+
+Ejemplo Correcto:
+```typescript
+// ✅ CORRECTO: Hook centralizado
+export function useProjects() {
+  const { data, error, isLoading } = useSWR('/api/projects', fetcher, {
+    onError: (err) => {
+      logStructured({
+        timestamp: new Date().toISOString(),
+        source: 'useProjects',
+        action: 'fetch_projects',
+        error: err.message
+      })
+    }
+  })
+  return { projects: data, error, isLoading }
+}
+
+// ❌ PROHIBIDO: Fetch directo en componente
+const response = await fetch('/api/projects')
+```
+
+---
+
+🛡️ 3. ZERO-FLAG POLICY (PERMISSION MASKING)
+
+User Flag Protection:
+- PROHIBIDO exponer roles internos (admin, owner, god_mode) en el cliente.
+- PROHIBIDO usar session.user.role directamente en componentes.
+
+Permission Masking:
+- El frontend solo recibe booleanos de "permiso de acción" (canEdit, canDelete, canView).
+- Implementa checks de permisos en Server Actions, no en hooks del cliente.
+- Usa hooks como usePermission() que devuelven solo booleanos, nunca roles.
+
+Ejemplo Correcto:
+```typescript
+// ✅ CORRECTO: Permission masking
+const { canEditUsers } = usePermission('users:edit') // boolean
+
+// ❌ PROHIBIDO: Exponer rol interno
+const { role } = useUserRole() // "admin" | "owner" - PELIGROSO
+```
+
+---
+
+🎨 4. UX/UI & ACCESSIBILITY EXCELLENCE
+
+Core Web Vitals:
+- Optimización estricta de LCP, FID y CLS.
+- Uso de imágenes WebP/Avif por defecto.
+- Lazy loading de imágenes y componentes pesados.
+
+Instant UI:
+- Implementa Optimistic Updates para acciones del usuario.
+- Micro-animaciones fluidas con Framer Motion (opcional, no bloqueante).
+- Feedback inmediato en todas las interacciones.
+
+A11y (Accesibilidad):
+- Implementación de modales con Focus Trap.
+- Cierre con tecla Esc en todos los modales.
+- Roles ARIA correctos en cada componente interactivo.
+- Navegación por teclado completa.
+- Contraste de colores WCAG AA mínimo.
+
+---
+
+📦 5. TYPE SAFETY & VALIDATION
+
+TypeScript Strict:
+- Cero uso de `any` en componentes.
+- Props tipadas estrictamente con interfaces o tipos.
+- Valida props con Zod cuando sea necesario.
+
+Form Validation:
+- Usa React Hook Form con validación Zod.
+- Validación tanto en cliente como en servidor (Server Actions).
+
+---
+
+🔄 6. STATE MANAGEMENT
+
+Server State:
+- Usa useSWR o TanStack Query para datos del servidor.
+- Cache automático y revalidación inteligente.
+
+Client State:
+- useState para estado local simple.
+- useReducer para estado complejo.
+- Evita prop drilling excesivo (considera Context API si es necesario).
+
+---
+
+🧪 7. TESTING FRONTEND
+
+Component Testing:
+- Tests unitarios para componentes con Testing Library.
+- Tests de accesibilidad con jest-axe.
+- Snapshot tests solo cuando sea necesario.
+
+E2E Testing:
+- Tests E2E para flujos críticos de usuario (Playwright recomendado).
+- Verifica accesibilidad en tests E2E.
+
+---
+
+📝 8. DOCUMENTATION
+
+Component Documentation:
+- JSDoc para todos los componentes públicos.
+- Documenta props, ejemplos de uso y casos edge.
+- Storybook (opcional) para documentación visual.
+

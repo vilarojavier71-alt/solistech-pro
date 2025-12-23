@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { z } from "zod"
 
 export type ExpenseCategory = 'Office' | 'Equipment' | 'Marketing' | 'Software' | 'Personnel' | 'Vehicles' | 'Other'
 
@@ -16,12 +17,29 @@ export interface Expense {
     created_at: string
 }
 
-export async function createExpense(data: { description: string; amount: number; category: ExpenseCategory; date: string }) {
+// ✅ SEGURO: Validación estricta con Zod (previene montos negativos)
+
+const CreateExpenseSchema = z.object({
+    description: z.string().min(1).max(500),
+    amount: z.number().positive().max(1000000), // ✅ Solo positivos, máximo 1M
+    category: z.enum(['Office', 'Equipment', 'Marketing', 'Software', 'Personnel', 'Vehicles', 'Other']) as z.ZodType<ExpenseCategory>,
+    date: z.string()
+})
+
+export async function createExpense(data: unknown) {
     const session = await auth()
     if (!session?.user) return { success: false, message: "No autorizado" }
 
+    const validation = CreateExpenseSchema.safeParse(data)
+    if (!validation.success) {
+        return { 
+            success: false, 
+            message: "Datos inválidos", 
+            details: validation.error.flatten().fieldErrors 
+        }
+    }
+
     try {
-        // Get User's org
         const user = await prisma.User.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
@@ -34,26 +52,47 @@ export async function createExpense(data: { description: string; amount: number;
         await prisma.operating_expenses.create({
             data: {
                 organization_id: user.organization_id,
-                description: data.description,
-                amount: data.amount,
-                category: data.category,
-                date: new Date(data.date),
+                description: validation.data.description,
+                amount: validation.data.amount, // ✅ Ya validado como positivo
+                category: validation.data.category,
+                date: new Date(validation.data.date),
             }
         })
 
         revalidatePath("/dashboard/finance")
         return { success: true }
     } catch (error) {
-        console.error("Error creating expense:", error)
         return { success: false, message: "Error al registrar el gasto" }
     }
 }
 
+// ✅ SEGURO: Validación de ownership (IDOR Prevention)
 export async function deleteExpense(id: string) {
     const session = await auth()
     if (!session?.user) return { success: false, message: "No autorizado" }
 
     try {
+        const user = await prisma.User.findUnique({
+            where: { id: session.user.id },
+            select: { organization_id: true }
+        })
+
+        if (!user?.organization_id) {
+            return { success: false, message: "Usuario sin organización asignada" }
+        }
+
+        // ✅ Validar ownership ANTES de eliminar
+        const expense = await prisma.operating_expenses.findFirst({
+            where: {
+                id,
+                organization_id: user.organization_id
+            }
+        })
+
+        if (!expense) {
+            return { success: false, message: "Gasto no encontrado o no pertenece a tu organización" }
+        }
+
         await prisma.operating_expenses.delete({
             where: { id }
         })

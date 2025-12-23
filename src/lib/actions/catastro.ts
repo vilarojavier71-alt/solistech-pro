@@ -37,8 +37,9 @@ export async function geocodeAddress(address: string) {
             }
         };
 
-    } catch (error: any) {
-        console.error("Geocoding error:", error);
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error("Geocoding error:", errorMessage);
         return { success: false, message: "Error de conexión" };
     }
 }
@@ -95,9 +96,10 @@ export async function searchCadastreByCoordinates(lat: number, lng: number, addr
             source: matchType === 'exact' ? 'Coordenadas (Exacta)' : 'Coordenadas (Proximidad)'
         };
 
-    } catch (error: any) {
-        console.error("Fallo final en searchCadastreByCoordinates:", error.message);
-        return { success: false, message: `Error de conexión Catastro: ${error.message}` };
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error("Fallo final en searchCadastreByCoordinates:", errorMessage);
+        return { success: false, message: `Error de conexión Catastro: ${errorMessage}` };
     }
 }
 

@@ -47,6 +47,7 @@ model User {
   created_invitations    invitations[]
   client_portal_project  projects?               @relation("client_portal_project")
   support_tickets        support_tickets[]
+  audit_logs             audit_logs[]
 
   @@index([organization_id, role])
   @@index([email])
@@ -859,4 +860,34 @@ model leave_requests {
   @@index([user_id, status])
   @@index([organization_id, status])
   @@index([start_date, end_date])
+}
+
+// ============================================================================
+// AUDIT LOGS (ISO 27001 A.8.15 Compliance)
+// ============================================================================
+
+model audit_logs {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  event_type     String    @db.VarChar(100)
+  user_id        String    @db.Uuid
+  organization_id String?  @db.Uuid
+  resource_type  String    @db.VarChar(100)
+  resource_id    String    @db.Uuid
+  action         String    @db.VarChar(255)
+  metadata       Json?
+  ip_address     String?   @db.Inet
+  user_agent     String?   @db.Text
+  timestamp      DateTime  @default(now()) @db.Timestamptz(6)
+
+  user         User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([organization_id])
+  @@index([event_type])
+  @@index([resource_type, resource_id])
+  @@index([timestamp(sort: Desc)])
+  @@index([user_id, timestamp(sort: Desc)])
+  @@index([organization_id, timestamp(sort: Desc)])
+  @@map("audit_logs")
 }

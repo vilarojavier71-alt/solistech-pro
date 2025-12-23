@@ -84,12 +84,58 @@ export function getProvinceFromCP(cp: string): string {
 // Función de Pausa para el Reintento
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// FUNCIÓN DE FETCH GENÉRICA CON REINTENTO Y PROTOCOL SWITCH
+// Circuit breaker sencillo en memoria (por instancia)
+const breaker = {
+    failures: 0,
+    threshold: 3,
+    timeoutMs: 30_000,
+    openedAt: 0
+}
+
+function isBreakerOpen() {
+    if (breaker.failures < breaker.threshold) return false
+    if (Date.now() - breaker.openedAt > breaker.timeoutMs) {
+        breaker.failures = 0
+        return false
+    }
+    return true
+}
+
+function recordFailure() {
+    breaker.failures += 1
+    if (breaker.failures >= breaker.threshold) {
+        breaker.openedAt = Date.now()
+        console.warn('[CircuitBreaker] Catastro abierto por fallos consecutivos')
+    }
+}
+
+function recordSuccess() {
+    breaker.failures = 0
+}
+
+const ALLOWED_HOST = 'ovc.catastro.meh.es'
+const BLOCKED_HOSTS = ['127.', '10.', '192.168.', '172.16.', '172.17.', '172.18.', '172.19.', '172.2', '172.30.', '172.31.']
+
+// FUNCIÓN DE FETCH GENÉRICA CON REINTENTO, VALIDACIÓN SSRF Y CIRCUIT BREAKER
 async function resilientFetch(url: string, attempts: number = 2): Promise<Response> {
+    const parsed = new URL(url)
+    const host = parsed.hostname.toLowerCase()
+
+    if (host !== ALLOWED_HOST) {
+        throw new Error(`Host no permitido para Catastro: ${host}`)
+    }
+    if (BLOCKED_HOSTS.some(h => host.startsWith(h))) {
+        throw new Error(`Bloqueo SSRF: host privado ${host}`)
+    }
+
+    if (isBreakerOpen()) {
+        throw new Error('Circuit breaker Catastro abierto. Intenta más tarde.')
+    }
+
     for (let i = 0; i < attempts; i++) {
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 7000) // 7s timeout
 
             const response = await fetch(url, {
                 cache: 'no-store',
@@ -97,33 +143,31 @@ async function resilientFetch(url: string, attempts: number = 2): Promise<Respon
                 headers: {
                     'User-Agent': 'MotorGap/1.0 (Contact: support@motorgap.es)'
                 }
-            });
+            })
 
-            clearTimeout(timeoutId);
+            clearTimeout(timeoutId)
 
             if (response.status === 500 && i < attempts - 1) {
-                // Si es 500 y no es el último intento, loguear y esperar
-                console.warn(`[REINTENTO #${i + 1}] API Catastro devolvió 500. Reintentando en 500ms...`);
-                await sleep(500);
-                continue; // Saltar al siguiente intento
+                console.warn(`[REINTENTO #${i + 1}] API Catastro devolvió 500. Reintentando en 500ms...`)
+                await sleep(500)
+                continue
             }
             if (!response.ok) {
-                // Error de red/protocolo (4xx o 5xx final)
-                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+                throw new Error(`Error HTTP: ${response.status} ${response.statusText}`)
             }
 
-            return response; // Éxito o última falla manejada
+            recordSuccess()
+            return response
         } catch (error: any) {
-            // Error de conexión, DNS, o Timeout
+            recordFailure()
             if (i < attempts - 1) {
-                console.warn(`[REINTENTO #${i + 1}] Fallo de red/conexión. Reintentando...`);
-                await sleep(500);
-                continue;
+                console.warn(`[REINTENTO #${i + 1}] Fallo de red/conexión. Reintentando...`)
+                await sleep(500)
+                continue
             }
-            throw error; // Última falla, lanzamos el error
+            throw error
         }
     }
-    // Si el bucle termina, algo salió mal
     throw new Error("El servicio de Catastro no respondió tras múltiples intentos.");
 }
 

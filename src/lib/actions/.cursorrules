@@ -1,0 +1,223 @@
+🌌 MPE-OS V3.0.0 - BACKEND RULESET (SERVER ACTIONS + SQL + FINOPS)
+
+Prioridad: Seguridad, Integridad de Datos, FinOps, Race Conditions.
+
+---
+
+🛡️ 1. SEGURIDAD & VALIDACIÓN
+
+Validación Estricta:
+- TODAS las Server Actions deben validar inputs con Zod o Valibot.
+- Nunca confíes en datos del cliente sin validar.
+- Usa esquemas estrictos con `.strict()` en Zod.
+
+IDOR Prevention:
+- Validación obligatoria de ownership del recurso en cada endpoint que acepte un ID.
+- Verifica que el recurso pertenezca a la organización del usuario antes de cualquier operación.
+- Usa UUIDs opacos en lugar de IDs secuenciales cuando sea posible.
+
+SSRF Prevention:
+- Bloquea peticiones a IPs internas (127.0.0.1, 10.x.x.x, 172.16.x.x, 192.168.x.x).
+- Bloquea acceso a metadatos de proveedores cloud (169.254.169.254).
+- Valida URLs permitidas en proxies (whitelist de dominios).
+- Nunca uses fetch() con URLs proporcionadas por el cliente sin validación.
+
+Payload Sanitization:
+- Desinfecta strings contra inyecciones NoSQL, SQL y XSS mediante esquemas de Zod estrictos.
+- Escapa caracteres especiales en queries raw.
+- Usa Prisma ORM para prevenir inyecciones SQL cuando sea posible.
+
+---
+
+💾 2. SQL BEST PRACTICES
+
+SQL Standards:
+- Palabras clave en MAYÚSCULAS (SELECT, INSERT, UPDATE, DELETE, WHERE, etc.).
+- Nombres de tablas/columnas en snake_case.
+- Usa Prisma ORM cuando sea posible, pero respeta estos estándares en queries raw.
+
+Optimización de Consultas:
+- Usa siempre EXPLAIN ANALYZE para evitar el problema N+1.
+- Selecciona solo los campos necesarios (evita SELECT *).
+- Implementa índices en campos de búsqueda frecuente.
+- Usa Prisma.include() o Prisma.select() para controlar qué campos se traen.
+
+Race Conditions:
+- Usa SELECT FOR UPDATE en transacciones críticas que involucren:
+  - Actualización de balances financieros
+  - Procesamiento de pagos
+  - Asignación de recursos limitados
+  - Actualización de inventario
+- Implementa transacciones atómicas con Prisma.$transaction.
+
+Ejemplo Correcto:
+```typescript
+// ✅ CORRECTO: SELECT FOR UPDATE en transacción
+async function processPaymentSafe(invoiceId: string, amount: number) {
+  await prisma.$transaction(async (tx) => {
+    const invoice = await tx.$queryRaw`
+      SELECT * FROM invoices 
+      WHERE id = ${invoiceId} 
+      FOR UPDATE
+    `
+    if (invoice.balance < amount) {
+      throw new Error('Insufficient balance')
+    }
+    const newBalance = invoice.balance - amount
+    await tx.invoices.update({
+      where: { id: invoiceId },
+      data: { balance: newBalance }
+    })
+  })
+}
+
+// ❌ VULNERABLE: Race condition
+async function processPaymentUnsafe(invoiceId: string, amount: number) {
+  const invoice = await prisma.invoices.findUnique({ where: { id: invoiceId } })
+  const newBalance = invoice.balance - amount
+  await prisma.invoices.update({
+    where: { id: invoiceId },
+    data: { balance: newBalance }
+  })
+}
+```
+
+---
+
+💰 3. FINOPS GUARDRAILS
+
+Accounting Automático:
+- Cada acción de infraestructura debe disparar un asiento contable automático.
+- Registra costos de recursos cloud, APIs externas y servicios de terceros.
+- Formato: DEBIT 622x (gastos) / CREDIT 4000 (proveedores).
+
+Cost Guardrails:
+- Bloquea escalados automáticos o acciones si gastoActual + costeEstimado > presupuestoMensual.
+- Implementa validación antes de crear recursos costosos.
+- Genera alertas cuando el gasto supere el 80% del presupuesto mensual.
+
+Ejemplo:
+```typescript
+async function validateInfrastructureScaling(
+  resource: string,
+  requestedIncrease: number
+): Promise<boolean> {
+  const budget = await getCurrentBudget()
+  const projectedCost = calculateProjectedCost(resource, requestedIncrease)
+  
+  if (projectedCost > budget.monthlyLimit * 0.9) {
+    logStructured({
+      timestamp: new Date().toISOString(),
+      source: 'finops',
+      action: 'block_scaling',
+      error: 'Budget threshold exceeded'
+    })
+    return false
+  }
+  return true
+}
+```
+
+---
+
+📝 4. ERROR HANDLING & LOGGING
+
+Error Protocol:
+- Bloques try/catch obligatorios en todas las Server Actions.
+- Logs estructurados con formato JSON que incluya:
+  - timestamp: ISO 8601
+  - source: nombre de la función/módulo
+  - action: acción que se estaba ejecutando
+  - userId: ID del usuario (si aplica)
+  - error: mensaje de error (si aplica)
+
+Ejemplo:
+```typescript
+try {
+  const result = await processPayment(invoiceId, amount)
+  return { success: true, data: result }
+} catch (error) {
+  logStructured({
+    timestamp: new Date().toISOString(),
+    source: 'processPayment',
+    action: 'payment_processing',
+    userId: session.user.id,
+    error: error instanceof Error ? error.message : 'Unknown error'
+  })
+  return { success: false, error: 'Payment processing failed' }
+}
+```
+
+Nunca expongas detalles internos de errores al cliente:
+- ❌ "Database connection failed: ECONNREFUSED"
+- ✅ "Error al procesar la solicitud. Por favor, inténtalo de nuevo."
+
+---
+
+🔐 5. AUTHENTICATION & AUTHORIZATION
+
+Session Validation:
+- Verifica la sesión del usuario en TODAS las Server Actions.
+- Usa `await auth()` de NextAuth antes de cualquier operación.
+
+Permission Checks:
+- Implementa checks de permisos en el servidor, nunca confíes en el cliente.
+- Usa funciones helper para verificar permisos antes de operaciones críticas.
+- Devuelve solo booleanos de permisos al cliente, nunca roles internos.
+
+---
+
+🔄 6. TRANSACTIONS & DATA INTEGRITY
+
+Atomic Operations:
+- Usa Prisma.$transaction para operaciones que requieren atomicidad.
+- Valida todas las condiciones antes de iniciar la transacción.
+- Implementa rollback automático en caso de error.
+
+Data Consistency:
+- Valida referencias de claves foráneas antes de crear registros.
+- Implementa constraints a nivel de base de datos cuando sea posible.
+- Usa transacciones para operaciones multi-tabla.
+
+---
+
+🧪 7. TESTING BACKEND
+
+Unit Testing:
+- Tests unitarios para lógica de negocio pura.
+- Mocks de Prisma para tests de Server Actions.
+- Tests de validación con inputs válidos e inválidos.
+
+Integration Testing:
+- Tests de integración para flujos completos.
+- Tests de transacciones para verificar atomicidad.
+- Tests de race conditions usando concurrencia simulada.
+
+---
+
+📚 8. DOCUMENTATION
+
+JSDoc Obligatorio:
+- Documenta todas las Server Actions públicas con JSDoc.
+- Incluye:
+  - Descripción de la función
+  - Parámetros con tipos
+  - Valor de retorno
+  - Errores posibles
+  - Requisitos de permisos
+
+Ejemplo:
+```typescript
+/**
+ * Procesa un pago para una factura.
+ * @param invoiceId - UUID de la factura
+ * @param amount - Cantidad a pagar (debe ser positiva)
+ * @returns Resultado de la operación con éxito o error
+ * @throws Error si la factura no existe o el balance es insuficiente
+ * @requires Rol: owner, admin, o comercial con permiso 'payments:process'
+ */
+export async function processPayment(invoiceId: string, amount: number) {
+  // ...
+}
+```
+

@@ -8,9 +8,9 @@ import type { InvoiceHashInput } from '@/lib/types/import-types'
 import { z } from 'zod'
 
 // Helper para corregir codificación corrupta (Mojibake)
-function fixMojibake(str: string | undefined | null): any {
-    if (!str) return str;
-    if (typeof str !== 'string') return str;
+function fixMojibake(str: string | undefined | null): string | undefined {
+    if (!str) return undefined;
+    if (typeof str !== 'string') return undefined;
 
     // Si contiene caracteres típicos de doble codificación UTF-8 -> Latin1
     // Ã (0xC3) es el primer byte de muchos caracteres comunes en español
@@ -24,8 +24,12 @@ function fixMojibake(str: string | undefined | null): any {
     return str;
 }
 
+interface InvoiceForCleaning {
+    [key: string]: unknown
+}
+
 // Helper para limpiar objetos completos (recursivo superficial para listas)
-function cleanInvoiceData(invoice: any) {
+function cleanInvoiceData(invoice: InvoiceForCleaning): InvoiceForCleaning {
     if (!invoice) return invoice
 
     // Campos de texto directo en la factura
@@ -113,7 +117,14 @@ async function generateInvoiceSignature(hash: string, previousHash: string | nul
 }
 
 // Generar QR Verifactu
-async function generateVerifactuQR(invoice: any): Promise<string> {
+interface InvoiceForQR {
+    invoice_number: string
+    issue_date: Date
+    total: number
+    customer_nif?: string | null
+}
+
+async function generateVerifactuQR(invoice: InvoiceForQR): Promise<string> {
     const qrData = {
         n: invoice.invoice_number,
         f: invoice.issue_date,
@@ -145,35 +156,12 @@ export async function createInvoice(rawData: InvoiceData) {
     // Generar número
     const { invoiceNumber, sequentialNumber } = await generateInvoiceNumber(user.organizationId!)
 
-    // Calcular totales
-    let subtotal = 0
-    let taxAmount = 0
-
-    const processedLines = data.lines.map((line, index) => {
-        const lineSubtotal = line.quantity * line.unitPrice
-        const discount = lineSubtotal * ((line.discountPercentage || 0) / 100)
-        const subtotalAfterDiscount = lineSubtotal - discount
-        const lineTax = subtotalAfterDiscount * ((line.taxRate || 21) / 100)
-        const lineTotal = subtotalAfterDiscount + lineTax
-
-        subtotal += subtotalAfterDiscount
-        taxAmount += lineTax
-
-        return {
-            line_order: index + 1,
-            description: fixMojibake(line.description) || line.description,
-            quantity: line.quantity,
-            unit_price: line.unitPrice,
-            discount_percentage: line.discountPercentage || 0,
-            discount_amount: discount,
-            tax_rate: line.taxRate || 21,
-            tax_amount: lineTax,
-            subtotal: subtotalAfterDiscount,
-            total: lineTotal
-        }
-    })
-
-    const total = subtotal + taxAmount
+    // Calcular totales (extraído a función pura)
+    const { calculateInvoiceTotals } = await import('@/lib/utils/invoice-calculations')
+    const { subtotal, taxAmount, total, processedLines } = calculateInvoiceTotals(
+        data.lines,
+        (str) => fixMojibake(str) || str || ''
+    )
 
     // Crear factura con transacción
     const invoice = await prisma.$transaction(async (tx) => {
@@ -213,7 +201,7 @@ export async function createInvoice(rawData: InvoiceData) {
     })
 
     // Calcular hash y QR (fuera de transacción)
-    const hash = await calculateInvoiceHash(invoice as any)
+    const hash = await calculateInvoiceHash(invoice)
     const signature = await generateInvoiceSignature(hash, null)
     const qrCode = await generateVerifactuQR({ ...invoice, verifactu_hash: hash })
 
@@ -225,6 +213,28 @@ export async function createInvoice(rawData: InvoiceData) {
             // verifactu_signature: signature,
             // verifactu_qr_code: qrCode
         }
+    })
+
+    // Audit log (ISO 27001 A.8.15)
+    const { auditLogAction } = await import('@/lib/audit/audit-logger')
+    await auditLogAction(
+        'invoice.created',
+        user.id,
+        'invoice',
+        updatedInvoice.id,
+        `Invoice ${invoiceNumber} created for customer ${customer.id}`,
+        {
+            organizationId: user.organizationId || undefined,
+            metadata: {
+                invoiceNumber,
+                customerId: customer.id,
+                total: total.toString(),
+                lineCount: processedLines.length
+            }
+        }
+    ).catch(err => {
+        // Log error pero no fallar la creación de factura
+        console.error('Failed to create audit log:', err)
     })
 
     return { data: updatedInvoice, error: null }
@@ -305,27 +315,84 @@ export async function registerPayment(invoiceId: string, paymentData: {
     const user = await getCurrentUserWithRole()
     if (!user) return { error: 'No autenticado' }
 
-    // TODO: Crear tabla invoice_payments en Docker schema
-    // Por ahora, actualizamos el estado de la factura directamente
+    try {
+        // Transacción ACID con SELECT FOR UPDATE para prevenir race conditions
+        const result = await prisma.$transaction(async (tx) => {
+            // Bloquear fila con SELECT FOR UPDATE
+            const [lockedInvoice] = await tx.$queryRaw<Array<{
+                id: string
+                total: number
+                payment_status: string
+                organization_id: string
+            }>>`
+                SELECT id, total, payment_status, organization_id
+                FROM invoices
+                WHERE id = ${invoiceId}::uuid
+                  AND organization_id = ${user.organizationId}::uuid
+                FOR UPDATE
+            `
 
-    const invoice = await prisma.invoices.findUnique({
-        where: { id: invoiceId }
-    })
+            if (!lockedInvoice) {
+                throw new Error('INVOICE_NOT_FOUND')
+            }
 
-    if (!invoice) return { error: 'Factura no encontrada' }
+            // Validar que no esté ya pagada completamente
+            if (lockedInvoice.payment_status === 'paid') {
+                throw new Error('INVOICE_ALREADY_PAID')
+            }
 
-    const currentPaid = Number(invoice.total || 0)
-    const newPaymentStatus = paymentData.amount >= currentPaid ? 'paid' : 'partial'
+            const currentTotal = Number(lockedInvoice.total || 0)
+            const newPaymentStatus = paymentData.amount >= currentTotal ? 'paid' : 'partial'
 
-    await prisma.invoices.update({
-        where: { id: invoiceId },
-        data: {
-            payment_status: newPaymentStatus,
-            updated_at: new Date()
+            // Actualizar estado de la factura
+            await tx.invoices.update({
+                where: { id: invoiceId },
+                data: {
+                    payment_status: newPaymentStatus,
+                    updated_at: new Date()
+                }
+            })
+
+            return { amount: paymentData.amount, status: newPaymentStatus }
+        }, {
+            isolationLevel: 'Serializable' // Máximo nivel de aislamiento
+        })
+
+        // Audit log (ISO 27001 A.8.15)
+        const { auditLogAction } = await import('@/lib/audit/audit-logger')
+        await auditLogAction(
+            'invoice.payment.registered',
+            user.id,
+            'invoice',
+            invoiceId,
+            `Payment of ${paymentData.amount}€ registered for invoice ${invoiceId}`,
+            {
+                organizationId: user.organizationId || undefined,
+                metadata: {
+                    amount: paymentData.amount,
+                    paymentMethod: paymentData.paymentMethod,
+                    reference: paymentData.reference,
+                    newStatus: result.status
+                }
+            }
+        ).catch(err => {
+            console.error('Failed to create audit log:', err)
+        })
+
+        return { data: result, error: null }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        
+        const errorMap: Record<string, string> = {
+            'INVOICE_NOT_FOUND': 'Factura no encontrada o no pertenece a tu organización',
+            'INVOICE_ALREADY_PAID': 'Esta factura ya está completamente pagada',
         }
-    })
 
-    return { data: { amount: paymentData.amount, status: newPaymentStatus }, error: null }
+        return {
+            error: errorMap[errorMessage] || 'Error al registrar el pago',
+            code: errorMessage
+        }
+    }
 }
 
 

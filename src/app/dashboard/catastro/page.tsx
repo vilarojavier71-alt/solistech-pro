@@ -22,8 +22,8 @@ import {
     Home,
     Map
 } from 'lucide-react'
-import { searchCadastreByCoordinates, findNearestParcel, geocodeAddress } from '@/lib/actions/catastro'
 import { cn } from '@/lib/utils'
+import { useCatastro } from '@/hooks/use-catastro'
 
 interface CadastralResult {
     rc: string
@@ -38,84 +38,47 @@ interface CadastralResult {
 export default function CatastroPage() {
     const [searchAddress, setSearchAddress] = useState('')
     const [directRC, setDirectRC] = useState('')
-    const [isSearching, setIsSearching] = useState(false)
-    const [isSearchingRC, setIsSearchingRC] = useState(false)
     const [result, setResult] = useState<CadastralResult | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [searchSource, setSearchSource] = useState<string>('')
     const [lastCoords, setLastCoords] = useState<{ lat: number; lng: number } | null>(null)
+    const { searchByAddress, searchByRC, isLoading } = useCatastro()
 
-    // Search cadastre by address
     const handleSearchByAddress = async () => {
-        if (!searchAddress.trim()) {
-            toast.error('Introduce una dirección')
-            return
-        }
-
-        setIsSearching(true)
+        if (!searchAddress.trim()) return toast.error('Introduce una dirección')
         setError(null)
         setResult(null)
-
-        try {
-            // First geocode the address
-            const geoResponse = await geocodeAddress(searchAddress)
-
-            if (!geoResponse.success || !geoResponse.data) {
-                setError('Dirección no encontrada. Prueba con más detalles.')
-                toast.error('Dirección no encontrada')
-                setIsSearching(false)
-                return
-            }
-
-            const { lat, lng } = geoResponse.data
-            setLastCoords({ lat, lng })
-
-            // Then search cadastre
-            const response = await searchCadastreByCoordinates(lat, lng, searchAddress)
-
-            if (response.success && response.data) {
-                setResult({ ...response.data as CadastralResult, lat, lng })
-                setSearchSource(response.source || 'Dirección')
-                toast.success('✅ Referencia Catastral encontrada')
-            } else {
-                // Try spiral search as fallback
-                const spiralResponse = await findNearestParcel(lat, lng)
-
-                if (spiralResponse.success && spiralResponse.data) {
-                    setResult({ ...spiralResponse.data as CadastralResult, lat, lng })
-                    setSearchSource('Búsqueda Espiral')
-                    toast.success('✅ Parcela cercana encontrada')
-                } else {
-                    setError(response.message || 'No se encontró referencia catastral en esta ubicación')
-                    toast.error('No se encontró referencia catastral')
-                }
-            }
-        } catch (err) {
-            setError('Error de conexión con el Catastro')
-            toast.error('Error de conexión con el Catastro')
-        } finally {
-            setIsSearching(false)
+        const response = await searchByAddress(searchAddress)
+        if (!response.success || !response.data) {
+            setError(response.message || 'No se encontró referencia catastral')
+            return toast.error('No se encontró referencia catastral')
         }
+        const coords = response.data.lat && response.data.lng ? { lat: response.data.lat, lng: response.data.lng } : null
+        setLastCoords(coords)
+        setResult(response.data)
+        setSearchSource(response.source || 'Dirección')
+        toast.success('✅ Referencia Catastral encontrada')
     }
 
-    // Direct RC lookup
     const handleSearchByRC = async () => {
         if (!directRC.trim() || directRC.length < 14) {
             toast.error('Introduce una referencia catastral válida (mínimo 14 caracteres)')
             return
         }
 
-        setIsSearchingRC(true)
         setError(null)
-
-        // Open directly in SEDE
+        const response = await searchByRC(directRC.trim())
+        if (!response.success || !response.data) {
+            setError(response.message || 'RC no encontrada')
+            return toast.error('RC no encontrada')
+        }
+        setResult(response.data)
+        setSearchSource('Referencia Catastral')
         window.open(
             `https://www1.sedecatastro.gob.es/CYCBienInmueble/OVCConCiworh.aspx?del=&mession=&RefC=${directRC.trim()}`,
             '_blank'
         )
-
         toast.success('Abriendo en Sede Electrónica...')
-        setIsSearchingRC(false)
     }
 
     // Copy RC to clipboard
@@ -200,11 +163,11 @@ export default function CatastroPage() {
 
                             <Button
                                 onClick={handleSearchByAddress}
-                                disabled={isSearching}
+                                disabled={isLoading}
                                 className="w-full"
                                 size="lg"
                             >
-                                {isSearching ? (
+                                {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Buscando en Catastro...
@@ -245,11 +208,11 @@ export default function CatastroPage() {
 
                             <Button
                                 onClick={handleSearchByRC}
-                                disabled={isSearchingRC}
+                                disabled={isLoading}
                                 variant="outline"
                                 className="w-full"
                             >
-                                {isSearchingRC ? (
+                                {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                         Abriendo...

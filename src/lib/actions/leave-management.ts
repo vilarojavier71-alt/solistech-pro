@@ -384,8 +384,23 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
             return { success: false, error: 'Solo administradores' }
         }
 
-        const request = await prisma.leave_requests.findUnique({
-            where: { id: validated.requestId }
+        // ✅ Validar organization_id antes de procesar (IDOR Prevention)
+        const userOrg = await prisma.user.findUnique({
+            where: { email: session.user.email! },
+            select: { organization_id: true }
+        })
+
+        if (!userOrg?.organization_id) {
+            return { success: false, error: 'Usuario sin organización asignada' }
+        }
+
+        const request = await prisma.leave_requests.findFirst({
+            where: {
+                id: validated.requestId,
+                user: {
+                    organization_id: userOrg.organization_id
+                }
+            }
         })
 
         if (!request || request.status !== 'pending') {

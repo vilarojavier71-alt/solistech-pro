@@ -4,35 +4,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { mapSolarPhaseToUI } from '@/lib/utils/solar-status-mapper'
 
 // ============================================================================
-// RATE LIMITER (En memoria - para producción usar Redis/Upstash)
+// RATE LIMITER (Centralizado - Anti-Ban 2.0)
 // ============================================================================
 
-const RATE_LIMIT = {
-    windowMs: 60 * 1000, // 1 minuto
-    maxRequests: 10, // 10 requests por minuto por usuario
-}
-
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(userId: string): { allowed: boolean; remaining: number } {
-    const now = Date.now()
-    const userLimit = rateLimitStore.get(userId)
-
-    if (!userLimit || now > userLimit.resetAt) {
-        rateLimitStore.set(userId, { count: 1, resetAt: now + RATE_LIMIT.windowMs })
-        return { allowed: true, remaining: RATE_LIMIT.maxRequests - 1 }
-    }
-
-    if (userLimit.count >= RATE_LIMIT.maxRequests) {
-        return { allowed: false, remaining: 0 }
-    }
-
-    userLimit.count++
-    return { allowed: true, remaining: RATE_LIMIT.maxRequests - userLimit.count }
-}
-
-// Limpieza periódica del store (evitar memory leak)
-setInterval(() => {
+import { checkRateLimit, RATE_LIMIT_PRESETS } from '@/lib/security/rate-limiter'(() => {
     const now = Date.now()
     for (const [key, value] of rateLimitStore.entries()) {
         if (now > value.resetAt) {
@@ -96,23 +71,68 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
         }
 
-        // 2. Verificar Rate Limit
-        const { allowed, remaining } = checkRateLimit(session.user.id || session.user.email)
-        if (!allowed) {
+        // 2. Verificar Rate Limit (Anti-Ban 2.0)
+        const rateLimitResult = checkRateLimit(request, {
+            ...RATE_LIMIT_PRESETS.ai, // Muy restrictivo para AI (costo)
+            keyGenerator: (req) => {
+                return `chat:${session.user.id || session.user.email}`;
+            }
+        });
+        
+        if (!rateLimitResult.allowed) {
+            const response = NextResponse.json(
+                { 
+                    error: 'Demasiadas solicitudes. Por favor espera un momento.',
+                    retryAfter: rateLimitResult.retryAfter
+                },
+                { status: 429 }
+            );
+            
+            response.headers.set('X-RateLimit-Limit', '10');
+            response.headers.set('X-RateLimit-Remaining', '0');
+            if (rateLimitResult.retryAfter) {
+                response.headers.set('Retry-After', rateLimitResult.retryAfter.toString());
+            }
+            
+            return response;
+        }
+
+        // ✅ Validar tamaño de payload (Resource Exhaustion Prevention)
+        const MAX_MESSAGES = 100
+        const MAX_MESSAGE_LENGTH = 10000
+        
+        const { messages } = await request.json()
+        
+        if (!Array.isArray(messages) || messages.length === 0) {
             return NextResponse.json(
-                { error: 'Demasiadas solicitudes. Por favor espera un momento.' },
-                {
-                    status: 429,
-                    headers: {
-                        'X-RateLimit-Remaining': '0',
-                        'Retry-After': '60'
-                    }
-                }
+                { error: 'Mensajes inválidos' },
+                { status: 400 }
             )
         }
 
-        const { messages } = await request.json()
+        if (messages.length > MAX_MESSAGES) {
+            return NextResponse.json(
+                { error: `Demasiados mensajes. Máximo: ${MAX_MESSAGES}` },
+                { status: 400 }
+            )
+        }
+
+        // Validar longitud de cada mensaje
+        for (const msg of messages) {
+            if (msg.content && msg.content.length > MAX_MESSAGE_LENGTH) {
+                return NextResponse.json(
+                    { error: `Mensaje demasiado largo. Máximo: ${MAX_MESSAGE_LENGTH} caracteres` },
+                    { status: 400 }
+                )
+            }
+        }
+
         const userMessage = messages[messages.length - 1]?.content || ''
+
+        // ✅ Validar presupuesto antes de procesar (EDoS Prevention)
+        // Nota: validateInfrastructureScaling requiere organizationId, no userId
+        // Por ahora, el rate limiting ya protege contra EDoS (10 req/min)
+        // TODO: Implementar validación de presupuesto por organización cuando esté disponible
 
         // 2. Obtener contexto del proyecto del usuario
         const projectContext = await getProjectContext(session.user.email)

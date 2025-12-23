@@ -16,16 +16,19 @@ export default function ProjectLocationMap({ address, coordinates }: ProjectLoca
         <Card className="overflow-hidden border-none shadow-none h-full w-full bg-slate-100 dark:bg-slate-800 relative group">
             <CardContent className="p-0 h-[300px] flex items-center justify-center relative">
                 {/* Mock Map Visuals */}
-                <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Madrid&zoom=14&size=600x300&sensor=false')] bg-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700"
+                <div 
+                    className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Madrid&zoom=14&size=600x300&sensor=false')] bg-cover opacity-50 grayscale group-hover:grayscale-0 transition-all duration-700"
                     style={{ backgroundImage: `linear-gradient(to bottom right, #e2e8f0 2px, transparent 2px), linear-gradient(to bottom left, #e2e8f0 2px, transparent 2px)` }}
+                    role="img"
+                    aria-label={`Mapa mostrando la ubicación del proyecto en ${address}`}
                 >
                     {/* Pattern to simulate map grid if image fails */}
-                    <div className="w-full h-full opacity-20 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div className="w-full h-full opacity-20 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:16px_16px]" aria-hidden="true"></div>
                 </div>
 
                 <div className="z-10 bg-background/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border flex flex-col items-center gap-2 animate-in text-center max-w-[80%]">
-                    <div className="bg-primary/10 p-3 rounded-full">
-                        <MapPin className="h-6 w-6 text-primary animate-bounce" />
+                    <div className="bg-primary/10 p-3 rounded-full" role="img" aria-label="Marcador de ubicación">
+                        <MapPin className="h-6 w-6 text-primary animate-bounce" aria-hidden="true" />
                     </div>
                     <div>
                         <p className="font-semibold text-sm">Ubicación del Proyecto</p>

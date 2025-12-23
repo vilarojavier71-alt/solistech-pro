@@ -53,14 +53,8 @@ export function OpportunitiesList({ opportunities, customerId }: { opportunities
         return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(amount)
     }
 
-    const getStageColor = (stage: string) => {
-        switch (stage) {
-            case 'closed_won': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
-            case 'closed_lost': return 'bg-red-500/10 text-red-500 border-red-500/20'
-            case 'negotiation': return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-            default: return 'bg-blue-500/10 text-blue-500 border-blue-500/20'
-        }
-    }
+    // ✅ WCAG 2.1 AA/AAA Compliant - Using centralized theme
+    const getStageColor = (stage: string) => getStatusColor('opportunity', stage)
 
     const getStageLabel = (stage: string) => {
         const labels: Record<string, string> = {

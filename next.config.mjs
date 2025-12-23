@@ -25,8 +25,56 @@ const nextConfig = {
     // Enable instrumentation for Sentry
     instrumentationHook: true,
   },
-  // PWA headers configuration
+  // Security headers configuration (ISO 27001 A.8.28)
   async headers() {
+    const isProduction = process.env.NODE_ENV === 'production'
+    
+    const securityHeaders = [
+      {
+        key: 'Strict-Transport-Security',
+        value: isProduction
+          ? 'max-age=31536000; includeSubDomains; preload'
+          : 'max-age=86400',
+      },
+      {
+        key: 'X-Frame-Options',
+        value: 'SAMEORIGIN',
+      },
+      {
+        key: 'X-Content-Type-Options',
+        value: 'nosniff',
+      },
+      {
+        key: 'X-XSS-Protection',
+        value: '1; mode=block',
+      },
+      {
+        key: 'Referrer-Policy',
+        value: 'strict-origin-when-cross-origin',
+      },
+      {
+        key: 'Permissions-Policy',
+        value: 'camera=(), microphone=(), geolocation=(self), interest-cohort=(), payment=(self)',
+      },
+      {
+        key: 'Content-Security-Policy',
+        value: [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          "font-src 'self' https://fonts.gstatic.com data:",
+          "img-src 'self' data: https: blob:",
+          "connect-src 'self' https://api.stripe.com https://*.sentry.io https://re.jrc.ec.europa.eu",
+          "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+          "object-src 'none'",
+          "base-uri 'self'",
+          "form-action 'self'",
+          "frame-ancestors 'self'",
+          "upgrade-insecure-requests"
+        ].join('; '),
+      },
+    ]
+    
     return [
       {
         source: '/manifest.json',
@@ -36,6 +84,11 @@ const nextConfig = {
             value: 'application/manifest+json',
           },
         ],
+      },
+      {
+        // Aplicar a todas las rutas
+        source: '/:path*',
+        headers: securityHeaders,
       },
     ];
   },

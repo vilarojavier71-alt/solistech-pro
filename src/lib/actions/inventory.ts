@@ -86,14 +86,33 @@ export async function createInventoryItem(data: { name: string; quantity: number
     }
 }
 
-// Stub function to prevent errors in UI calls
+// ✅ SEGURO: Validación de ownership y cantidades
 export async function updateStock(itemId: string, quantity: number, type: 'in' | 'out', reason: string) {
-    try {
-        const orgId = await getOrganizationId()
-        if (!orgId) return { success: false, message: "No autorizado" }
+    const user = await getCurrentUserWithRole()
+    if (!user?.organizationId) return { success: false, message: "No autorizado" }
 
-        const item = await prisma.inventory_items.findUnique({ where: { id: itemId } })
-        if (!item) return { success: false, message: "Item no encontrado" }
+    // Validar cantidad positiva
+    if (quantity <= 0) {
+        return { success: false, message: "La cantidad debe ser positiva" }
+    }
+
+    try {
+        // ✅ Validar ownership ANTES de actualizar (IDOR Prevention)
+        const item = await prisma.inventory_items.findFirst({
+            where: {
+                id: itemId,
+                organization_id: user.organizationId
+            }
+        })
+
+        if (!item) {
+            return { success: false, message: "Item no encontrado o no pertenece a tu organización" }
+        }
+
+        // Validar stock suficiente para salida
+        if (type === 'out' && item.quantity < quantity) {
+            return { success: false, message: "Stock insuficiente" }
+        }
 
         const newQuantity = type === 'in' ? item.quantity + quantity : item.quantity - quantity
 
@@ -101,6 +120,7 @@ export async function updateStock(itemId: string, quantity: number, type: 'in' |
             where: { id: itemId },
             data: { quantity: newQuantity }
         })
+
         revalidatePath("/dashboard/inventory")
         return { success: true }
     } catch (error) {

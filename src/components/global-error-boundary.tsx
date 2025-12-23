@@ -41,10 +41,13 @@ export class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, Err
                         Hemos detectado un error crítico en la interfaz. Nuestro equipo de élite ha sido notificado.
                     </p>
 
-                    <div className="bg-zinc-900/50 p-4 rounded-lg border border-red-500/20 max-w-lg w-full mb-8 font-mono text-xs text-left overflow-auto max-h-40">
-                        <p className="text-red-400 font-bold mb-1">Error Trace:</p>
-                        {this.state.error?.message || "Unknown Error"}
-                    </div>
+                    {/* Error details solo en desarrollo */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="bg-zinc-900/50 p-4 rounded-lg border border-red-500/20 max-w-lg w-full mb-8 font-mono text-xs text-left overflow-auto max-h-40">
+                            <p className="text-red-400 font-bold mb-1">Error Trace (Dev Only):</p>
+                            {this.state.error?.message || "Unknown Error"}
+                        </div>
+                    )}
 
                     <div className="flex gap-4">
                         <Button
