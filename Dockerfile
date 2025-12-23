@@ -9,7 +9,7 @@
 #   - Limpieza de cache entre pasos
 # =============================================================================
 
-FROM node:20-slim AS base
+FROM node:22-slim AS base
 
 # Instalar dependencias de sistema necesarias para Prisma
 RUN apt-get update && apt-get install -y \

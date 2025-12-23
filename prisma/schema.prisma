@@ -101,6 +101,9 @@ model organizations {
   employee_leave_balances employee_leave_balances[]
   leave_requests          leave_requests[]
 
+  // Audit logs (ISO 27001)
+  audit_logs              audit_logs[]
+
   @@index([subscription_plan, subscription_status])
 }
 
