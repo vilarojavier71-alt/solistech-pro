@@ -1,0 +1,4 @@
+# Coolify Configuration
+# Force Nixpacks build method
+build_method=nixpacks
+
