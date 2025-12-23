@@ -65,6 +65,7 @@ export async function createPresentation(
         const fiscalDeductionType = (calc as any).subsidy_irpf_type || '40'
 
         // Create presentation record
+        // ISO 27001: A.8.15 - Audit Trail (track who created presentations)
         const presentation = await prisma.presentations.create({
             data: {
                 organization_id: organizationId,
@@ -74,7 +75,8 @@ export async function createPresentation(
                 status: 'generating',
                 original_photo_url: originalPhotoUrl || null,
                 simulated_photo_url: simulatedPhotoUrl || null,
-                fiscal_deduction_type: fiscalDeductionType
+                fiscal_deduction_type: fiscalDeductionType,
+                created_by: user?.id || null // ISO 27001: A.8.15 - Audit Trail
             }
         })
 
