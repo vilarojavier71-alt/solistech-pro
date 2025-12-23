@@ -8,7 +8,9 @@
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "install:coolify": "mkdir -p /tmp/.npm && npm install --cache /tmp/.npm --tmp /tmp",
+    "build:coolify": "npm run install:coolify && prisma generate && npx prisma migrate deploy && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
