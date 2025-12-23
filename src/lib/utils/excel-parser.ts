@@ -1,59 +1,20 @@
-import * as XLSX from 'xlsx'
+/**
+ * Excel Parser - Wrapper para compatibilidad
+ * @deprecated Use parseExcelFileSecure from excel-parser-secure.ts
+ * Este archivo mantiene compatibilidad pero redirige al parser seguro
+ */
 
-export interface ParsedRow {
-    [key: string]: string | number | null
-}
+import { parseExcelFileSecure, type ParseResult, type ParsedRow } from './excel-parser-secure'
 
-export interface ParseResult {
-    headers: string[]
-    data: ParsedRow[]
-    errors: string[]
-}
+// Re-export types
+export type { ParsedRow, ParseResult }
 
+/**
+ * Parsea archivo Excel usando el parser seguro
+ * ISO 27001: Input validation + Prototype Pollution protection
+ */
 export async function parseExcelFile(file: File): Promise<ParseResult> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-
-        reader.onload = (e) => {
-            try {
-                const data = e.target?.result
-                const workbook = XLSX.read(data, { type: 'binary' })
-
-                // Get first sheet
-                const sheetName = workbook.SheetNames[0]
-                const worksheet = workbook.Sheets[sheetName]
-
-                // Convert to JSON
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: null })
-
-                if (jsonData.length === 0) {
-                    resolve({
-                        headers: [],
-                        data: [],
-                        errors: ['El archivo está vacío']
-                    })
-                    return
-                }
-
-                // Extract headers from first row
-                const headers = Object.keys(jsonData[0] as object)
-
-                resolve({
-                    headers,
-                    data: jsonData as ParsedRow[],
-                    errors: []
-                })
-            } catch (error) {
-                reject(error)
-            }
-        }
-
-        reader.onerror = () => {
-            reject(new Error('Error al leer el archivo'))
-        }
-
-        reader.readAsBinaryString(file)
-    })
+    return parseExcelFileSecure(file)
 }
 
 export function validateEmail(email: string): boolean {

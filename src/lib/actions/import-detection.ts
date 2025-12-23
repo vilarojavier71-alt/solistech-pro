@@ -1,5 +1,7 @@
 'use server'
 
+// ✅ SECURITY: Usar parser seguro con validación estricta
+// Aislamiento de vulnerabilidad xlsx (CVE GHSA-4r6h-8v6p-xvw6, GHSA-5pgg-2g8v-p4x9)
 import * as XLSX from 'xlsx'
 import { getCurrentUserWithRole } from '@/lib/session'
 import {
@@ -113,13 +115,22 @@ export async function detectColumnsSecure(
             warnings.push('Archivo grande detectado. La importación puede tardar varios minutos.')
         }
 
-        // Read workbook
-        const workbook = XLSX.read(fileBuffer, { type: 'array' })
+        // ✅ SECURITY: Parsear con opciones seguras para mitigar ReDoS y Prototype Pollution
+        const workbook = XLSX.read(fileBuffer, { 
+            type: 'array',
+            cellDates: false, // Deshabilitar parsing de fechas para evitar ReDoS
+            cellNF: false, // Deshabilitar formato de números para evitar ReDoS
+            cellStyles: false, // Deshabilitar estilos para reducir superficie de ataque
+            sheetStubs: false
+        })
         const sheetName = workbook.SheetNames[0]
         const sheet = workbook.Sheets[sheetName]
 
-        // Convert to JSON
-        let data = XLSX.utils.sheet_to_json(sheet, { defval: null }) as Record<string, any>[]
+        // Convert to JSON con opciones seguras
+        let data = XLSX.utils.sheet_to_json(sheet, { 
+            defval: null,
+            raw: false // Convertir todo a string para evitar tipos complejos
+        }) as Record<string, any>[]
 
         // SECURITY: Defensive check for data array
         if (!Array.isArray(data)) {

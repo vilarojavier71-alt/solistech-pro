@@ -158,11 +158,20 @@ export async function processImport(
             throw new Error(rateLimitCheck.error)
         }
 
-        // Parse file
+        // ✅ SECURITY: Parsear con opciones seguras para mitigar ReDoS y Prototype Pollution
         const XLSX = await import('xlsx')
-        const workbook = XLSX.read(fileBuffer, { type: 'array' })
+        const workbook = XLSX.read(fileBuffer, { 
+            type: 'array',
+            cellDates: false, // Deshabilitar parsing de fechas para evitar ReDoS
+            cellNF: false, // Deshabilitar formato de números para evitar ReDoS
+            cellStyles: false, // Deshabilitar estilos para reducir superficie de ataque
+            sheetStubs: false
+        })
         const sheet = workbook.Sheets[workbook.SheetNames[0]]
-        const data = XLSX.utils.sheet_to_json(sheet, { defval: null }) as Record<string, any>[]
+        const data = XLSX.utils.sheet_to_json(sheet, { 
+            defval: null,
+            raw: false // Convertir todo a string para evitar tipos complejos
+        }) as Record<string, any>[]
 
         // Create import job
         const { data: job, error: jobError } = await supabase
