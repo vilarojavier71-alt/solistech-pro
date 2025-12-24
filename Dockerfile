@@ -1,7 +1,10 @@
 FROM node:20-alpine
 
 # Instalar compatibilidad para Prisma y OpenSSL (Alpine)
-RUN apk add --no-cache openssl openssl1.1-compat libc6-compat
+# Agregar repositorio legacy explicito para asegurar openssl1.1-compat
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/main" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache openssl openssl1.1-compat libc6-compat
 
 WORKDIR /app
 
