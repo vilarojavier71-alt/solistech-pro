@@ -113,10 +113,10 @@ export async function getProjectsList(params: {
         }
 
         // Get total count
-        const total = await prisma.projects.count({ where })
+        const total = await prisma.project.count({ where })
 
         // Get paginated data
-        const data = await prisma.projects.findMany({
+        const data = await prisma.project.findMany({
             where,
             include: {
                 customer: {
@@ -204,7 +204,7 @@ export async function createProject(input: unknown) {
         })
 
         // Ensure proper types for DB
-        const newProject = await prisma.projects.create({
+        const newProject = await prisma.project.create({
             data: {
                 organization_id: user.organizationId,
                 client_id: client_id,
@@ -269,7 +269,7 @@ export async function updateProject(id: string, input: unknown) {
 
         updateData.updated_at = new Date()
 
-        await prisma.projects.update({
+        await prisma.project.update({
             where: { id, organization_id: user.organizationId },
             data: updateData
         })
@@ -288,7 +288,7 @@ export async function deleteProject(id: string) {
         const user = await getCurrentUserWithRole()
         if (!user) return { success: false, error: 'Sesión expirada' }
 
-        await prisma.projects.delete({
+        await prisma.project.delete({
             where: { id, organization_id: user.organizationId }
         })
 
@@ -305,7 +305,7 @@ export async function getProjectById(id: string) {
     const user = await getCurrentUserWithRole()
     if (!user) return null
 
-    return prisma.projects.findFirst({
+    return prisma.project.findFirst({
         where: { id, organization_id: user.organizationId },
         include: {
             customer: true,

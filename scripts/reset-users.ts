@@ -19,7 +19,7 @@ async function main() {
         // We will delete ALL users to allow fresh registration of e.g. the same email.
 
         console.log('Deleting Users...')
-        const { count } = await prisma.user.deleteMany({})
+        const { count } = await prisma.users.deleteMany({})
 
         console.log(`✅ Successfully deleted ${count} users.`)
         console.log('🛡️  System clean and ready for registration testing.')

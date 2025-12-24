@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,7 +25,7 @@ export default async function SettingsPage() {
     if (!session?.user) return null
 
     // Get user profile
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
     })
 
@@ -33,7 +33,7 @@ export default async function SettingsPage() {
 
     // Get organization details
     const organization = profile.organization_id
-        ? await prisma.organizations.findUnique({
+        ? await prisma.organization.findUnique({
             where: { id: profile.organization_id },
         })
         : null
@@ -217,3 +217,4 @@ export default async function SettingsPage() {
         </div>
     )
 }
+

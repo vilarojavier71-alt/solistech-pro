@@ -16,14 +16,14 @@ export async function getOrganizationSubscription() {
     const session = await auth()
     if (!session?.user?.id) return null
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!user?.organization_id) return null
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: user.organization_id },
         select: {
             id: true,
@@ -56,7 +56,7 @@ export async function checkEmployeeLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, is_test_admin: true }
     })
@@ -71,7 +71,7 @@ export async function checkEmployeeLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: orgId },
         select: {
             subscription_plan: true,
@@ -121,7 +121,7 @@ export async function checkCustomerLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, is_test_admin: true }
     })
@@ -136,7 +136,7 @@ export async function checkCustomerLimit(organizationId?: string): Promise<{
         return { canAdd: false, currentCount: 0, maxAllowed: 0, plan: 'basic' }
     }
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: orgId },
         select: {
             subscription_plan: true,
@@ -174,7 +174,7 @@ export async function checkCustomerLimit(organizationId?: string): Promise<{
  * Create or retrieve Stripe customer for organization
  */
 export async function getOrCreateStripeCustomer(organizationId: string): Promise<string | null> {
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: organizationId },
         select: { stripe_customer_id: true, name: true, email: true }
     })
@@ -195,7 +195,7 @@ export async function getOrCreateStripeCustomer(organizationId: string): Promise
         })
 
         // Save customer ID
-        await prisma.organizations.update({
+        await prisma.organization.update({
             where: { id: organizationId },
             data: { stripe_customer_id: customer.id }
         })
@@ -219,7 +219,7 @@ export async function createCheckoutSession(planId: string): Promise<{ url: stri
         return { url: null, error: 'No autenticado' }
     }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })
@@ -287,7 +287,7 @@ export async function createCustomerPortalSession(): Promise<{ url: string | nul
         return { url: null, error: 'No autenticado' }
     }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -296,7 +296,7 @@ export async function createCustomerPortalSession(): Promise<{ url: string | nul
         return { url: null, error: 'Organización no encontrada' }
     }
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: user.organization_id },
         select: { stripe_customer_id: true }
     })
@@ -332,7 +332,7 @@ export async function activateProSubscription(
     periodStart: Date,
     periodEnd: Date
 ) {
-    await prisma.organizations.update({
+    await prisma.organization.update({
         where: { id: organizationId },
         data: {
             subscription_status: 'active',
@@ -345,7 +345,7 @@ export async function activateProSubscription(
     })
 
     // Create subscription record
-    await prisma.subscriptions.upsert({
+    await prisma.subscription.upsert({
         where: { stripe_subscription_id: stripeSubscriptionId },
         create: {
             organization_id: organizationId,
@@ -370,7 +370,7 @@ export async function activateProSubscription(
  * Handle subscription cancellation
  */
 export async function cancelSubscription(organizationId: string) {
-    await prisma.organizations.update({
+    await prisma.organization.update({
         where: { id: organizationId },
         data: {
             subscription_status: 'canceled',
@@ -387,7 +387,7 @@ export async function cancelSubscription(organizationId: string) {
  * Update employee count for organization
  */
 export async function updateEmployeeCount(organizationId: string, count: number) {
-    await prisma.organizations.update({
+    await prisma.organization.update({
         where: { id: organizationId },
         data: {
             current_employee_count: count,
@@ -395,3 +395,4 @@ export async function updateEmployeeCount(organizationId: string, count: number)
         }
     })
 }
+

@@ -14,7 +14,7 @@ export async function assignClientToProject(projectId: string, clientEmail: stri
 
     try {
         // 1. Find User by Email
-        const clientUser = await prisma.User.findUnique({
+        const clientUser = await prisma.user.findUnique({
             where: { email: clientEmail }
         })
 
@@ -23,7 +23,7 @@ export async function assignClientToProject(projectId: string, clientEmail: stri
         }
 
         // 2. Assign Project
-        await prisma.projects.update({
+        await prisma.project.update({
             where: { id: projectId },
             data: {
                 portal_user_id: clientUser.id
@@ -42,3 +42,4 @@ export async function assignClientToProject(projectId: string, clientEmail: stri
         return { error: 'Error asignando cliente' }
     }
 }
+

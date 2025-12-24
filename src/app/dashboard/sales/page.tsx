@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { SalesTable } from '@/components/dashboard/sales-table'
 import { Button } from '@/components/ui/button'
@@ -22,7 +22,7 @@ export default async function SalesPage() {
     }
 
     // Fetch real sales from database
-    const sales = await prisma.sales.findMany({
+    const sales = await prisma.sale.findMany({
         where: { organization_id: profile.organization_id },
         orderBy: { created_at: 'desc' }
     })
@@ -48,3 +48,4 @@ export default async function SalesPage() {
         </div>
     )
 }
+

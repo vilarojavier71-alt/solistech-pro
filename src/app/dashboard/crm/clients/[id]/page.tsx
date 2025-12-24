@@ -14,7 +14,7 @@ import { notFound } from "next/navigation"
 
 async function getClient(id: string) {
     // Migrated to Prisma
-    const data = await prisma.customers.findUnique({
+    const data = await prisma.customer.findUnique({
         where: { id }
     })
     return data

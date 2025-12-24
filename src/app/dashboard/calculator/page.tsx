@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { SolarCalculatorPremium } from '@/components/calculator/solar-calculator-premium'
 import { getCurrentUserWithRole } from '@/lib/session'
 import { prisma } from '@/lib/db'
@@ -26,14 +26,14 @@ export default async function CalculatorPage() {
 
         if (user?.organizationId) {
             try {
-                const org = await prisma.organizations.findUnique({
+                const org = await prisma.organization.findUnique({
                     where: { id: user.organizationId },
                     select: { subscription_plan: true, is_god_mode: true }
                 })
                 isPro = org?.subscription_plan === 'pro' || !!org?.is_god_mode
 
                 // Fetch customers for the save dialog
-                customers = await prisma.customers.findMany({
+                customers = await prisma.customer.findMany({
                     where: { organization_id: user.organizationId },
                     select: { id: true, name: true },
                     orderBy: { name: 'asc' }

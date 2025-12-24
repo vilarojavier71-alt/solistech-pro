@@ -1,4 +1,4 @@
-﻿import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { UserRoleManager } from "@/components/dashboard/admin/user-role-manager"
@@ -10,7 +10,7 @@ export default async function AdminUsersPage() {
     if (!session?.user) redirect("/auth/login")
 
     // Get current user role
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })
@@ -32,4 +32,5 @@ export default async function AdminUsersPage() {
         </div>
     )
 }
+
 

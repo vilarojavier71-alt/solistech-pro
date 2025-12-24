@@ -30,7 +30,7 @@ export async function createPresentation(
         const { user, organizationId } = await getPresentationContext()
 
         // Get calculation data
-        const calc = await prisma.calculations.findUnique({
+        const calc = await prisma.calculation.findUnique({
             where: { id: calculationId },
             include: {
                 organization: true,
@@ -66,7 +66,7 @@ export async function createPresentation(
 
         // Create presentation record
         // ISO 27001: A.8.15 - Audit Trail (track who created presentations)
-        const presentation = await prisma.presentations.create({
+        const presentation = await prisma.presentation.create({
             data: {
                 organization_id: organizationId,
                 customer_id: customerId,
@@ -135,7 +135,7 @@ export async function createPresentation(
         try {
             pptxBuffer = await generatePresentation(presentationData)
         } catch (genError: any) {
-            await prisma.presentations.update({
+            await prisma.presentation.update({
                 where: { id: presentation.id },
                 data: { status: 'failed' }
             })
@@ -146,7 +146,7 @@ export async function createPresentation(
         // For now, store base64 or return buffer
         console.log(`[PRESENTATION] Generated ${pptxBuffer.length} bytes for presentation ${presentation.id}`)
 
-        await prisma.presentations.update({
+        await prisma.presentation.update({
             where: { id: presentation.id },
             data: {
                 status: 'completed',
@@ -171,7 +171,7 @@ export async function getOrganizationPresentations() {
     try {
         const { organizationId } = await getPresentationContext()
 
-        const presentations = await prisma.presentations.findMany({
+        const presentations = await prisma.presentation.findMany({
             where: { organization_id: organizationId },
             include: {
                 customer: { select: { name: true, email: true } },
@@ -188,7 +188,7 @@ export async function getOrganizationPresentations() {
 
 export async function markPresentationAsSent(presentationId: string, sentToEmail: string) {
     try {
-        await prisma.presentations.update({
+        await prisma.presentation.update({
             where: { id: presentationId },
             data: {
                 status: 'sent',
@@ -204,7 +204,7 @@ export async function markPresentationAsSent(presentationId: string, sentToEmail
 
 export async function deletePresentation(presentationId: string) {
     try {
-        await prisma.presentations.delete({
+        await prisma.presentation.delete({
             where: { id: presentationId }
         })
         return { success: true }
@@ -212,3 +212,4 @@ export async function deletePresentation(presentationId: string) {
         return { error: error.message }
     }
 }
+

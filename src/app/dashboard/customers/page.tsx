@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { ClientsDataGrid } from '@/components/customers/clients-data-grid'
@@ -18,14 +18,14 @@ export default async function CustomersPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!profile?.organization_id) return null
 
-    const customers = await prisma.customers.findMany({
+    const customers = await prisma.customer.findMany({
         where: {
             organization_id: profile.organization_id,
             is_active: true
@@ -64,3 +64,4 @@ export default async function CustomersPage() {
         </div>
     )
 }
+

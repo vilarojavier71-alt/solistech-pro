@@ -20,7 +20,7 @@ async function getImportContext() {
     const user = await getCurrentUserWithRole()
     if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: user.id },
         select: { organization_id: true }
     })
@@ -43,7 +43,7 @@ export async function importCustomers(data: CustomerImportRow[]): Promise<Import
                 continue
             }
 
-            await prisma.customers.create({
+            await prisma.customer.create({
                 data: {
                     organization_id: organizationId,
                     name,
@@ -82,7 +82,7 @@ export async function importLeads(data: LeadImportRow[]): Promise<ImportResult> 
                 continue
             }
 
-            await prisma.leads.create({
+            await prisma.lead.create({
                 data: {
                     organization_id: organizationId,
                     name,
@@ -148,12 +148,12 @@ export async function importVisits(data: VisitImportRow[]): Promise<ImportResult
             }
 
             // Find or create customer
-            let customer = await prisma.customers.findFirst({
+            let customer = await prisma.customer.findFirst({
                 where: { organization_id: organizationId, name: clientName }
             })
 
             if (!customer) {
-                customer = await prisma.customers.create({
+                customer = await prisma.customer.create({
                     data: {
                         organization_id: organizationId,
                         name: clientName,
@@ -163,7 +163,7 @@ export async function importVisits(data: VisitImportRow[]): Promise<ImportResult
                 })
             }
 
-            await prisma.appointments.create({
+            await prisma.appointment.create({
                 data: {
                     organization_id: organizationId,
                     title: `Visita: ${clientName}`,
@@ -208,12 +208,12 @@ export async function importSales(data: SaleImportRow[]): Promise<ImportResult> 
             const amountStr = row['amount'] || row['Importe'] || row['Total'] || '0'
             const totalAmount = parseFloat(String(amountStr).replace(/[^0-9.-]+/g, '')) || 0
 
-            let customer = await prisma.customers.findFirst({
+            let customer = await prisma.customer.findFirst({
                 where: { organization_id: organizationId, name: clientName }
             })
 
             if (!customer) {
-                customer = await prisma.customers.create({
+                customer = await prisma.customer.create({
                     data: {
                         organization_id: organizationId,
                         name: clientName,
@@ -223,7 +223,7 @@ export async function importSales(data: SaleImportRow[]): Promise<ImportResult> 
                 })
             }
 
-            await prisma.sales.create({
+            await prisma.sale.create({
                 data: {
                     organization_id: organizationId,
                     customer_id: customer.id,
@@ -317,3 +317,4 @@ function mapComponentType(typeRaw: string): string {
     if (t.includes('optimi')) return 'optimizer'
     return 'other'
 }
+

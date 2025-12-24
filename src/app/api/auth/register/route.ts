@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     console.log('[REGISTER API] Starting registration process')
     // [DEBUG] Inspect Prisma Client State
     console.log('[REGISTER API] Prisma Keys:', Object.keys(prisma))
-    console.log('[REGISTER API] prisma.User type:', typeof prisma.User)
+    console.log('[REGISTER API] prisma.user type:', typeof prisma.user)
     console.log('[REGISTER API] prisma.user type:', typeof (prisma as any).user)
 
     try {
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if user exists
-        const existingUser = await prisma.User.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email },
         })
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         const hashedPassword = await bcrypt.hash(password, 12)
 
         // Create user
-        const user = await prisma.User.create({
+        const user = await prisma.user.create({
             data: {
                 email,
                 password_hash: hashedPassword,
@@ -60,3 +60,4 @@ export async function POST(request: NextRequest) {
         )
     }
 }
+

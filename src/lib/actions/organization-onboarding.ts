@@ -35,7 +35,7 @@ export async function createOrganization(formData: FormData) {
 
     try {
         // 3. Double Check if user already has an org (DB check via Prisma)
-        const userData = await prisma.User.findUnique({
+        const userData = await prisma.user.findUnique({
             where: { id: userId },
             select: { organization_id: true }
         })
@@ -59,7 +59,7 @@ export async function createOrganization(formData: FormData) {
         while (!isUnique) {
             const checkSlug = counter === 1 ? slug : `${baseSlug}-${counter}`
 
-            const existing = await prisma.organizations.findUnique({
+            const existing = await prisma.organization.findUnique({
                 where: { slug: checkSlug },
                 select: { id: true }
             })
@@ -122,3 +122,4 @@ export async function createOrganization(formData: FormData) {
         return { error: `Error interno: ${error.message || JSON.stringify(error)}` }
     }
 }
+

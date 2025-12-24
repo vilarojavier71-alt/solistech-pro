@@ -72,13 +72,13 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             pendingInvoices
         ] = await Promise.all([
             // Total Revenue (all paid invoices)
-            prisma.invoices.aggregate({
+            prisma.invoice.aggregate({
                 where: { organization_id: orgId, status: 'paid' },
                 _sum: { total: true }
             }).catch(() => ({ _sum: { total: null } })),
 
             // Monthly Revenue (paid invoices this month)
-            prisma.invoices.aggregate({
+            prisma.invoice.aggregate({
                 where: {
                     organization_id: orgId,
                     status: 'paid',
@@ -88,7 +88,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             }).catch(() => ({ _sum: { total: null } })),
 
             // Leads count (this month)
-            prisma.leads.count({
+            prisma.lead.count({
                 where: {
                     organization_id: orgId,
                     created_at: { gte: startOfMonth }
@@ -96,7 +96,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             }).catch(() => 0),
 
             // Active projects (in installation phase)
-            prisma.projects.count({
+            prisma.project.count({
                 where: {
                     organization_id: orgId,
                     status: { in: ['installation', 'approved'] }
@@ -104,7 +104,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             }).catch(() => 0),
 
             // Today's appointments
-            prisma.appointments.count({
+            prisma.appointment.count({
                 where: {
                     organization_id: orgId,
                     start_time: { gte: today, lt: tomorrow }
@@ -112,17 +112,17 @@ export async function getDashboardStats(): Promise<DashboardStats> {
             }).catch(() => 0),
 
             // Total customers
-            prisma.customers.count({
+            prisma.customer.count({
                 where: { organization_id: orgId }
             }).catch(() => 0),
 
             // Total invoices
-            prisma.invoices.count({
+            prisma.invoice.count({
                 where: { organization_id: orgId }
             }).catch(() => 0),
 
             // Pending invoices (not paid)
-            prisma.invoices.count({
+            prisma.invoice.count({
                 where: {
                     organization_id: orgId,
                     status: { in: ['pending', 'sent', 'draft'] }
@@ -160,7 +160,7 @@ export async function getRecentProjects(limit = 5) {
 
         if (!user?.organizationId) return []
 
-        return await prisma.projects.findMany({
+        return await prisma.project.findMany({
             where: { organization_id: user.organizationId },
             orderBy: { updated_at: 'desc' },
             take: limit,
@@ -188,7 +188,7 @@ export async function getTodayAppointments() {
         const tomorrow = new Date(today)
         tomorrow.setDate(tomorrow.getDate() + 1)
 
-        return await prisma.appointments.findMany({
+        return await prisma.appointment.findMany({
             where: {
                 organization_id: user.organizationId,
                 start_time: { gte: today, lt: tomorrow }

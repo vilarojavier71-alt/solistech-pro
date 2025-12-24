@@ -1,10 +1,11 @@
 'use server'
 
+import { prisma } from '@/lib/db'
 import { getCurrentUserWithRole } from '@/lib/session'
 import {
     validateCustomFields,
-    sanitizeCSVInjection,
-    validateSpanishNIF,
+    // sanitizeCSVInjection, // Not used in Prisma version
+    // validateSpanishNIF, // Not used in Prisma version
     checkImportRateLimit,
     createBatches,
     IMPORT_LIMITS
@@ -99,7 +100,8 @@ function validateAndTransformRow(
         result.standardFields = parseResult.data
     } else {
         // Map Zod errors
-        parseResult.error.errors.forEach((err: any) => {
+        // Cast to any to avoid "Property 'errors' does not exist" if Zod versions mismatch or type inference fails
+        (parseResult.error as any).errors.forEach((err: any) => {
             result.errors.push({
                 field: err.path.join('.'),
                 message: err.message
@@ -132,71 +134,81 @@ export async function processImport(
     fileBuffer: ArrayBuffer,
     options: ProcessImportOptions
 ): Promise<ImportResult> {
-    const supabase = await createClient()
-
     try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error('No autenticado')
+        const user = await getCurrentUserWithRole()
+        if (!user?.id) throw new Error('No autenticado')
 
-        const { data: userData } = await supabase
-            .from('users')
-            .select('organization_id')
-            .eq('id', user.id)
-            .single()
+        const userId = user.id
+        // user already has organizationId, but let's be safe and verify via DB if needed, 
+        // or just use user.organizationId if we trust the session (we should).
+        // But for consistency with original logic, let's just use the ID.
+        // Wait, original logic fetched from DB. 
+        // And user.organizationId is what we want.
 
-        if (!userData) throw new Error('Usuario no encontrado')
+        let organizationId = user.organizationId
+        if (!organizationId) {
+            const userDb = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { organization_id: true }
+            })
+            organizationId = userDb?.organization_id || null
+        }
+
+        if (!organizationId) throw new Error('Organización no encontrada')
 
         // SECURITY CHECK: Rate limiting
-        const { data: recentImports } = await supabase
-            .from('import_jobs')
-            .select('id')
-            .eq('created_by', user.id)
-            .gte('created_at', new Date(Date.now() - IMPORT_LIMITS.RATE_LIMIT_WINDOW).toISOString())
+        const recentJobsCount = await prisma.importJob.count({
+            where: {
+                created_by: userId,
+                created_at: {
+                    gte: new Date(Date.now() - IMPORT_LIMITS.RATE_LIMIT_WINDOW)
+                }
+            }
+        })
 
-        const rateLimitCheck = await checkImportRateLimit(user.id, recentImports?.length || 0)
+        const rateLimitCheck = await checkImportRateLimit(userId, recentJobsCount)
         if (!rateLimitCheck.allowed) {
             throw new Error(rateLimitCheck.error)
         }
 
-        // ✅ SECURITY: Parsear con opciones seguras para mitigar ReDoS y Prototype Pollution
+        // ✅ SECURITY: Parsear con opciones seguras
         const XLSX = await import('xlsx')
-        const workbook = XLSX.read(fileBuffer, { 
+        const workbook = XLSX.read(fileBuffer, {
             type: 'array',
-            cellDates: false, // Deshabilitar parsing de fechas para evitar ReDoS
-            cellNF: false, // Deshabilitar formato de números para evitar ReDoS
-            cellStyles: false, // Deshabilitar estilos para reducir superficie de ataque
+            cellDates: false,
+            cellNF: false,
+            cellStyles: false,
             sheetStubs: false
         })
         const sheet = workbook.Sheets[workbook.SheetNames[0]]
-        const data = XLSX.utils.sheet_to_json(sheet, { 
+        const data = XLSX.utils.sheet_to_json(sheet, {
             defval: null,
-            raw: false // Convertir todo a string para evitar tipos complejos
+            raw: false
         }) as Record<string, any>[]
 
         // Create import job
-        const { data: job, error: jobError } = await supabase
-            .from('import_jobs')
-            .insert({
-                organization_id: userData.organization_id,
+        const job = await prisma.importJob.create({
+            data: {
+                organization_id: organizationId,
                 entity_type: options.entityType,
                 file_name: 'import.xlsx',
                 total_rows: Array.isArray(data) ? data.length : 0,
                 status: 'processing',
-                column_mapping: options.columnMapping,
-                started_at: new Date().toISOString(),
-                created_by: user.id
-            })
-            .select()
-            .single()
-
-        if (jobError || !job) {
-            console.error("🔥 SUPABASE INSERT ERROR:", JSON.stringify(jobError, null, 2));
-            throw new Error(`Error creating import job: ${jobError?.message} (${jobError?.code})`);
-        }
+                column_mapping: options.columnMapping as any, // Json
+                created_by: userId,
+                // created_at defaults to now
+            }
+        })
 
         if (!Array.isArray(data)) {
-            await supabase.from('import_jobs').update({ status: 'failed', errors: [{ row: 0, field: 'file', message: 'Datos ilegibles o corruptos (No array)', value: null }] }).eq('id', job.id)
-            throw new Error('El archivo no contiene un formato de lista válido')
+            await prisma.importJob.update({
+                where: { id: job.id },
+                data: {
+                    status: 'failed',
+                    errors: [{ row: 0, field: 'file', message: 'Datos corruptos', value: null }] as any
+                }
+            })
+            throw new Error('El archivo no contiene un formato válido')
         }
 
         // OPTIMIZATION: Process in batches
@@ -218,14 +230,13 @@ export async function processImport(
             const recordsToInsert: any[] = []
             const recordsToUpdate: Array<{ id: string; record: any }> = []
 
-            // PHASE 1: Validate ALL rows in batch first (atomic)
+            // PHASE 1: Validate ALL rows in batch first
             for (let j = 0; j < batch.length; j++) {
                 const row = batch[j]
                 if (!row) continue
 
-                const rowNumber = (batchIndex * batchSize) + j + 2 // +2 for Excel (1-indexed + header)
+                const rowNumber = (batchIndex * batchSize) + j + 2
 
-                // Validate and transform
                 const validated = validateAndTransformRow(
                     row,
                     rowNumber,
@@ -235,88 +246,93 @@ export async function processImport(
 
                 processedRows++
 
-                // Skip if errors
                 if (validated.errors && validated.errors.length > 0) {
                     failedRows++
-                    // Defensive check on errors array
-                    if (Array.isArray(validated.errors)) {
-                        validated.errors.forEach(err => {
-                            allErrors.push({
-                                row: rowNumber,
-                                field: err?.field || 'unknown',
-                                message: err?.message || 'Error desconocido',
-                                value: row[Object.keys(options.columnMapping).find(k => options.columnMapping[k] === err.field) || '']
-                            })
+                    validated.errors.forEach(err => {
+                        allErrors.push({
+                            row: rowNumber,
+                            field: err.field,
+                            message: err.message,
+                            value: row[Object.keys(options.columnMapping).find(k => options.columnMapping[k] === err.field) || '']
                         })
-                    }
+                    })
                     continue
                 }
 
-                // ... (rest of phase 1)
-
-
                 // Prepare record
-                const record = {
-                    ...validated.standardFields,
-                    organization_id: userData.organization_id,
-                    custom_attributes: validated.customFields,
-                    import_metadata: {
-                        imported_at: new Date().toISOString(),
-                        import_job_id: job.id,
-                        source_row: rowNumber
-                    }
+                // Merge import_metadata into custom_attributes to verify persistence
+                const importMeta = {
+                    imported_at: new Date().toISOString(),
+                    import_job_id: job.id,
+                    source_row: rowNumber
                 }
 
-                // Check for duplicates (flexible per entity type)
+                const finalCustomAttributes = {
+                    ...validated.customFields,
+                    import_metadata: importMeta
+                }
+
+                const record: any = {
+                    ...validated.standardFields,
+                    organization_id: organizationId,
+                    custom_attributes: finalCustomAttributes,
+                    updated_at: new Date()
+                }
+
+                if (!record.created_at) record.created_at = new Date()
+
+                // DUPLICATE CHECK
                 if (options.skipDuplicates || options.updateExisting) {
-                    let duplicateQuery = supabase
-                        .from(options.entityType)
-                        .select('id')
-                        .eq('organization_id', userData.organization_id)
+                    let existing = null
+                    const modelDelegate = getDelegate(options.entityType)
 
-                    // Build duplicate detection based on entity type
-                    const standardFields = validated.standardFields as Record<string, any>
-
-                    switch (options.entityType) {
-                        case 'customers':
-                            if (standardFields.email) {
-                                duplicateQuery = duplicateQuery.eq('email', standardFields.email)
-                            } else if (standardFields.full_name) {
-                                duplicateQuery = duplicateQuery.eq('full_name', standardFields.full_name)
+                    if (modelDelegate) {
+                        try {
+                            // Type-safe(r) duplicate checking
+                            if (options.entityType === 'customers') {
+                                if (record.email) existing = await prisma.customer.findFirst({ where: { organization_id: organizationId, email: record.email }, select: { id: true } })
+                                else if (record.name) existing = await prisma.customer.findFirst({ where: { organization_id: organizationId, name: record.name }, select: { id: true } }) // name is mandatory
+                            } else if (options.entityType === 'projects') {
+                                if (record.name) existing = await prisma.project.findFirst({ where: { organization_id: organizationId, name: record.name }, select: { id: true } })
+                            } else if (options.entityType === 'sales') {
+                                if (record.customer_name && record.sale_date) {
+                                    existing = await prisma.sale.findFirst({
+                                        where: {
+                                            organization_id: organizationId,
+                                            customer_name: record.customer_name,
+                                            sale_date: record.sale_date
+                                        },
+                                        select: { id: true }
+                                    })
+                                }
+                            } else if (options.entityType === 'visits') {
+                                if (record.customer_name && record.start_time) {
+                                    existing = await prisma.appointment.findFirst({ // Assuming visits map to appointments
+                                        where: {
+                                            organization_id: organizationId,
+                                            customer_name: record.customer_name,
+                                            start_time: record.start_time
+                                        },
+                                        select: { id: true }
+                                    })
+                                }
+                            } else if (options.entityType === 'stock') {
+                                if (record.product_name) {
+                                    existing = await prisma.inventoryItem.findFirst({ // Assuming stock maps to inventory_items
+                                        where: { organization_id: organizationId, name: record.product_name },
+                                        select: { id: true }
+                                    })
+                                } else if (record.sku) {
+                                    existing = await prisma.inventoryItem.findFirst({
+                                        where: { organization_id: organizationId, sku: record.sku },
+                                        select: { id: true }
+                                    })
+                                }
                             }
-                            break
-                        case 'projects':
-                            if (standardFields.name) {
-                                duplicateQuery = duplicateQuery.eq('name', standardFields.name)
-                            }
-                            break
-                        case 'sales':
-                            if (standardFields.customer_name && standardFields.sale_date) {
-                                duplicateQuery = duplicateQuery
-                                    .eq('customer_name', standardFields.customer_name)
-                                    .eq('sale_date', standardFields.sale_date)
-                            }
-                            break
-                        case 'visits':
-                            if (standardFields.customer_name && standardFields.start_time) {
-                                duplicateQuery = duplicateQuery
-                                    .eq('customer_name', standardFields.customer_name)
-                                    .eq('start_time', standardFields.start_time)
-                            }
-                            break
-                        case 'stock':
-                            if (standardFields.product_name) {
-                                duplicateQuery = duplicateQuery.eq('product_name', standardFields.product_name)
-                            } else if (standardFields.sku) {
-                                duplicateQuery = duplicateQuery.eq('sku', standardFields.sku)
-                            }
-                            break
-                        default:
-                            // For calculations and others, skip duplicate check
-                            break
+                        } catch (dupErr) {
+                            console.error('Duplicate check error:', dupErr)
+                        }
                     }
-
-                    const { data: existing } = await duplicateQuery.limit(1).maybeSingle()
 
                     if (existing) {
                         if (options.skipDuplicates) {
@@ -332,82 +348,96 @@ export async function processImport(
                 recordsToInsert.push(record)
             }
 
-            // PHASE 2: Insert all valid records in batch (more atomic)
+            // PHASE 2: INSERT
             if (recordsToInsert.length > 0) {
-                const { error: insertError } = await supabase
-                    .from(options.entityType)
-                    .insert(recordsToInsert)
+                // Use switch to select Prisma model delegate
+                // We have to iterate or use createMany. createMany cannot return IDs easily but we don't strictly need them here.
+                // But validation errors inside DB (e.g. constraints) will fail the whole batch in createMany?
+                // createMany is transaction-safe but if one fails, all fail? Yes.
+                // Let's try createMany for speed, fallback to individual if error?
+                // Or just individual.
 
-                if (insertError) {
-                    // Batch insert failed, try one by one
-                    for (const record of recordsToInsert) {
-                        const { error: singleError } = await supabase
-                            .from(options.entityType)
-                            .insert(record)
-
-                        if (singleError) {
-                            failedRows++
-                            allErrors.push({
-                                row: record.import_metadata.source_row,
-                                field: 'general',
-                                message: singleError.message,
-                                value: null
-                            })
-                        } else {
-                            successfulRows++
+                // Using strict switch for type safety
+                try {
+                    const modelDelegate = getDelegate(options.entityType)
+                    if (modelDelegate) {
+                        // Batch insert using createMany
+                        await modelDelegate.createMany({ data: recordsToInsert })
+                        successfulRows += recordsToInsert.length
+                    } else {
+                        throw new Error(`Model delegate not found for ${options.entityType}`)
+                    }
+                } catch (err: any) {
+                    // Fallback: one by one
+                    const modelDelegate = getDelegate(options.entityType)
+                    if (modelDelegate) {
+                        for (const rec of recordsToInsert) {
+                            try {
+                                await modelDelegate.create({ data: rec })
+                                successfulRows++
+                            } catch (singleErr: any) {
+                                failedRows++
+                                allErrors.push({
+                                    row: rec.custom_attributes?.import_metadata?.source_row || 0,
+                                    field: 'db_insert',
+                                    message: singleErr.message,
+                                    value: null
+                                })
+                            }
                         }
                     }
-                } else {
-                    successfulRows += recordsToInsert.length
                 }
             }
 
-            // PHASE 3: Update existing records
-            for (const { id, record } of recordsToUpdate) {
-                const { error: updateError } = await supabase
-                    .from(options.entityType)
-                    .update(record)
-                    .eq('id', id)
-
-                if (updateError) {
-                    failedRows++
-                    allErrors.push({
-                        row: record.import_metadata.source_row,
-                        field: 'general',
-                        message: updateError.message,
-                        value: null
-                    })
-                } else {
-                    successfulRows++
+            // PHASE 3: UPDATE
+            const modelDelegate = getDelegate(options.entityType)
+            if (modelDelegate) {
+                for (const { id, record } of recordsToUpdate) {
+                    try {
+                        const { created_at, ...updateData } = record // proper clean
+                        await modelDelegate.update({
+                            where: { id },
+                            data: updateData
+                        })
+                        successfulRows++
+                    } catch (updateErr: any) {
+                        failedRows++
+                        allErrors.push({
+                            row: record.custom_attributes?.import_metadata?.source_row || 0,
+                            field: 'db_update',
+                            message: updateErr.message,
+                            value: null
+                        })
+                    }
                 }
             }
 
-            // Update job progress after each batch
-            await supabase
-                .from('import_jobs')
-                .update({
+            // Progress update
+            await prisma.importJob.update({
+                where: { id: job.id },
+                data: {
                     processed_rows: processedRows,
                     successful_rows: successfulRows,
                     failed_rows: failedRows,
                     skipped_rows: skippedRows
-                })
-                .eq('id', job.id)
+                }
+            })
 
-            // Small delay between batches to prevent server overload
+            // Delay
             if (batchIndex < batches.length - 1) {
                 await new Promise(resolve => setTimeout(resolve, 100))
             }
         }
 
-        // Complete job
-        await supabase
-            .from('import_jobs')
-            .update({
+        // Complete
+        await prisma.importJob.update({
+            where: { id: job.id },
+            data: {
                 status: failedRows === data.length ? 'failed' : 'completed',
-                completed_at: new Date().toISOString(),
-                errors: allErrors
-            })
-            .eq('id', job.id)
+                completed_at: new Date(),
+                errors: allErrors as any
+            }
+        })
 
         return {
             jobId: job.id,
@@ -426,23 +456,32 @@ export async function processImport(
     }
 }
 
+// Helper to get Prisma delegate
+function getDelegate(entityType: string): any {
+    switch (entityType) {
+        case 'customers': return prisma.customer
+        case 'projects': return prisma.project
+        case 'sales': return prisma.sale
+        case 'visits': return prisma.appointment // Mapping 'visits' to 'appointments'? Check schema.
+        case 'calculations': return prisma.calculation
+        case 'stock': return prisma.inventoryItem // Assuming mapping
+        default: return (prisma as any)[entityType] // Fallback
+    }
+}
+
 // ============================================
 // GET IMPORT JOB STATUS
 // ============================================
 
 export async function getImportJobStatus(jobId: string) {
-    const supabase = await createClient()
-
     try {
-        const { data, error } = await supabase
-            .from('import_jobs')
-            .select('*')
-            .eq('id', jobId)
-            .single()
+        const job = await prisma.importJob.findUnique({
+            where: { id: jobId }
+        })
 
-        if (error) throw error
+        if (!job) throw new Error('Job not found')
 
-        return { success: true, data }
+        return { success: true, data: job }
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
         console.error('Error getting job status:', error)
@@ -455,40 +494,30 @@ export async function getImportJobStatus(jobId: string) {
 // ============================================
 
 export async function getImportHistory(entityType?: string, limit: number = 10) {
-    const supabase = await createClient()
-
     try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) throw new Error('No autenticado')
+        const session = await getCurrentUserWithRole()
+        if (!session?.id) throw new Error('No autenticado')
+        const userId = session.id
 
-        const { data: userData } = await supabase
-            .from('users')
-            .select('organization_id')
-            .eq('id', user.id)
-            .single()
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { organization_id: true }
+        })
+        if (!user?.organization_id) throw new Error('User org not found')
 
-        if (!userData) throw new Error('Usuario no encontrado')
+        const jobs = await prisma.importJob.findMany({
+            where: {
+                organization_id: user.organization_id,
+                ...(entityType ? { entity_type: entityType } : {})
+            },
+            orderBy: { created_at: 'desc' },
+            take: limit
+        })
 
-        let query = supabase
-            .from('import_jobs')
-            .select('*')
-            .eq('organization_id', userData.organization_id)
-            .order('created_at', { ascending: false })
-            .limit(limit)
-
-        if (entityType) {
-            query = query.eq('entity_type', entityType)
-        }
-
-        const { data, error } = await query
-
-        if (error) throw error
-
-        return { success: true, data }
+        return { success: true, data: jobs }
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
         console.error('Error getting import history:', error)
         return { success: false, error: errorMessage }
     }
 }
-

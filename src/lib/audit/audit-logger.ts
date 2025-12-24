@@ -69,7 +69,7 @@ export async function auditLog(data: AuditLogData): Promise<string | null> {
         }
 
         // Crear log en base de datos (inmutable)
-        const auditEntry = await prisma.audit_logs.create({
+        const auditEntry = await prisma.auditLog.create({
             data: {
                 event_type: data.eventType,
                 user_id: data.userId,

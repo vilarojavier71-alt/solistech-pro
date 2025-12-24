@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { NewProjectForm } from '@/components/forms/new-project-form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { auth } from '@/lib/auth'
@@ -15,7 +15,7 @@ export default async function NewProjectPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -23,7 +23,7 @@ export default async function NewProjectPage() {
     if (!profile?.organization_id) return null
 
     // Get customers for dropdown
-    const customers = await prisma.customers.findMany({
+    const customers = await prisma.customer.findMany({
         where: { organization_id: profile.organization_id },
         select: { id: true, name: true },
         orderBy: { name: 'asc' }
@@ -54,4 +54,5 @@ export default async function NewProjectPage() {
         </div>
     )
 }
+
 

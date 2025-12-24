@@ -15,7 +15,7 @@ export default async function SaleDetailsPage({ params }: PageProps) {
     const { id } = await params
 
     // STUB: sales table not in Prisma schema
-    // TODO: Add sales model to Prisma and fetch with prisma.sales.findUnique({ where: { id } })
+    // TODO: Add sales model to Prisma and fetch with prisma.sale.findUnique({ where: { id } })
     const sale = {
         id,
         customer_name: 'Cliente de ejemplo',

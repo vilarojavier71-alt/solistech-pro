@@ -13,7 +13,7 @@ export async function getCustomersForSelect() {
 
     try {
         // Fix 1: Select name instead of full_name, nif instead of dni
-        const customers = await prisma.customers.findMany({
+        const customers = await prisma.customer.findMany({
             where: { organization_id: user.organizationId, is_active: true },
             select: { id: true, name: true, nif: true },
             orderBy: { name: 'asc' }
@@ -32,7 +32,7 @@ export async function getCustomersForSelect() {
 
 export async function getTeamForSelect(roles: string[]) {
     try {
-        const team = await prisma.User.findMany({
+        const team = await prisma.user.findMany({
             where: { role: { in: roles } },
             select: { id: true, full_name: true, role: true },
             orderBy: { full_name: 'asc' }
@@ -50,7 +50,7 @@ export async function createCustomerAction(data: any) {
     if (!user || !user.organizationId) return { success: false, error: 'No autenticado' }
 
     try {
-        const newCustomer = await prisma.customers.create({
+        const newCustomer = await prisma.customer.create({
             data: {
                 organization_id: user.organizationId,
                 name: data.full_name,
@@ -79,7 +79,7 @@ export async function createSaleAction(data: any) {
     if (!user || !user.organizationId) return { success: false, error: 'No autenticado' }
 
     try {
-        const newSale = await prisma.sales.create({
+        const newSale = await prisma.sale.create({
             data: {
                 organization_id: user.organizationId,
                 customer_id: data.customer_id,
@@ -123,7 +123,7 @@ export async function createVisitAction(data: any) {
     if (!user || !user.organizationId) return { success: false, error: 'No autenticado' }
 
     try {
-        await prisma.appointments.create({
+        await prisma.appointment.create({
             data: {
                 organization_id: user.organizationId,
                 title: data.title,
@@ -144,3 +144,4 @@ export async function createVisitAction(data: any) {
         return { success: false, error: e.message || 'Error al agendar visita' }
     }
 }
+

@@ -29,7 +29,7 @@ export async function getAllTimeEntries(filters?: {
         if (filters.dateTo) where.clock_in.lte = new Date(filters.dateTo)
     }
 
-    const data = await prisma.time_entries.findMany({
+    const data = await prisma.timeEntry.findMany({
         where,
         include: {
             user: { select: { id: true, full_name: true, email: true } }
@@ -46,7 +46,7 @@ export async function getOrganizationUsers() {
     const user = await getCurrentUserWithRole()
     if (!user) return { data: null, error: 'No autenticado' }
 
-    const data = await prisma.User.findMany({
+    const data = await prisma.user.findMany({
         where: { organization_id: user.organizationId },
         select: { id: true, full_name: true, email: true, role: true },
         orderBy: { full_name: 'asc' }
@@ -95,7 +95,7 @@ export async function validateWorkDay(entryId: string) {
         return { error: 'No autorizado' }
     }
 
-    const data = await prisma.time_entries.update({
+    const data = await prisma.timeEntry.update({
         where: { id: entryId },
         data: {
             is_verified: true,
@@ -105,3 +105,4 @@ export async function validateWorkDay(entryId: string) {
 
     return { data, error: null }
 }
+

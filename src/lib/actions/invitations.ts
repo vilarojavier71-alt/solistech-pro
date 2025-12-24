@@ -23,7 +23,7 @@ export async function generateClientInvitation(organizationId: string) {
         const token = randomBytes(3).toString('hex').toUpperCase()
 
         // 3. Create Invitation
-        const invitation = await prisma.invitations.create({
+        const invitation = await prisma.invitation.create({
             data: {
                 organization_id: organizationId,
                 token: token,

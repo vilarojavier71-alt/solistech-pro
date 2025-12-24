@@ -34,7 +34,7 @@ export async function createTeamMember(prevState: ActionState | null, formData: 
 
     try {
         // Check caller is admin
-        const caller = await prisma.User.findUnique({
+        const caller = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -42,7 +42,7 @@ export async function createTeamMember(prevState: ActionState | null, formData: 
         if (!caller) return { error: 'Usuario no encontrado' }
 
         // Check for God Mode
-        const organization = await prisma.organizations.findUnique({
+        const organization = await prisma.organization.findUnique({
             where: { id: caller.organization_id || undefined },
             select: { is_god_mode: true }
         })
@@ -88,7 +88,7 @@ export async function createTeamMember(prevState: ActionState | null, formData: 
         // Create user in database (simplified - no auth)
         const tempPassword = Math.random().toString(36).slice(-8) + 'Aa1!'
 
-        await prisma.User.create({
+        await prisma.user.create({
             data: {
                 email: input.email,
                 full_name: input.fullName,
@@ -132,7 +132,7 @@ export async function getOrganizationMembers(organizationId: string) {
     if (!session?.user) return []
 
     try {
-        const members = await prisma.User.findMany({
+        const members = await prisma.user.findMany({
             where: { organization_id: organizationId },
             select: {
                 id: true,
@@ -181,3 +181,4 @@ export async function initializeRoles(organizationId: string) {
     // Roles are using simple string enum in users.role field
     return { success: true, message: 'Roles predeterminados disponibles' }
 }
+

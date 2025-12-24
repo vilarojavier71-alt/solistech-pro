@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { getCurrentUserWithRole } from '@/lib/session'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
+import { calculateFallbackProduction } from '@/lib/solar/utils'
 
 // Constants for calculations
 const PANEL_POWER = 550 // Watts per panel (modern high-efficiency panel)
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify Subscription with Prisma
-        const org = await prisma.organizations.findUnique({
+        const org = await prisma.organization.findUnique({
             where: { id: user.organizationId },
             select: { subscription_plan: true, is_god_mode: true }
         })
@@ -64,15 +65,15 @@ export async function POST(request: NextRequest) {
         // Validar payload con Zod
         const rawBody = await request.json()
         const validationResult = CalculationRequestSchema.safeParse(rawBody)
-        
+
         if (!validationResult.success) {
             logger.warn('Invalid calculation request', {
                 source: 'calculate-solar',
                 action: 'validation_error',
-                errors: validationResult.error.errors
+                errors: (validationResult.error as any).errors
             })
             return NextResponse.json(
-                { error: 'Datos inválidos', details: validationResult.error.errors },
+                { error: 'Datos inválidos', details: (validationResult.error as any).errors },
                 { status: 400 }
             )
         }
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
 
         // SSRF Protection: Validar que la URL solo apunte a PVGIS oficial
         const pvgisUrl = `${PVGIS_BASE_URL}/PVcalc?lat=${location.lat}&lon=${location.lng}&peakpower=1&loss=14&angle=${roofTilt}&aspect=${azimuth}&outputformat=json`
-        
+
         // Validar hostname antes de hacer fetch
         try {
             const urlObj = new URL(pvgisUrl)
@@ -143,8 +144,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Calculate optimal system size (proteger contra división por cero)
-        const systemSize = annualProduction > 0 
-            ? Math.ceil((consumption / annualProduction) * 10) / 10 
+        const systemSize = annualProduction > 0
+            ? Math.ceil((consumption / annualProduction) * 10) / 10
             : Math.ceil((consumption / 1400) * 10) / 10 // Fallback a 1400 kWh/kWp/año
 
         // Validar que systemSize sea razonable
@@ -163,8 +164,8 @@ export async function POST(request: NextRequest) {
         const systemCost = Math.max(0, systemSize * SYSTEM_COST_PER_KW * 1000)
 
         // Cambio: ROI Anual en lugar de Payback (proteger contra división por cero)
-        const annualROI = systemCost > 0 
-            ? Math.round((annualSavings / systemCost) * 100 * 10) / 10 
+        const annualROI = systemCost > 0
+            ? Math.round((annualSavings / systemCost) * 100 * 10) / 10
             : 0
         const roi = annualROI
 
@@ -196,23 +197,4 @@ export async function POST(request: NextRequest) {
 
 // Fallback calculation when PVGis is unavailable
 // Exported for testing
-export function calculateFallbackProduction(lat: number, orientation: string, tilt: number): number {
-    // Base production in Spain (average kWh/kWp/year)
-    let baseProduction = 1400
-
-    // Adjust for latitude (better in south)
-    if (lat < 37) baseProduction += 200 // Southern Spain
-    else if (lat > 42) baseProduction -= 150 // Northern Spain
-
-    // Adjust for orientation
-    if (orientation === 'south') baseProduction *= 1.0
-    else if (orientation === 'southeast' || orientation === 'southwest') baseProduction *= 0.95
-    else if (orientation === 'east' || orientation === 'west') baseProduction *= 0.85
-    else baseProduction *= 0.7 // North or poor orientations
-
-    // Adjust for tilt (30° is optimal in Spain)
-    const tiltFactor = 1 - Math.abs(tilt - 30) * 0.005
-    baseProduction *= tiltFactor
-
-    return Math.round(baseProduction)
-}
+// Fallback calculation moved to @/lib/solar/utils

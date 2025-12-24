@@ -40,7 +40,7 @@ export async function updateOrganization(data: any) {
     const user = await getCurrentUserWithRole()
     if (!user) throw new Error('No autenticado')
 
-    await prisma.organizations.update({
+    await prisma.organization.update({
         where: { id: data.organizationId },
         data: {
             name: data.name,
@@ -67,7 +67,7 @@ export async function updateProfile(data: any) {
     const user = await getCurrentUserWithRole()
     if (!user) throw new Error('No autenticado')
 
-    await prisma.User.update({
+    await prisma.user.update({
         where: { id: user.id },
         data: {
             full_name: data.fullName,
@@ -85,3 +85,4 @@ export async function uploadAvatar(formData: FormData, userId: string) {
     console.log("Upload avatar requested for user", userId)
     return "https://via.placeholder.com/150"
 }
+

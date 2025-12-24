@@ -10,7 +10,7 @@ import { prisma } from '@/lib/db'
 
 export async function loginClientAction(dni: string, accessCode: string) {
     try {
-        const sale = await prisma.sales.findFirst({
+        const sale = await prisma.sale.findFirst({
             where: {
                 dni: dni.toUpperCase(),
                 access_code: accessCode.toUpperCase()

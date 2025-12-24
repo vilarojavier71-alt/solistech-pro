@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Hammer, Calendar as CalendarIcon, MapPin, CheckCircle } from 'lucide-react'
@@ -11,7 +11,7 @@ export default async function InstallationsPage() {
 
     // Fetch projects with status 'installation' or similar active statuses
     // Prioritizing installation, then approved/signed projects
-    const projects = await prisma.projects.findMany({
+    const projects = await prisma.project.findMany({
         where: {
             organization_id: session.user.organizationId,
             status: { in: ['installation', 'approved', 'signed'] }

@@ -55,14 +55,14 @@ export async function getOrganizationSettings() {
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
 
         if (!user?.organization_id) return { error: 'Usuario sin organización' }
 
-        const settings = await prisma.organization_settings.findUnique({
+        const settings = await prisma.organizationSettings.findUnique({
             where: { organization_id: user.organization_id }
         })
 
@@ -102,7 +102,7 @@ export async function saveOrganizationApiKey(
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -120,7 +120,7 @@ export async function saveOrganizationApiKey(
         const encryptedKey = encryptApiKey(apiKey)
 
         // Upsert (Insert or Update)
-        await prisma.organization_settings.upsert({
+        await prisma.organizationSettings.upsert({
             where: { organization_id: user.organization_id },
             update: {
                 ai_provider: provider,
@@ -154,14 +154,14 @@ export async function updatePresentationSettings(
     if (!session?.user?.id) return { error: 'No autenticado' }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
 
         if (!user?.organization_id) return { error: 'Usuario sin organización' }
 
-        await prisma.organization_settings.upsert({
+        await prisma.organizationSettings.upsert({
             where: { organization_id: user.organization_id },
             update: {
                 presentation_template: template,
@@ -187,7 +187,7 @@ export async function getDecryptedApiKey(organizationId: string) {
     // O es llamada server-side por proceso seguro.
 
     try {
-        const data = await prisma.organization_settings.findUnique({
+        const data = await prisma.organizationSettings.findUnique({
             where: { organization_id: organizationId },
             select: {
                 ai_provider: true,
@@ -209,3 +209,4 @@ export async function getDecryptedApiKey(organizationId: string) {
         return null
     }
 }
+

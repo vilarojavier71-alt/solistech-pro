@@ -81,7 +81,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     return null
                 }
 
-                const user = await prisma.User.findUnique({
+                const user = await prisma.user.findUnique({
                     where: { email: credentials.email as string },
                 })
 
@@ -112,13 +112,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async signIn({ user, account }) {
             // For OAuth (Google), create/update user in our users table
             if (account?.provider === "google" && user.email) {
-                const existingUser = await prisma.User.findUnique({
+                const existingUser = await prisma.user.findUnique({
                     where: { email: user.email },
                 })
 
                 if (!existingUser) {
                     // Create new user from Google OAuth
-                    await prisma.User.create({
+                    await prisma.user.create({
                         data: {
                             email: user.email,
                             full_name: user.name || "Usuario",
@@ -143,7 +143,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // CRITICAL FIX: Always re-hydrate organization_id from DB
             // This ensures session reflects changes made after login (e.g., creating org)
             if (token.id) {
-                const dbUser = await prisma.User.findUnique({
+                const dbUser = await prisma.user.findUnique({
                     where: { id: token.id as string },
                     select: {
                         organization_id: true,
@@ -165,7 +165,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // Fetch Permissions if role is present and not yet loaded
             // ✅ Permission Masking: Solo permisos booleanos, nunca roles
             if (token.role && !token.permissions) {
-                const rolePermissions = await prisma.RolePermission.findMany({
+                const rolePermissions = await prisma.rolePermission.findMany({
                     where: { role: token.role as string },
                     select: { permission_slug: true }
                 })
@@ -177,11 +177,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string
-                // ✅ Permission Masking: Solo permisos booleanos, nunca roles
-                // El rol se mantiene en el token para lógica del servidor, pero NO se expone al cliente
-                ; (session.user as any).organizationId = token.organizationId || ""
-                ; (session.user as any).permissions = token.permissions || []
-                ; (session.user as any).plan = token.plan || "basic"
+                    // ✅ Permission Masking: Solo permisos booleanos, nunca roles
+                    // El rol se mantiene en el token para lógica del servidor, pero NO se expone al cliente
+                    ; (session.user as any).organizationId = token.organizationId || ""
+                    ; (session.user as any).permissions = token.permissions || []
+                    ; (session.user as any).plan = token.plan || "basic"
                 // ❌ REMOVIDO: session.user.role - No exponer roles internos al cliente (Zero-Flag Policy)
             }
             return session

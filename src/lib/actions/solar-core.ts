@@ -58,7 +58,7 @@ export async function createSolarSale(data: CreateSaleInput) {
     }
 
     // 3. Obtener organización del usuario
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true, department: true }
     })
@@ -79,7 +79,7 @@ export async function createSolarSale(data: CreateSaleInput) {
 
     try {
         // 5. Buscar o crear cliente
-        let customer = await prisma.customers.findFirst({
+        let customer = await prisma.customer.findFirst({
             where: {
                 nif: dniResult.normalized,
                 organization_id: user.organization_id
@@ -87,7 +87,7 @@ export async function createSolarSale(data: CreateSaleInput) {
         })
 
         if (!customer) {
-            customer = await prisma.customers.create({
+            customer = await prisma.customer.create({
                 data: {
                     name: data.clientName,
                     email: emailResult.normalized,
@@ -100,7 +100,7 @@ export async function createSolarSale(data: CreateSaleInput) {
         }
 
         // 6. Crear proyecto con estado inicial
-        const project = await prisma.projects.create({
+        const project = await prisma.project.create({
             data: {
                 name: data.projectName,
                 description: data.projectDescription,
@@ -150,7 +150,7 @@ export async function reconcilePayment(data: ReconcilePaymentInput) {
     }
 
     // 1. Verificar permisos (tesoreria, admin, owner)
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true, department: true, organization_id: true }
     })
@@ -268,7 +268,7 @@ export async function submitEngineerReview(data: EngineerReviewInput) {
     }
 
     // 1. Verificar permisos (ingenieria, admin, owner)
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true, department: true, organization_id: true, full_name: true }
     })
@@ -284,7 +284,7 @@ export async function submitEngineerReview(data: EngineerReviewInput) {
 
     try {
         // 2. Obtener proyecto y validar estado previo
-        const project = await prisma.projects.findFirst({
+        const project = await prisma.project.findFirst({
             where: {
                 id: data.projectId,
                 organization_id: user!.organization_id
@@ -316,7 +316,7 @@ export async function submitEngineerReview(data: EngineerReviewInput) {
             reviewed_at: new Date().toISOString(),
         }
 
-        await prisma.projects.update({
+        await prisma.project.update({
             where: { id: data.projectId },
             data: {
                 solar_phase: newPhase,
@@ -354,7 +354,7 @@ export async function getSolarProjectStatus(projectId: string) {
         return { error: 'No autenticado' }
     }
 
-    const project = await prisma.projects.findUnique({
+    const project = await prisma.project.findUnique({
         where: { id: projectId },
         select: {
             id: true,
@@ -372,3 +372,4 @@ export async function getSolarProjectStatus(projectId: string) {
 
     return project ? { success: true, project } : { error: 'Proyecto no encontrado' }
 }
+

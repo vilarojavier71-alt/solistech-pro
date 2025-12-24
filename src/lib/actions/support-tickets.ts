@@ -66,7 +66,7 @@ export async function createTicket(data: z.infer<typeof createTicketSchema>) {
         const slaMinutes = SLA_DEADLINES[validated.priority] || SLA_DEADLINES.normal
         const slaDeadline = new Date(Date.now() + slaMinutes * 60 * 1000)
 
-        const ticket = await prisma.support_tickets.create({
+        const ticket = await prisma.supportTicket.create({
             data: {
                 organization_id: user.organization_id,
                 user_id: user.id,
@@ -82,7 +82,7 @@ export async function createTicket(data: z.infer<typeof createTicketSchema>) {
         })
 
         // Add system message
-        await prisma.ticket_messages.create({
+        await prisma.ticketMessage.create({
             data: {
                 ticket_id: ticket.id,
                 sender_id: user.id,
@@ -133,7 +133,7 @@ export async function getTickets(filters?: { status?: string; priority?: string 
             whereClause.priority = filters.priority
         }
 
-        const tickets = await prisma.support_tickets.findMany({
+        const tickets = await prisma.supportTicket.findMany({
             where: whereClause,
             orderBy: [
                 { priority: 'desc' },
@@ -172,7 +172,7 @@ export async function getTicketById(ticketId: string) {
             return { success: false, error: 'Usuario no encontrado' }
         }
 
-        const ticket = await prisma.support_tickets.findFirst({
+        const ticket = await prisma.supportTicket.findFirst({
             where: {
                 id: ticketId,
                 organization_id: user.organization_id!,
@@ -239,7 +239,7 @@ export async function updateTicket(data: z.infer<typeof updateTicketSchema>) {
             updateData.assigned_to = validated.assignedTo
         }
 
-        const ticket = await prisma.support_tickets.update({
+        const ticket = await prisma.supportTicket.update({
             where: { id: validated.ticketId },
             data: updateData
         })
@@ -282,7 +282,7 @@ export async function sendMessage(data: z.infer<typeof sendMessageSchema>) {
         else if (user.role === 'technician') senderRole = 'technician'
 
         // Create message
-        const message = await prisma.ticket_messages.create({
+        const message = await prisma.ticketMessage.create({
             data: {
                 ticket_id: validated.ticketId,
                 sender_id: user.id,
@@ -294,7 +294,7 @@ export async function sendMessage(data: z.infer<typeof sendMessageSchema>) {
 
         // If this is first response from staff, update first_response_at
         if (senderRole !== 'client') {
-            await prisma.support_tickets.updateMany({
+            await prisma.supportTicket.updateMany({
                 where: {
                     id: validated.ticketId,
                     first_response_at: null
@@ -333,7 +333,7 @@ export async function getMessages(ticketId: string) {
 
         const isStaff = user?.role === 'admin' || user?.role === 'technician'
 
-        const messages = await prisma.ticket_messages.findMany({
+        const messages = await prisma.ticketMessage.findMany({
             where: {
                 ticket_id: ticketId,
                 // Hide internal notes from clients
@@ -367,7 +367,7 @@ export async function markMessagesAsRead(ticketId: string) {
         }
 
         // Mark all unread messages in this ticket as read
-        await prisma.ticket_messages.updateMany({
+        await prisma.ticketMessage.updateMany({
             where: {
                 ticket_id: ticketId,
                 read_at: null,
@@ -407,11 +407,11 @@ export async function getTicketStats() {
         }
 
         const [total, open, inAnalysis, resolved, urgent] = await Promise.all([
-            prisma.support_tickets.count({ where: { organization_id: user.organization_id } }),
-            prisma.support_tickets.count({ where: { organization_id: user.organization_id, status: 'open' } }),
-            prisma.support_tickets.count({ where: { organization_id: user.organization_id, status: 'in_analysis' } }),
-            prisma.support_tickets.count({ where: { organization_id: user.organization_id, status: 'resolved' } }),
-            prisma.support_tickets.count({ where: { organization_id: user.organization_id, priority: 'urgent', status: { notIn: ['resolved', 'closed'] } } }),
+            prisma.supportTicket.count({ where: { organization_id: user.organization_id } }),
+            prisma.supportTicket.count({ where: { organization_id: user.organization_id, status: 'open' } }),
+            prisma.supportTicket.count({ where: { organization_id: user.organization_id, status: 'in_analysis' } }),
+            prisma.supportTicket.count({ where: { organization_id: user.organization_id, status: 'resolved' } }),
+            prisma.supportTicket.count({ where: { organization_id: user.organization_id, priority: 'urgent', status: { notIn: ['resolved', 'closed'] } } }),
         ])
 
         return {
@@ -424,3 +424,4 @@ export async function getTicketStats() {
         return { success: false, error: 'Error al obtener estadísticas' }
     }
 }
+

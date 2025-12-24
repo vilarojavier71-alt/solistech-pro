@@ -50,7 +50,7 @@ export async function updateClient(id: string, input: unknown) {
         }
 
         // Obtener cliente actual
-        const currentClient = await prisma.customers.findFirst({
+        const currentClient = await prisma.customer.findFirst({
             where: {
                 id,
                 organization_id: user.organizationId
@@ -81,7 +81,7 @@ export async function updateClient(id: string, input: unknown) {
         const mergedCustom = { ...currentCustom, ...customFields }
 
         // Update
-        const updated = await prisma.customers.update({
+        const updated = await prisma.customer.update({
             where: { id },
             data: {
                 ...sqlFields,
@@ -111,7 +111,7 @@ export async function deleteClient(id: string) {
     if (!user) return { error: 'No autenticado' }
 
     try {
-        await prisma.customers.update({
+        await prisma.customer.update({
             where: {
                 id,
                 organization_id: user.organizationId
@@ -202,7 +202,7 @@ export async function addNewClient(input: unknown) {
             }
         })
 
-        const newClient = await prisma.customers.create({
+        const newClient = await prisma.customer.create({
             data: {
                 ...sqlFields,
                 name: fixMojibake(validatedData.name) || validatedData.name, // Explicitly provide name for TS
@@ -251,7 +251,7 @@ export async function getCustomers() {
     if (!user) return { data: null, error: 'No autenticado' }
 
     try {
-        const rawData = await prisma.customers.findMany({
+        const rawData = await prisma.customer.findMany({
             where: {
                 organization_id: user.organizationId,
                 is_active: true

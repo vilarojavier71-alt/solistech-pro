@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { TeamTable } from '@/components/dashboard/team-table'
 import { Info, Users } from 'lucide-react'
@@ -8,7 +8,7 @@ export default async function TeamPage() {
 
     if (!session?.user) return null
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })
@@ -16,7 +16,7 @@ export default async function TeamPage() {
     if (!profile?.organization_id) return null
 
     // Get all organization members
-    const teamMembers = await prisma.User.findMany({
+    const teamMembers = await prisma.user.findMany({
         where: { organization_id: profile.organization_id },
         orderBy: { created_at: 'asc' }
     })
@@ -52,4 +52,5 @@ export default async function TeamPage() {
         </div>
     )
 }
+
 

@@ -35,7 +35,7 @@ export async function createEmployee(input: unknown) {
         let orgId = user.organizationId
 
         if (!orgId) {
-            const dbUser = await prisma.User.findUnique({
+            const dbUser = await prisma.user.findUnique({
                 where: { id: user.id },
                 select: { organization_id: true }
             })
@@ -60,7 +60,7 @@ export async function createEmployee(input: unknown) {
         }
 
         // Check if email exists
-        const existingUser = await prisma.User.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email: validated.email }
         })
 
@@ -72,7 +72,7 @@ export async function createEmployee(input: unknown) {
         const passwordHash = await bcrypt.hash(validated.password, 12)
 
         // Create user
-        const newEmployee = await prisma.User.create({
+        const newEmployee = await prisma.user.create({
             data: {
                 email: validated.email,
                 password_hash: passwordHash,
@@ -103,10 +103,11 @@ export async function getEmployees() {
         return { data: null, error: 'No tienes permisos para ver empleados' }
     }
 
-    const data = await prisma.User.findMany({
+    const data = await prisma.user.findMany({
         where: { organization_id: user.organizationId },
         orderBy: { created_at: 'desc' }
     })
 
     return { data, error: null }
 }
+

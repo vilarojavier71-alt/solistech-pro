@@ -113,7 +113,7 @@ export async function processPayment(
     if (!session?.user) throw new Error('No autenticado')
 
     // 1. Fetch Invoice from Prisma
-    const invoice = await prisma.invoices.findUnique({
+    const invoice = await prisma.invoice.findUnique({
         where: { id: invoiceId }
     })
     if (!invoice) throw new Error('Invoice not found')

@@ -10,7 +10,7 @@ export async function getPortalDashboardData(saleId: string, dni: string) {
         }
 
         // Fetch sale
-        const sale = await prisma.sales.findFirst({
+        const sale = await prisma.sale.findFirst({
             where: {
                 id: saleId,
                 dni: dni // Security check: ensure DNI matches
@@ -22,7 +22,7 @@ export async function getPortalDashboardData(saleId: string, dni: string) {
         }
 
         // Fetch notifications
-        const notifications = await prisma.client_notifications.findMany({
+        const notifications = await prisma.clientNotification.findMany({
             where: { sale_id: saleId },
             orderBy: { created_at: 'desc' },
             take: 5

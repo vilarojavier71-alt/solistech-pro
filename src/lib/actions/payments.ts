@@ -22,7 +22,7 @@ async function getPaymentContext() {
     const user = await getCurrentUserWithRole()
     if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: user.id },
         select: { organization_id: true }
     })
@@ -36,7 +36,7 @@ export async function getPaymentMethods() {
     try {
         const { organizationId } = await getPaymentContext()
 
-        const methods = await prisma.payment_methods.findMany({
+        const methods = await prisma.paymentMethod.findMany({
             where: { organization_id: organizationId, is_active: true },
             orderBy: [{ is_default: 'desc' }, { name: 'asc' }]
         })
@@ -55,7 +55,7 @@ export async function createPaymentMethod(data: { name: string; instructions?: s
     try {
         const { organizationId } = await getPaymentContext()
 
-        const newMethod = await prisma.payment_methods.create({
+        const newMethod = await prisma.paymentMethod.create({
             data: {
                 organization_id: organizationId,
                 name: validation.data.name,
@@ -69,3 +69,4 @@ export async function createPaymentMethod(data: { name: string; instructions?: s
         return { error: error.message }
     }
 }
+

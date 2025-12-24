@@ -2,6 +2,7 @@
 
 import { getCurrentUserWithRole } from '@/lib/session'
 import { getDecryptedApiKey } from './organization-settings'
+import { prisma } from '@/lib/db'
 
 export interface AIImageGenerationParams {
     originalPhotoUrl: string
@@ -181,17 +182,19 @@ export async function generateSolarSimulation(
     organizationId: string,
     params: AIImageGenerationParams
 ): Promise<AIImageResult> {
-    const supabase = await createClient()
+    // const supabase = await createClient()
 
     try {
         // 1. CACHÉ: Buscar imagen similar existente
-        const { data: cachedPresentations } = await supabase
-            .from('presentations')
-            .select('simulated_photo_url')
-            .eq('organization_id', organizationId)
-            .not('simulated_photo_url', 'is', null)
-            .order('created_at', { ascending: false })
-            .limit(20)
+        const cachedPresentations = await prisma.presentation.findMany({
+            where: {
+                organization_id: organizationId,
+                simulated_photo_url: { not: null }
+            },
+            select: { simulated_photo_url: true },
+            orderBy: { created_at: 'desc' },
+            take: 20
+        })
 
         // Buscar coincidencia aproximada (mismo tamaño de sistema)
         if (cachedPresentations && cachedPresentations.length > 0) {

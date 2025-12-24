@@ -38,7 +38,7 @@ export async function getUserPermissions(): Promise<Record<Permission, boolean>>
 
     try {
         // Obtener rol del usuario desde la base de datos (no del session)
-        const user = await prisma.users.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { role: true, organization_id: true }
         })
@@ -104,4 +104,5 @@ export async function checkPermission(permission: Permission): Promise<boolean> 
     const permissions = await getUserPermissions()
     return permissions[permission]
 }
+
 

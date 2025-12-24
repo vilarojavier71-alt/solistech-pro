@@ -3,6 +3,8 @@ import { redirect } from "next/navigation"
 import { getSetting } from "@/lib/actions/settings"
 import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client"
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
     let session
     try {

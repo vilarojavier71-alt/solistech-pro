@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -18,7 +18,7 @@ export default async function CalendarPage() {
     })
 
     // Fetch real appointments from database
-    const appointments = profile?.organization_id ? await prisma.appointments.findMany({
+    const appointments = profile?.organization_id ? await prisma.appointment.findMany({
         where: { organization_id: profile.organization_id },
         include: {
             customer: { select: { name: true, phone: true } },
@@ -106,3 +106,4 @@ export default async function CalendarPage() {
         </div>
     )
 }
+

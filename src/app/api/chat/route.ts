@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
 
 async function getProjectContext(userEmail: string) {
     // Buscar proyecto del cliente por email
-    const project = await prisma.projects.findFirst({
+    const project = await prisma.project.findFirst({
         where: {
             client_portal_enabled: true,
             customer: { email: userEmail }

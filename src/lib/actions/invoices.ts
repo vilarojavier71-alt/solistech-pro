@@ -85,7 +85,7 @@ export type InvoiceLine = z.infer<typeof InvoiceLineSchema>
 // Generar número de factura automático
 async function generateInvoiceNumber(organizationId: string, series: string = 'A') {
     // Buscar última factura de la organización
-    const lastInvoice = await prisma.invoices.findFirst({
+    const lastInvoice = await prisma.invoice.findFirst({
         where: { organization_id: organizationId },
         orderBy: { sequential_number: 'desc' }
     })
@@ -148,7 +148,7 @@ export async function createInvoice(rawData: InvoiceData) {
     if (!user) return { error: 'No autenticado' }
 
     // Obtener cliente
-    const customer = await prisma.customers.findUnique({
+    const customer = await prisma.customer.findUnique({
         where: { id: data.customerId }
     })
     if (!customer) return { error: 'Cliente no encontrado' }
@@ -206,7 +206,7 @@ export async function createInvoice(rawData: InvoiceData) {
     const qrCode = await generateVerifactuQR({ ...invoice, verifactu_hash: hash })
 
     // Actualizar con datos Verifactu
-    const updatedInvoice = await prisma.invoices.update({
+    const updatedInvoice = await prisma.invoice.update({
         where: { id: invoice.id },
         data: {
             // verifactu_hash: hash,
@@ -261,7 +261,7 @@ export async function listInvoices(filters?: {
         where.issue_date = { ...where.issue_date, lte: new Date(filters.dateTo) }
     }
 
-    const rawData = await prisma.invoices.findMany({
+    const rawData = await prisma.invoice.findMany({
         where,
         include: {
             customer: { select: { id: true, name: true, email: true } },
@@ -278,7 +278,7 @@ export async function listInvoices(filters?: {
 
 // Obtener factura por ID
 export async function getInvoiceById(invoiceId: string) {
-    const rawData = await prisma.invoices.findUnique({
+    const rawData = await prisma.invoice.findUnique({
         where: { id: invoiceId },
         include: {
             customer: true,
@@ -293,7 +293,7 @@ export async function getInvoiceById(invoiceId: string) {
 
 // Cancelar factura
 export async function cancelInvoice(invoiceId: string, reason?: string) {
-    const data = await prisma.invoices.update({
+    const data = await prisma.invoice.update({
         where: { id: invoiceId },
         data: {
             status: 'cancelled',
@@ -408,7 +408,7 @@ export async function getInvoiceStats() {
     const today = new Date()
 
     // Total facturado este mes
-    const monthlyInvoices = await prisma.invoices.findMany({
+    const monthlyInvoices = await prisma.invoice.findMany({
         where: {
             organization_id: user.organizationId,
             issue_date: { gte: startOfMonth },
@@ -420,7 +420,7 @@ export async function getInvoiceStats() {
     const monthlyTotal = monthlyInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0)
 
     // Facturas pendientes
-    const unpaidInvoices = await prisma.invoices.findMany({
+    const unpaidInvoices = await prisma.invoice.findMany({
         where: {
             organization_id: user.organizationId,
             payment_status: { in: ['pending', 'partial'] },
@@ -432,7 +432,7 @@ export async function getInvoiceStats() {
     const unpaidTotal = unpaidInvoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0)
 
     // Facturas vencidas
-    const overdueInvoices = await prisma.invoices.findMany({
+    const overdueInvoices = await prisma.invoice.findMany({
         where: {
             organization_id: user.organizationId,
             payment_status: { in: ['pending', 'partial'] },

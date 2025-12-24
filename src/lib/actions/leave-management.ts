@@ -100,7 +100,7 @@ export async function getLeaveBalance(userId?: string, year?: number) {
             : user.id
 
         // Get or create balance for this year
-        let balance = await prisma.employee_leave_balances.findUnique({
+        let balance = await prisma.employeeLeaveBalance.findUnique({
             where: {
                 user_id_year: {
                     user_id: targetUserId,
@@ -111,7 +111,7 @@ export async function getLeaveBalance(userId?: string, year?: number) {
 
         // If no balance exists, create one
         if (!balance) {
-            balance = await prisma.employee_leave_balances.create({
+            balance = await prisma.employeeLeaveBalance.create({
                 data: {
                     user_id: targetUserId,
                     organization_id: user.organization_id,
@@ -161,7 +161,7 @@ export async function getAllEmployeeBalances(year?: number) {
 
         const currentYear = year || new Date().getFullYear()
 
-        const balances = await prisma.employee_leave_balances.findMany({
+        const balances = await prisma.employeeLeaveBalance.findMany({
             where: {
                 organization_id: user.organization_id!,
                 year: currentYear
@@ -205,7 +205,7 @@ export async function adjustBalance(data: z.infer<typeof adjustBalanceSchema>) {
             updateData.paid_days_total = new Decimal(validated.paidDaysTotal)
         }
 
-        const balance = await prisma.employee_leave_balances.upsert({
+        const balance = await prisma.employeeLeaveBalance.upsert({
             where: {
                 user_id_year: {
                     user_id: validated.userId,
@@ -286,7 +286,7 @@ export async function requestLeave(data: z.infer<typeof requestLeaveSchema>) {
         }
 
         // Create request
-        const request = await prisma.leave_requests.create({
+        const request = await prisma.leaveRequest.create({
             data: {
                 user_id: user.id,
                 organization_id: user.organization_id,
@@ -301,7 +301,7 @@ export async function requestLeave(data: z.infer<typeof requestLeaveSchema>) {
 
         // Update pending days if vacation type
         if (validated.leaveType === 'vacation') {
-            await prisma.employee_leave_balances.update({
+            await prisma.employeeLeaveBalance.update({
                 where: {
                     user_id_year: { user_id: user.id, year }
                 },
@@ -354,7 +354,7 @@ export async function getLeaveRequests(filters?: { status?: string; userId?: str
             where.status = filters.status
         }
 
-        const requests = await prisma.leave_requests.findMany({
+        const requests = await prisma.leaveRequest.findMany({
             where,
             orderBy: { created_at: 'desc' }
         })
@@ -394,7 +394,7 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
             return { success: false, error: 'Usuario sin organización asignada' }
         }
 
-        const request = await prisma.leave_requests.findFirst({
+        const request = await prisma.leaveRequest.findFirst({
             where: {
                 id: validated.requestId,
                 user: {
@@ -413,7 +413,7 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
         if (validated.approved) {
             // Approve and update balances
             await prisma.$transaction([
-                prisma.leave_requests.update({
+                prisma.leaveRequest.update({
                     where: { id: validated.requestId },
                     data: {
                         status: 'approved',
@@ -421,7 +421,7 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
                         approved_at: new Date()
                     }
                 }),
-                prisma.employee_leave_balances.update({
+                prisma.employeeLeaveBalance.update({
                     where: {
                         user_id_year: { user_id: request.user_id, year }
                     },
@@ -442,7 +442,7 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
         } else {
             // Reject and restore pending days if vacation
             await prisma.$transaction([
-                prisma.leave_requests.update({
+                prisma.leaveRequest.update({
                     where: { id: validated.requestId },
                     data: {
                         status: 'rejected',
@@ -452,7 +452,7 @@ export async function approveOrRejectLeave(data: z.infer<typeof approveLeaveSche
                     }
                 }),
                 ...(request.leave_type === 'vacation' ? [
-                    prisma.employee_leave_balances.update({
+                    prisma.employeeLeaveBalance.update({
                         where: {
                             user_id_year: { user_id: request.user_id, year }
                         },
@@ -487,7 +487,7 @@ export async function cancelLeaveRequest(requestId: string) {
             select: { id: true }
         })
 
-        const request = await prisma.leave_requests.findFirst({
+        const request = await prisma.leaveRequest.findFirst({
             where: {
                 id: requestId,
                 user_id: user!.id,
@@ -502,12 +502,12 @@ export async function cancelLeaveRequest(requestId: string) {
         const year = request.start_date.getFullYear()
 
         await prisma.$transaction([
-            prisma.leave_requests.update({
+            prisma.leaveRequest.update({
                 where: { id: requestId },
                 data: { status: 'cancelled' }
             }),
             ...(request.leave_type === 'vacation' ? [
-                prisma.employee_leave_balances.update({
+                prisma.employeeLeaveBalance.update({
                     where: {
                         user_id_year: { user_id: user!.id, year }
                     },
@@ -529,3 +529,4 @@ export async function cancelLeaveRequest(requestId: string) {
 
 // Helper exports
 export { LEAVE_TYPE_LABELS, STATUS_LABELS }
+

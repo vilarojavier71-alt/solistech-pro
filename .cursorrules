@@ -156,3 +156,4 @@ Limpieza Pre-V1:
 Análisis de Coste:
 "Revisa esta lógica buscando potenciales fugas económicas o de recursos (loops infinitos, llamadas API sin límite)."
 
+

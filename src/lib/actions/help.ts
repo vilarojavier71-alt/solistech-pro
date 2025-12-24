@@ -73,7 +73,7 @@ export async function createTicket(prevState: any, formData: FormData) {
     }
 
     try {
-        await prisma.support_tickets.create({
+        await prisma.supportTicket.create({
             data: {
                 organization_id: user.organizationId,
                 user_id: user.id,
@@ -105,7 +105,7 @@ export async function getUserTickets() {
 
     if (!user?.organizationId) return []
 
-    return prisma.support_tickets.findMany({
+    return prisma.supportTicket.findMany({
         where: { organization_id: user.organizationId },
         orderBy: { created_at: 'desc' },
         take: 10

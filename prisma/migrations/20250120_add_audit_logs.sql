@@ -42,3 +42,4 @@ COMMENT ON COLUMN audit_logs.timestamp IS 'Timestamp del evento (inmutable)';
 -- Política de retención (opcional - implementar con job de limpieza)
 -- Los logs deben retenerse por mínimo 1 año para cumplimiento
 
+

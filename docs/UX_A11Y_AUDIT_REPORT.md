@@ -242,3 +242,4 @@ Se ha ejecutado una auditoría completa de accesibilidad y UX siguiendo WCAG 2.1
 **Fecha:** 2025-01-20  
 **Próximo Paso:** Aplicar remediaciones inmediatas
 
+

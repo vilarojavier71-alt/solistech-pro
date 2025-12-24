@@ -53,7 +53,7 @@ export async function generateTechnicalMemory(calculationId: string) {
 
         // Obtener datos completos del cálculo usando Prisma
         // Note: Using 'as any' because calculations table relations may not be fully generated yet
-        const calc = await (prisma.calculations as any).findFirst({
+        const calc = await (prisma.calculation as any).findFirst({
             where: {
                 id: calculationId,
                 organization_id: user.organizationId || undefined

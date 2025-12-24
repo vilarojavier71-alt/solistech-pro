@@ -24,7 +24,7 @@ async function getPaymentSettingsContext() {
     const user = await getCurrentUserWithRole()
     if (!user || !user.id) throw new Error('Usuario no autenticado')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: user.id },
         select: { organization_id: true }
     })
@@ -38,7 +38,7 @@ export async function getPaymentMethods() {
     try {
         const { organizationId } = await getPaymentSettingsContext()
 
-        const methods = await prisma.payment_methods.findMany({
+        const methods = await prisma.paymentMethod.findMany({
             where: { organization_id: organizationId, is_active: true },
             orderBy: [{ is_default: 'desc' }, { name: 'asc' }]
         })
@@ -57,7 +57,7 @@ export async function createPaymentMethod(data: z.infer<typeof PaymentMethodSche
     try {
         const { organizationId } = await getPaymentSettingsContext()
 
-        const newMethod = await prisma.payment_methods.create({
+        const newMethod = await prisma.paymentMethod.create({
             data: {
                 organization_id: organizationId,
                 name: validation.data.name,
@@ -78,7 +78,7 @@ export async function updatePaymentMethod(id: string, data: Partial<z.infer<type
     try {
         const { organizationId } = await getPaymentSettingsContext()
 
-        const updatedMethod = await prisma.payment_methods.updateMany({
+        const updatedMethod = await prisma.paymentMethod.updateMany({
             where: { id, organization_id: organizationId },
             data: {
                 name: data.name,
@@ -99,7 +99,7 @@ export async function deletePaymentMethod(id: string) {
     try {
         const { organizationId } = await getPaymentSettingsContext()
 
-        await prisma.payment_methods.updateMany({
+        await prisma.paymentMethod.updateMany({
             where: { id, organization_id: organizationId },
             data: { is_active: false }
         })
@@ -111,3 +111,4 @@ export async function deletePaymentMethod(id: string) {
         return { error: error.message }
     }
 }
+

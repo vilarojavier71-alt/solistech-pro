@@ -21,7 +21,7 @@ export async function createLead(formData: FormData) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -46,7 +46,7 @@ export async function createLead(formData: FormData) {
     }
 
     try {
-        await prisma.leads.create({
+        await prisma.lead.create({
             data: {
                 ...validation.data,
                 organization_id: user.organization_id,
@@ -69,7 +69,7 @@ export async function getLeads(params?: {
     const session = await auth()
     if (!session?.user?.id) return []
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -106,7 +106,7 @@ export async function getLeads(params?: {
         orderBy.created_at = 'desc'
     }
 
-    return await prisma.leads.findMany({
+    return await prisma.lead.findMany({
         where,
         orderBy,
         include: {
@@ -123,7 +123,7 @@ export async function updateLeadStatus(id: string, status: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -132,7 +132,7 @@ export async function updateLeadStatus(id: string, status: string) {
 
     try {
         // ✅ Validar ownership ANTES de actualizar
-        const lead = await prisma.leads.findFirst({
+        const lead = await prisma.lead.findFirst({
             where: {
                 id,
                 organization_id: user.organization_id
@@ -143,7 +143,7 @@ export async function updateLeadStatus(id: string, status: string) {
             return { error: "Lead no encontrado o no pertenece a tu organización" }
         }
 
-        await prisma.leads.update({
+        await prisma.lead.update({
             where: { id },
             data: { status }
         })
@@ -158,7 +158,7 @@ export async function deleteLead(id: string) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -167,7 +167,7 @@ export async function deleteLead(id: string) {
 
     try {
         // Verify lead belongs to user's organization before deleting
-        const lead = await prisma.leads.findFirst({
+        const lead = await prisma.lead.findFirst({
             where: {
                 id,
                 organization_id: user.organization_id
@@ -178,7 +178,7 @@ export async function deleteLead(id: string) {
             return { error: "Lead no encontrado" }
         }
 
-        await prisma.leads.delete({
+        await prisma.lead.delete({
             where: { id }
         })
 
@@ -194,7 +194,7 @@ export async function updateLead(id: string, data: any) {
     const session = await auth()
     if (!session?.user?.id) return { error: "No autenticado" }
 
-    const user = await prisma.users.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -203,7 +203,7 @@ export async function updateLead(id: string, data: any) {
 
     try {
         // ✅ Validar ownership ANTES de actualizar
-        const lead = await prisma.leads.findFirst({
+        const lead = await prisma.lead.findFirst({
             where: {
                 id,
                 organization_id: user.organization_id
@@ -219,7 +219,7 @@ export async function updateLead(id: string, data: any) {
             return { error: validation.error.issues[0].message }
         }
 
-        await prisma.leads.update({
+        await prisma.lead.update({
             where: { id },
             data: validation.data
         })

@@ -130,3 +130,4 @@ if (typeof setInterval !== 'undefined') {
     setInterval(clearUserAgentHistory, 60 * 60 * 1000)
 }
 
+

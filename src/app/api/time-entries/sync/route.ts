@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
         if (type === 'clock_in') {
             // Check for open entry (already clocked in)
-            const openEntry = await prisma.time_entries.findFirst({
+            const openEntry = await prisma.timeEntry.findFirst({
                 where: {
                     user_id: session.user.id,
                     clock_out: null
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
             }
 
             // Create new clock_in entry
-            const newEntry = await prisma.time_entries.create({
+            const newEntry = await prisma.timeEntry.create({
                 data: {
                     user_id: session.user.id,
                     project_id: data.projectId || null,
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 
         } else if (type === 'clock_out') {
             // Find open entry to close
-            const openEntry = await prisma.time_entries.findFirst({
+            const openEntry = await prisma.timeEntry.findFirst({
                 where: {
                     user_id: session.user.id,
                     clock_out: null
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
             const totalMinutes = Math.round((timestamp.getTime() - clockIn.getTime()) / 60000)
 
             // Update entry with clock_out
-            const updatedEntry = await prisma.time_entries.update({
+            const updatedEntry = await prisma.timeEntry.update({
                 where: { id: openEntry.id },
                 data: {
                     clock_out: timestamp,

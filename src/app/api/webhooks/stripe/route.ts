@@ -43,7 +43,7 @@ export async function POST(req: Request) {
                         session.subscription as string
                     ) as any
 
-                    await prisma.organizations.update({
+                    await prisma.organization.update({
                         where: { id: organizationId },
                         data: {
                             subscription_status: 'active',
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
                     })
 
                     // Create subscription record
-                    await prisma.subscriptions.upsert({
+                    await prisma.subscription.upsert({
                         where: { stripe_subscription_id: subscription.id },
                         create: {
                             organization_id: organizationId,
@@ -94,7 +94,7 @@ export async function POST(req: Request) {
                         subscription.status === 'past_due' ? 'past_due' :
                             subscription.status === 'canceled' ? 'canceled' : 'basic'
 
-                    await prisma.organizations.update({
+                    await prisma.organization.update({
                         where: { id: organizationId },
                         data: {
                             subscription_status: status,
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
                     })
 
                     // Update subscription record
-                    await prisma.subscriptions.update({
+                    await prisma.subscription.update({
                         where: { stripe_subscription_id: subscription.id },
                         data: {
                             status,
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
                 const organizationId = subscription.metadata?.organizationId
 
                 if (organizationId) {
-                    await prisma.organizations.update({
+                    await prisma.organization.update({
                         where: { id: organizationId },
                         data: {
                             subscription_status: 'canceled',
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
 
                     // Update subscription record
                     try {
-                        await prisma.subscriptions.update({
+                        await prisma.subscription.update({
                             where: { stripe_subscription_id: subscription.id },
                             data: {
                                 status: 'canceled',
@@ -180,7 +180,7 @@ export async function POST(req: Request) {
                     const organizationId = sub.metadata?.organizationId
 
                     if (organizationId) {
-                        await prisma.organizations.update({
+                        await prisma.organization.update({
                             where: { id: organizationId },
                             data: {
                                 subscription_status: 'past_due',

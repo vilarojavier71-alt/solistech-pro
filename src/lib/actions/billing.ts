@@ -12,14 +12,14 @@ export async function getInvoices() {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!user?.organization_id) return { error: 'Organización no encontrada' }
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: user.organization_id },
         select: { stripe_customer_id: true }
     })
@@ -56,14 +56,14 @@ export async function getPaymentMethods() {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!user?.organization_id) return { error: 'Organización no encontrada' }
 
-    const org = await prisma.organizations.findUnique({
+    const org = await prisma.organization.findUnique({
         where: { id: user.organization_id },
         select: { stripe_customer_id: true }
     })
@@ -106,7 +106,7 @@ export async function updateBillingDetails(data: {
     const session = await auth()
     if (!session?.user?.id) return { error: 'No autenticado' }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true, role: true }
     })
@@ -116,7 +116,7 @@ export async function updateBillingDetails(data: {
 
     try {
         // Update local organization data
-        await prisma.organizations.update({
+        await prisma.organization.update({
             where: { id: user.organization_id },
             data: {
                 email: data.billingEmail, // Using main email as billing email for now
@@ -131,7 +131,7 @@ export async function updateBillingDetails(data: {
         })
 
         // Update Stripe Customer if exists
-        const org = await prisma.organizations.findUnique({
+        const org = await prisma.organization.findUnique({
             where: { id: user.organization_id },
             select: { stripe_customer_id: true }
         })
@@ -158,3 +158,4 @@ export async function updateBillingDetails(data: {
         return { error: 'Error al actualizar datos de facturación' }
     }
 }
+

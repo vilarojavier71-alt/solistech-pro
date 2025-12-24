@@ -27,7 +27,7 @@ async function getOrganizationId(): Promise<string | null> {
 
     // 2. If missing, Try DB (Re-hydration)
     if (!orgId) {
-        const dbUser = await prisma.User.findUnique({
+        const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
             select: { organization_id: true }
         })
@@ -43,7 +43,7 @@ export async function getInventoryItems(): Promise<InventoryItem[]> {
         if (!orgId) return []
 
         // Use Prisma directly (Admin Context)
-        const items = await prisma.inventory_items.findMany({
+        const items = await prisma.inventoryItem.findMany({
             where: { organization_id: orgId },
             orderBy: { name: 'asc' }
         })
@@ -67,7 +67,7 @@ export async function createInventoryItem(data: { name: string; quantity: number
         const orgId = await getOrganizationId()
         if (!orgId) return { success: false, message: "Organización no válida o usuario no autenticado." }
 
-        await prisma.inventory_items.create({
+        await prisma.inventoryItem.create({
             data: {
                 organization_id: orgId,
                 name: data.name,
@@ -98,7 +98,7 @@ export async function updateStock(itemId: string, quantity: number, type: 'in' |
 
     try {
         // ✅ Validar ownership ANTES de actualizar (IDOR Prevention)
-        const item = await prisma.inventory_items.findFirst({
+        const item = await prisma.inventoryItem.findFirst({
             where: {
                 id: itemId,
                 organization_id: user.organizationId
@@ -116,7 +116,7 @@ export async function updateStock(itemId: string, quantity: number, type: 'in' |
 
         const newQuantity = type === 'in' ? item.quantity + quantity : item.quantity - quantity
 
-        await prisma.inventory_items.update({
+        await prisma.inventoryItem.update({
             where: { id: itemId },
             data: { quantity: newQuantity }
         })
@@ -135,3 +135,4 @@ export async function createSupplier(data: any) {
 export async function createComponent(data: any) {
     return { success: false, message: "Funcionalidad en desarrollo" }
 }
+

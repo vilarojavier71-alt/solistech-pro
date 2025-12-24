@@ -1,4 +1,4 @@
-﻿import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getOrganizationMembers, getOrganizationRoles } from '@/lib/actions/team-management'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,7 +18,7 @@ export default async function TeamSettingsPage() {
     if (!session?.user) return null
 
     // Get Org ID
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -97,3 +97,4 @@ export default async function TeamSettingsPage() {
         </div>
     )
 }
+

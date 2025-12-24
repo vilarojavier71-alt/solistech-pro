@@ -28,7 +28,7 @@ interface InfrastructureResource {
  */
 async function getCurrentBudget(organizationId: string): Promise<BudgetConfig | null> {
     try {
-        const org = await prisma.organizations.findUnique({
+        const org = await prisma.organization.findUnique({
             where: { id: organizationId },
             select: {
                 id: true,
@@ -212,7 +212,7 @@ export async function recordInfrastructureCost(
                 if (user?.organizationId === organizationId) {
                     // Buscar cuenta 622x (Gastos de infraestructura)
                     const { prisma } = await import('@/lib/db')
-                    const expenseAccount = await prisma.accounting_accounts.findFirst({
+                    const expenseAccount = await prisma.accountingAccount.findFirst({
                         where: {
                             organization_id: organizationId,
                             code: { startsWith: '622' },
@@ -223,7 +223,7 @@ export async function recordInfrastructureCost(
                     })
 
                     // Buscar cuenta 4000 (Proveedores)
-                    const supplierAccount = await prisma.accounting_accounts.findFirst({
+                    const supplierAccount = await prisma.accountingAccount.findFirst({
                         where: {
                             organization_id: organizationId,
                             code: { startsWith: '400' },

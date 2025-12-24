@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { CreateInvoiceForm } from '@/components/invoices/create-invoice-form'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
@@ -14,8 +14,8 @@ export default async function NewInvoicePage() {
 
     if (!session?.user) redirect('/auth/login')
 
-    // [FIX] Use prisma.users instead of prisma.User to avoid TS errors and potential runtime issues
-    const userData = await prisma.users.findUnique({
+    // [FIX] Use prisma.user instead of prisma.user to avoid TS errors and potential runtime issues
+    const userData = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
@@ -23,7 +23,7 @@ export default async function NewInvoicePage() {
     if (!userData?.organization_id) redirect('/auth/login')
 
     // Get customers
-    const customersRaw = await prisma.customers.findMany({
+    const customersRaw = await prisma.customer.findMany({
         where: { organization_id: userData.organization_id },
         select: { id: true, name: true, email: true },
         orderBy: { name: 'asc' }
@@ -48,4 +48,5 @@ export default async function NewInvoicePage() {
         </div>
     )
 }
+
 

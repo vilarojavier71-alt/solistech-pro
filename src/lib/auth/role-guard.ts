@@ -22,7 +22,7 @@ export async function verifyRole(allowedRoles: AppRole[]): Promise<{ authorized:
             return { authorized: false, role: null, userId: null }
         }
 
-        const userData = await prisma.User.findUnique({
+        const userData = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { role: true }
         })
@@ -67,3 +67,4 @@ export async function protectPage(allowedRoles: AppRole[], redirectUrl: string =
         redirect(redirectUrl)
     }
 }
+

@@ -28,33 +28,34 @@ model User {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization           organizations?          @relation(fields: [organization_id], references: [id])
+  organization           Organization?          @relation(fields: [organization_id], references: [id])
   accounts               Account[]
   sessions               Session[]
-  customers              customers[]
-  projects               projects[]
-  assigned_projects      projects[]              @relation("assigned_projects")
-  assigned_leads         leads[]
-  time_entries           time_entries[]
-  invoices               invoices[]
-  gmail_token            gmail_tokens?
-  accounting_journals    accounting_journals[]
-  phase_changes          project_phase_history[]
-  processed_transactions project_transactions[]  @relation("processed_transactions")
-  uploaded_documents     project_documents[]     @relation("uploaded_documents")
-  reviewed_documents     project_documents[]     @relation("reviewed_documents")
-  assigned_appointments  appointments[]
-  created_invitations    invitations[]
-  client_portal_project  projects?               @relation("client_portal_project")
-  support_tickets        support_tickets[]
-  audit_logs             audit_logs[]
+  customers              Customer[]
+  projects               Project[]
+  assigned_projects      Project[]              @relation("assigned_projects")
+  assigned_leads         Lead[]
+  time_entries           TimeEntry[]
+  invoices               Invoice[]
+  gmail_token            GmailToken?
+  accounting_journals    AccountingJournal[]
+  phase_changes          ProjectPhaseHistory[]
+  processed_transactions ProjectTransaction[]  @relation("processed_transactions")
+  uploaded_documents     ProjectDocument[]     @relation("uploaded_documents")
+  reviewed_documents     ProjectDocument[]     @relation("reviewed_documents")
+  assigned_appointments  Appointment[]
+  created_invitations    Invitation[]
+  client_portal_project  Project?               @relation("client_portal_project")
+  support_tickets        SupportTicket[]
+  audit_logs             AuditLog[]
+  import_jobs            ImportJob[]
 
   @@index([organization_id, role])
   @@index([email])
   @@map("users")
 }
 
-model organizations {
+model Organization {
   id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name                   String
   slug                   String    @unique
@@ -76,38 +77,40 @@ model organizations {
   updated_at             DateTime? @default(now()) @db.Timestamptz(6)
 
   users               User[]
-  customers           customers[]
-  leads               leads[]
-  projects            projects[]
-  invoices            invoices[]
-  subscriptions       subscriptions[]
-  settings            organization_settings?
-  operating_expenses  operating_expenses[]
-  inventory_items     inventory_items[]
-  accounting_accounts accounting_accounts[]
-  accounting_journals accounting_journals[]
-  sales               sales[]
-  appointment         appointments[]
+  customers           Customer[]
+  leads               Lead[]
+  projects            Project[]
+  invoices            Invoice[]
+  subscriptions       Subscription[]
+  settings            OrganizationSettings?
+  operating_expenses  OperatingExpense[]
+  inventory_items     InventoryItem[]
+  accounting_accounts AccountingAccount[]
+  accounting_journals AccountingJournal[]
+  sales               Sale[]
+  appointment         Appointment[]
 
-  invitations invitations[]
+  invitations Invitation[]
 
   // New stabilization tables
-  payment_methods payment_methods[]
-  calculations    calculations[]
-  presentations   presentations[]
-  support_tickets support_tickets[]
+  payment_methods PaymentMethod[]
+  calculations    Calculation[]
+  presentations   Presentation[]
+  support_tickets SupportTicket[]
 
   // Leave management tables
-  employee_leave_balances employee_leave_balances[]
-  leave_requests          leave_requests[]
+  employee_leave_balances EmployeeLeaveBalance[]
+  import_jobs             ImportJob[]
+  leave_requests          LeaveRequest[]
 
   // Audit logs (ISO 27001)
-  audit_logs              audit_logs[]
+  audit_logs              AuditLog[]
 
   @@index([subscription_plan, subscription_status])
+  @@map("organizations")
 }
 
-model organization_settings {
+model OrganizationSettings {
   id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id           String    @unique @db.Uuid
   ai_provider               String?
@@ -119,11 +122,14 @@ model organization_settings {
   created_at                DateTime  @default(now()) @db.Timestamptz(6)
   updated_at                DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@map("organization_settings")
 }
 
 // Subscription history and tracking
-model subscriptions {
+// Subscription history and tracking
+model Subscription {
   id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id        String   @db.Uuid
   stripe_subscription_id String   @unique
@@ -135,7 +141,9 @@ model subscriptions {
   created_at             DateTime @default(now()) @db.Timestamptz(6)
   updated_at             DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
 }
 
 // ============================================================================
@@ -186,7 +194,7 @@ model VerificationToken {
 // BUSINESS TABLES
 // ============================================================================
 
-model customers {
+model Customer {
   id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id   String?  @db.Uuid
   created_by        String?  @db.Uuid
@@ -206,19 +214,20 @@ model customers {
   created_at        DateTime @default(now()) @db.Timestamptz(6)
   updated_at        DateTime @default(now()) @db.Timestamptz(6)
 
-  organization    organizations?  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization    Organization?  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   created_by_user User?           @relation(fields: [created_by], references: [id], onDelete: SetNull)
-  projects        projects[]
-  invoices        invoices[]
-  appointments    appointments[]
-  presentations   presentations[]
+  projects        Project[]
+  invoices        Invoice[]
+  appointments    Appointment[]
+  presentations   Presentation[]
 
   @@index([organization_id, name])
   @@index([organization_id, email])
   @@index([organization_id, nif])
+  @@map("customers")
 }
 
-model leads {
+model Lead {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   name            String
@@ -233,13 +242,14 @@ model leads {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization  organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization  Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   assigned_user User?         @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
 
   @@index([organization_id, status])
+  @@map("leads")
 }
 
-model projects {
+model Project {
   id                       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id          String?   @db.Uuid
   client_id                String?   @db.Uuid
@@ -274,21 +284,22 @@ model projects {
   // Campos de fecha de proyecto
   start_date               DateTime? @db.Date
   end_date                 DateTime? @db.Date
+  grant_calculation        Json?
   created_at               DateTime  @default(now()) @db.Timestamptz(6)
   updated_at               DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization        organizations?          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  customer            customers?              @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  organization        Organization?          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer            Customer?              @relation(fields: [client_id], references: [id], onDelete: Cascade)
   created_by_user     User?                   @relation(fields: [created_by], references: [id])
   assigned_technician User?                   @relation("assigned_projects", fields: [assigned_technician_id], references: [id])
   portal_user         User?                   @relation("client_portal_project", fields: [portal_user_id], references: [id])
-  time_entries        time_entries[]
-  invoices            invoices[]
-  phase_history       project_phase_history[]
-  transactions        project_transactions[]
-  documents           project_documents[]
-  calculations        calculations[]
-  presentations       presentations[]
+  time_entries        TimeEntry[]
+  invoices            Invoice[]
+  phase_history       ProjectPhaseHistory[]
+  transactions        ProjectTransaction[]
+  documents           ProjectDocument[]
+  calculations        Calculation[]
+  presentations       Presentation[]
 
   @@index([organization_id, status])
   @@index([location])
@@ -296,7 +307,7 @@ model projects {
   @@index([organization_id, created_at])
 }
 
-model time_entries {
+model TimeEntry {
   id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id            String    @db.Uuid
   project_id         String?   @db.Uuid
@@ -315,10 +326,12 @@ model time_entries {
   created_at         DateTime  @default(now()) @db.Timestamptz(6)
 
   user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  project projects? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  project Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  @@map("time_entries")
 }
 
-model invoices {
+model Invoice {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id      String?   @db.Uuid
   invoice_number       String
@@ -344,19 +357,20 @@ model invoices {
   created_at           DateTime  @default(now()) @db.Timestamptz(6)
   updated_at           DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization    organizations?  @relation(fields: [organization_id], references: [id])
-  customer        customers?      @relation(fields: [customer_id], references: [id], onDelete: Restrict)
-  project         projects?       @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  organization    Organization?  @relation(fields: [organization_id], references: [id])
+  customer        Customer?      @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  project         Project?       @relation(fields: [project_id], references: [id], onDelete: SetNull)
   created_by_user User?           @relation(fields: [created_by], references: [id])
-  lines           invoice_lines[]
+  lines           InvoiceLine[]
 
   @@unique([organization_id, invoice_number])
   @@index([organization_id, status])
   @@index([issue_date])
   @@index([organization_id, due_date])
+  @@map("invoices")
 }
 
-model invoice_lines {
+model InvoiceLine {
   id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   invoice_id          String   @db.Uuid
   line_order          Int
@@ -370,14 +384,16 @@ model invoice_lines {
   subtotal            Decimal  @db.Decimal(12, 2)
   total               Decimal  @db.Decimal(12, 2)
 
-  invoice invoices @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  invoice Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+
+  @@map("invoice_lines")
 }
 
 // ============================================================================
 // FINANCE & INVENTORY (GAP ANALYSIS FIXES)
 // ============================================================================
 
-model operating_expenses {
+model OperatingExpense {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   description     String
@@ -388,12 +404,13 @@ model operating_expenses {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([organization_id, date])
+  @@map("operating_expenses")
 }
 
-model inventory_items {
+model InventoryItem {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   name            String
@@ -407,22 +424,25 @@ model inventory_items {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([organization_id, sku])
+  @@map("inventory_items")
 }
 
 // ============================================================================
 // RBAC SYSTEM (ROLES & PERMISSIONS)
 // ============================================================================
 
-model permissions {
+model Permission {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   slug        String   @unique // e.g. "users:view", "invoices:create"
   description String?
   created_at  DateTime @default(now()) @db.Timestamptz(6)
 
   roles RolePermission[]
+
+  @@map("permissions")
 }
 
 model RolePermission {
@@ -431,7 +451,7 @@ model RolePermission {
   permission_slug String
   created_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  permission permissions @relation(fields: [permission_slug], references: [slug], onDelete: Cascade)
+  permission Permission @relation(fields: [permission_slug], references: [slug], onDelete: Cascade)
 
   @@unique([role, permission_slug])
   @@index([role])
@@ -442,7 +462,7 @@ model RolePermission {
 // ACCOUNTING / DOUBLE-ENTRY BOOKKEEPING
 // ============================================================================
 
-model accounting_accounts {
+model AccountingAccount {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   code            String
@@ -454,16 +474,17 @@ model accounting_accounts {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  parent       accounting_accounts?      @relation("AccountHierarchy", fields: [parent_id], references: [id])
-  children     accounting_accounts[]     @relation("AccountHierarchy")
-  transactions accounting_transactions[]
+  organization Organization             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  parent       AccountingAccount?      @relation("AccountHierarchy", fields: [parent_id], references: [id])
+  children     AccountingAccount[]     @relation("AccountHierarchy")
+  transactions AccountingTransaction[]
 
   @@unique([organization_id, code])
   @@index([organization_id, type])
+  @@map("accounting_accounts")
 }
 
-model accounting_journals {
+model AccountingJournal {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   date            DateTime @db.Date
@@ -474,15 +495,16 @@ model accounting_journals {
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
   created_by      String?  @db.Uuid
 
-  organization    organizations             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization    Organization             @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   created_by_user User?                     @relation(fields: [created_by], references: [id])
-  transactions    accounting_transactions[]
+  transactions    AccountingTransaction[]
 
   @@index([organization_id, date])
   @@index([organization_id, status])
+  @@map("accounting_journals")
 }
 
-model accounting_transactions {
+model AccountingTransaction {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   journal_id  String   @db.Uuid
   account_id  String   @db.Uuid
@@ -491,18 +513,19 @@ model accounting_transactions {
   description String?
   created_at  DateTime @default(now()) @db.Timestamptz(6)
 
-  journal accounting_journals @relation(fields: [journal_id], references: [id], onDelete: Cascade)
-  account accounting_accounts @relation(fields: [account_id], references: [id], onDelete: Restrict)
+  journal AccountingJournal @relation(fields: [journal_id], references: [id], onDelete: Cascade)
+  account AccountingAccount @relation(fields: [account_id], references: [id], onDelete: Restrict)
 
   @@index([journal_id])
   @@index([account_id])
+  @@map("accounting_transactions")
 }
 
 // ============================================================================
 // GMAIL INTEGRATION (Encrypted Tokens)
 // ============================================================================
 
-model gmail_tokens {
+model GmailToken {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id       String   @unique @db.Uuid
   access_token  String // Encrypted
@@ -515,13 +538,14 @@ model gmail_tokens {
   updated_at    DateTime @default(now()) @db.Timestamptz(6)
 
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  @@map("gmail_tokens")
 }
 
 // ============================================================================
 // PORTAL CLIENTE - Historial de Fases
 // ============================================================================
 
-model project_phase_history {
+model ProjectPhaseHistory {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   project_id String   @db.Uuid
   from_phase Int?
@@ -530,17 +554,18 @@ model project_phase_history {
   notes      String?
   created_at DateTime @default(now()) @db.Timestamptz(6)
 
-  project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   user    User     @relation(fields: [changed_by], references: [id])
 
   @@index([project_id, created_at(sort: Desc)])
+  @@map("project_phase_history")
 }
 
 // ============================================================================
 // SOLAR CORE - Transacciones Financieras
 // ============================================================================
 
-model project_transactions {
+model ProjectTransaction {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   project_id      String   @db.Uuid
   amount          Decimal  @db.Decimal(12, 2)
@@ -550,17 +575,18 @@ model project_transactions {
   processed_by    String   @db.Uuid
   created_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  project projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   user    User     @relation("processed_transactions", fields: [processed_by], references: [id])
 
   @@index([project_id, created_at(sort: Desc)])
+  @@map("project_transactions")
 }
 
 // ============================================================================
 // SOLAR CORE - Documentos de Proyecto (Flujo Ping-Pong)
 // ============================================================================
 
-model project_documents {
+model ProjectDocument {
   id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   project_id       String    @db.Uuid
   type             String // DNI, FACTURA_LUZ, CONTRATO, CIE, OTRO
@@ -575,19 +601,20 @@ model project_documents {
   created_at       DateTime  @default(now()) @db.Timestamptz(6)
   updated_at       DateTime  @default(now()) @db.Timestamptz(6)
 
-  project  projects @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  project  Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
   uploader User?    @relation("uploaded_documents", fields: [uploaded_by], references: [id])
   reviewer User?    @relation("reviewed_documents", fields: [reviewed_by], references: [id])
 
   @@index([project_id, type])
   @@index([project_id, status])
+  @@map("project_documents")
 }
 
 // ============================================================================
 // LEGACY TABLES RECOVERY (MIGRATION FIXES)
 // ============================================================================
 
-model sales {
+model Sale {
   id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id      String?   @db.Uuid
   customer_id          String?   @db.Uuid
@@ -613,12 +640,13 @@ model sales {
   created_at           DateTime  @default(now()) @db.Timestamptz(6)
   updated_at           DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([organization_id, sale_number])
+  @@map("sales")
 }
 
-model appointments {
+model Appointment {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String?   @db.Uuid
   title           String?
@@ -633,14 +661,15 @@ model appointments {
   created_at      DateTime  @default(now()) @db.Timestamptz(6)
   updated_at      DateTime  @default(now()) @db.Timestamptz(6)
 
-  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  customer     customers?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer     Customer?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
   assignee     User?          @relation(fields: [assigned_to], references: [id], onDelete: SetNull)
 
   @@index([organization_id, start_time])
+  @@map("appointments")
 }
 
-model client_notifications {
+model ClientNotification {
   id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sale_id           String    @db.Uuid
   title             String
@@ -662,7 +691,7 @@ model client_notifications {
 // INVITATION SYSTEM (Client Onboarding)
 // ============================================================================
 
-model invitations {
+model Invitation {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   token           String   @unique // 6-8 chars alphanumeric
@@ -673,18 +702,19 @@ model invitations {
   created_by      String   @db.Uuid
   created_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   creator      User          @relation(fields: [created_by], references: [id], onDelete: Cascade)
 
   @@index([organization_id, status])
   @@index([token])
+  @@map("invitations")
 }
 
 // ============================================================================
 // MISSING TABLES (STABILIZATION FIXES)
 // ============================================================================
 
-model payment_methods {
+model PaymentMethod {
   id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id String   @db.Uuid
   name            String
@@ -695,12 +725,13 @@ model payment_methods {
   created_at      DateTime @default(now()) @db.Timestamptz(6)
   updated_at      DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([organization_id, is_active])
+  @@map("payment_methods")
 }
 
-model calculations {
+model Calculation {
   id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id          String   @db.Uuid
   project_id               String?  @db.Uuid
@@ -715,14 +746,15 @@ model calculations {
   created_at               DateTime @default(now()) @db.Timestamptz(6)
   updated_at               DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  project      projects?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  project      Project?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
 
   @@index([organization_id])
   @@index([project_id])
+  @@map("calculations")
 }
 
-model presentations {
+model Presentation {
   id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id       String   @db.Uuid
   customer_id           String?  @db.Uuid
@@ -737,18 +769,19 @@ model presentations {
   created_at            DateTime @default(now()) @db.Timestamptz(6)
   updated_at            DateTime @default(now()) @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  customer     customers?    @relation(fields: [customer_id], references: [id], onDelete: SetNull)
-  project      projects?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  customer     Customer?    @relation(fields: [customer_id], references: [id], onDelete: SetNull)
+  project      Project?     @relation(fields: [project_id], references: [id], onDelete: SetNull)
 
   @@index([organization_id, project_id])
+  @@map("presentations")
 }
 
 // ============================================================================
 // SUPPORT TICKETS (Help Center)
 // ============================================================================
 
-model support_tickets {
+model SupportTicket {
   id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   organization_id   String    @db.Uuid
   user_id           String    @db.Uuid
@@ -767,18 +800,19 @@ model support_tickets {
   created_at        DateTime  @default(now()) @db.Timestamptz(6)
   updated_at        DateTime  @updatedAt @db.Timestamptz(6)
 
-  organization organizations     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   user         User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  messages     ticket_messages[]
+  messages     TicketMessage[]
 
   @@index([organization_id, status])
   @@index([user_id])
   @@index([customer_id])
   @@index([assigned_to])
   @@index([status, priority])
+  @@map("support_tickets")
 }
 
-model ticket_messages {
+model TicketMessage {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   ticket_id   String    @db.Uuid
   sender_id   String    @db.Uuid
@@ -789,17 +823,18 @@ model ticket_messages {
   read_at     DateTime? @db.Timestamptz(6)
   created_at  DateTime  @default(now()) @db.Timestamptz(6)
 
-  ticket support_tickets @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  ticket SupportTicket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
 
   @@index([ticket_id, created_at])
   @@index([sender_id])
+  @@map("ticket_messages")
 }
 
 // ============================================================================
 // LEAVE MANAGEMENT (Gestión de Vacaciones y Días Libres)
 // ============================================================================
 
-model employee_leave_balances {
+model EmployeeLeaveBalance {
   id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id         String @unique @db.Uuid
   organization_id String @db.Uuid
@@ -826,13 +861,14 @@ model employee_leave_balances {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @updatedAt @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, year])
   @@index([organization_id, year])
+  @@map("employee_leave_balances")
 }
 
-model leave_requests {
+model LeaveRequest {
   id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id         String @db.Uuid
   organization_id String @db.Uuid
@@ -858,18 +894,19 @@ model leave_requests {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @updatedAt @db.Timestamptz(6)
 
-  organization organizations @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, status])
   @@index([organization_id, status])
   @@index([start_date, end_date])
+  @@map("leave_requests")
 }
 
 // ============================================================================
 // AUDIT LOGS (ISO 27001 A.8.15 Compliance)
 // ============================================================================
 
-model audit_logs {
+model AuditLog {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   event_type     String    @db.VarChar(100)
   user_id        String    @db.Uuid
@@ -883,7 +920,7 @@ model audit_logs {
   timestamp      DateTime  @default(now()) @db.Timestamptz(6)
 
   user         User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  organization organizations? @relation(fields: [organization_id], references: [id], onDelete: SetNull)
+  organization Organization? @relation(fields: [organization_id], references: [id], onDelete: SetNull)
 
   @@index([user_id])
   @@index([organization_id])
@@ -893,4 +930,30 @@ model audit_logs {
   @@index([user_id, timestamp(sort: Desc)])
   @@index([organization_id, timestamp(sort: Desc)])
   @@map("audit_logs")
+}
+
+
+model ImportJob {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String    @db.Uuid
+  entity_type     String
+  file_name       String
+  total_rows      Int       @default(0)
+  processed_rows  Int       @default(0)
+  successful_rows Int       @default(0)
+  failed_rows     Int       @default(0)
+  skipped_rows    Int       @default(0)
+  status          String    @default("pending")
+  column_mapping  Json?
+  errors          Json?
+  started_at      DateTime? @db.Timestamptz(6)
+  completed_at    DateTime? @db.Timestamptz(6)
+  created_by      String    @db.Uuid
+  created_at      DateTime  @default(now()) @db.Timestamptz(6)
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [created_by], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, created_at])
+  @@map("import_jobs")
 }

@@ -21,7 +21,7 @@ export async function getClientDashboardData() {
     try {
         // ISOLATION QUERY: Find ONLY the project assigned to this user
         // This is the "Data Isolation" guarantee
-        const project = await prisma.projects.findUnique({
+        const project = await prisma.project.findUnique({
             where: {
                 portal_user_id: user.id
             },

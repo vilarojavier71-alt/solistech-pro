@@ -1,6 +1,6 @@
 'use server'
 
-import { getCurrentUserWithRole } from '@/lib/session'
+import { prisma } from '@/lib/db'
 
 /**
  * Tipos de subvenciones disponibles
@@ -74,22 +74,25 @@ export interface GrantCalculationParams {
  * Calcula todas las subvenciones aplicables a un proyecto
  */
 export async function calculateGrant(params: GrantCalculationParams): Promise<{ data: GrantCalculation | null, error: string | null }> {
-    const supabase = await createClient()
-
     try {
         // 1. Obtener subvenciones aplicables desde grants_db
-        const { data: grants, error: grantsError } = await supabase
-            .rpc('get_applicable_grants', {
-                p_autonomous_community: params.autonomousCommunity,
-                p_province: params.province || null,
-                p_municipality: params.municipality || null,
-                p_power_kwp: params.systemSizeKwp,
-                p_reference_date: new Date().toISOString().split('T')[0]
-            })
+        // Usamos raw query porque grants_db no está en el esquema Prisma aún
+        const currentDate = new Date().toISOString().split('T')[0]
 
-        if (grantsError) {
-            console.error('Error fetching grants:', grantsError)
-            // Continuar con cálculo básico si falla la BD
+        let grants: any[] = []
+        try {
+            grants = await prisma.$queryRaw`
+                SELECT * FROM get_applicable_grants(
+                    ${params.autonomousCommunity}, 
+                    ${params.province || null}, 
+                    ${params.municipality || null}, 
+                    ${params.systemSizeKwp}, 
+                    ${currentDate}::date
+                )
+            `
+        } catch (dbError) {
+            console.error('Error fetching grants via RPC, trying direct fallback if needed:', dbError)
+            // If RPC fails, grants remains empty array
         }
 
         // 2. Calcular IRPF
@@ -183,17 +186,15 @@ export async function calculateGrant(params: GrantCalculationParams): Promise<{ 
  * Guarda el cálculo de subvenciones en el proyecto
  */
 async function saveGrantCalculation(projectId: string, calculation: GrantCalculation) {
-    const supabase = await createClient()
-
-    const { error } = await supabase
-        .from('projects')
-        .update({
-            grant_calculation: calculation,
-            updated_at: new Date().toISOString()
+    try {
+        await prisma.project.update({
+            where: { id: projectId },
+            data: {
+                grant_calculation: calculation as any, // Cast to any if Json type mismatch
+                updated_at: new Date()
+            }
         })
-        .eq('id', projectId)
-
-    if (error) {
+    } catch (error) {
         console.error('Error saving grant calculation:', error)
     }
 }
@@ -202,20 +203,17 @@ async function saveGrantCalculation(projectId: string, calculation: GrantCalcula
  * Obtiene el cálculo de subvenciones guardado de un proyecto
  */
 export async function getProjectGrantCalculation(projectId: string): Promise<{ data: GrantCalculation | null, error: string | null }> {
-    const supabase = await createClient()
-
     try {
-        const { data, error } = await supabase
-            .from('projects')
-            .select('grant_calculation')
-            .eq('id', projectId)
-            .single()
+        const project = await prisma.project.findUnique({
+            where: { id: projectId },
+            select: { grant_calculation: true }
+        })
 
-        if (error) {
-            return { data: null, error: error.message }
+        if (!project) {
+            return { data: null, error: 'Project not found' }
         }
 
-        return { data: data?.grant_calculation || null, error: null }
+        return { data: project.grant_calculation as unknown as GrantCalculation || null, error: null }
 
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -227,27 +225,26 @@ export async function getProjectGrantCalculation(projectId: string): Promise<{ d
  * Lista todas las subvenciones disponibles para una C.A.
  */
 export async function listAvailableGrants(autonomousCommunity: string, province?: string) {
-    const supabase = await createClient()
-
     try {
-        let query = supabase
-            .from('grants_db')
-            .select('*')
-            .eq('is_active', true)
-            .or(`autonomous_community.eq.${autonomousCommunity},autonomous_community.eq.NACIONAL`)
-            .lte('valid_from', new Date().toISOString())
+        // Usamos raw query porque grants_db no está en Prisma
+        const today = new Date().toISOString()
+
+        let query = `
+            SELECT * FROM grants_db 
+            WHERE is_active = true 
+            AND (autonomous_community = '${autonomousCommunity}' OR autonomous_community = 'NACIONAL')
+            AND valid_from <= '${today}'
+        `
 
         if (province) {
-            query = query.or(`province.is.null,province.eq.${province}`)
+            query += ` AND (province IS NULL OR province = '${province}')`
         }
 
-        const { data, error } = await query.order('grant_type')
+        query += ` ORDER BY grant_type ASC`
 
-        if (error) {
-            return { data: null, error: error.message }
-        }
+        const grants = await prisma.$queryRawUnsafe(query)
 
-        return { data, error: null }
+        return { data: grants as any[], error: null }
 
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

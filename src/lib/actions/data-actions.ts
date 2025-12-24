@@ -31,7 +31,7 @@ export async function importDataFromCsv<T = any>(
 
     try {
         // Get User's Organization
-        const userDetails = await prisma.User.findUnique({
+        const userDetails = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -64,7 +64,7 @@ export async function importDataFromCsv<T = any>(
         // Prisma requires specific model access - using switch for supported tables
         switch (tableName) {
             case 'customers':
-                await prisma.customers.createMany({
+                await prisma.customer.createMany({
                     data: rowsToInsert.map(r => ({
                         name: r.name || r.full_name || 'Sin nombre',
                         email: r.email,
@@ -81,7 +81,7 @@ export async function importDataFromCsv<T = any>(
                 break
 
             case 'projects':
-                await prisma.projects.createMany({
+                await prisma.project.createMany({
                     data: rowsToInsert.map(r => ({
                         name: r.name || 'Proyecto Importado',
                         description: r.description,
@@ -110,4 +110,5 @@ export async function importDataFromCsv<T = any>(
         return { success: false, message: "Error inesperado durante la importación: " + err.message }
     }
 }
+
 

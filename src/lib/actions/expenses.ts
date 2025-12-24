@@ -40,7 +40,7 @@ export async function createExpense(data: unknown) {
     }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -49,7 +49,7 @@ export async function createExpense(data: unknown) {
             return { success: false, message: "Usuario sin organización asignada" }
         }
 
-        await prisma.operating_expenses.create({
+        await prisma.operatingExpense.create({
             data: {
                 organization_id: user.organization_id,
                 description: validation.data.description,
@@ -72,7 +72,7 @@ export async function deleteExpense(id: string) {
     if (!session?.user) return { success: false, message: "No autorizado" }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -82,7 +82,7 @@ export async function deleteExpense(id: string) {
         }
 
         // ✅ Validar ownership ANTES de eliminar
-        const expense = await prisma.operating_expenses.findFirst({
+        const expense = await prisma.operatingExpense.findFirst({
             where: {
                 id,
                 organization_id: user.organization_id
@@ -93,7 +93,7 @@ export async function deleteExpense(id: string) {
             return { success: false, message: "Gasto no encontrado o no pertenece a tu organización" }
         }
 
-        await prisma.operating_expenses.delete({
+        await prisma.operatingExpense.delete({
             where: { id }
         })
 
@@ -109,7 +109,7 @@ export async function getFinancialSummary(startDate?: string, endDate?: string) 
     if (!session?.user) return { totalIncome: 0, totalExpenses: 0, balance: 0, expenseCount: 0, recentExpenses: [] }
 
     try {
-        const user = await prisma.User.findUnique({
+        const user = await prisma.user.findUnique({
             where: { id: session.user.id },
             select: { organization_id: true }
         })
@@ -119,7 +119,7 @@ export async function getFinancialSummary(startDate?: string, endDate?: string) 
         }
 
         // 1. Income (Paid Invoices)
-        const invoices = await prisma.invoices.findMany({
+        const invoices = await prisma.invoice.findMany({
             where: {
                 organization_id: user.organization_id,
                 status: 'paid',
@@ -131,7 +131,7 @@ export async function getFinancialSummary(startDate?: string, endDate?: string) 
         const totalIncome = invoices.reduce((sum, inv) => sum + Number(inv.total || 0), 0)
 
         // 2. Expenses (Operating Expenses)
-        const expenses = await prisma.operating_expenses.findMany({
+        const expenses = await prisma.operatingExpense.findMany({
             where: {
                 organization_id: user.organization_id,
                 ...(startDate && { date: { gte: new Date(startDate) } }),
@@ -159,14 +159,14 @@ export async function getExpenseList() {
     const session = await auth()
     if (!session?.user) return []
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!user?.organization_id) return []
 
-    const expenses = await prisma.operating_expenses.findMany({
+    const expenses = await prisma.operatingExpense.findMany({
         where: { organization_id: user.organization_id },
         orderBy: { date: 'desc' },
         take: 50
@@ -179,3 +179,4 @@ export async function getExpenseList() {
         created_at: e.created_at.toISOString()
     })) as Expense[]
 }
+

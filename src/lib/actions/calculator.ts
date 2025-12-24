@@ -37,7 +37,7 @@ export async function createProjectFromCalculation(
             return { error: 'No autenticado.' }
         }
 
-        const dbUser = await prisma.User.findUnique({
+        const dbUser = await prisma.user.findUnique({
             where: { id: sessionUser.id },
             select: { organization_id: true }
         })
@@ -48,7 +48,7 @@ export async function createProjectFromCalculation(
         }
 
         // Verify customer belongs to organization
-        const customer = await prisma.customers.findUnique({
+        const customer = await prisma.customer.findUnique({
             where: { id: customerId },
             select: { organization_id: true }
         })
@@ -57,7 +57,7 @@ export async function createProjectFromCalculation(
             return { error: 'Cliente inválido.' }
         }
 
-        const newProject = await prisma.projects.create({
+        const newProject = await prisma.project.create({
             data: {
                 organization_id: organizationId,
                 client_id: customerId,
@@ -91,7 +91,7 @@ export async function saveCalculation(data: SaveCalculationData) {
         }
 
         // Get fresh user data from DB
-        const dbUser = await prisma.User.findUnique({
+        const dbUser = await prisma.user.findUnique({
             where: { id: sessionUser.id },
             select: { organization_id: true }
         })
@@ -109,7 +109,7 @@ export async function saveCalculation(data: SaveCalculationData) {
         const safeROI = Math.min(Math.max(data.roi || 0, 0), 9999)
 
         // Verify organization exists
-        const orgExists = await prisma.organizations.findUnique({
+        const orgExists = await prisma.organization.findUnique({
             where: { id: organizationId },
             select: { id: true }
         })
@@ -119,7 +119,7 @@ export async function saveCalculation(data: SaveCalculationData) {
         }
 
         // Create calculation record
-        const calculation = await prisma.calculations.create({
+        const calculation = await prisma.calculation.create({
             data: {
                 organization_id: organizationId,
                 system_size_kwp: data.systemSize,
@@ -150,3 +150,4 @@ export async function saveCalculation(data: SaveCalculationData) {
         return { error: `Error al guardar cálculo: ${error.message || 'Error desconocido'}` }
     }
 }
+

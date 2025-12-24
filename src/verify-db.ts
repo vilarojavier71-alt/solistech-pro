@@ -6,7 +6,7 @@ async function verify() {
     console.log('Querying latest organization...')
 
     try {
-        const latestOrg = await prisma.organizations.findFirst({
+        const latestOrg = await prisma.organization.findFirst({
             orderBy: { created_at: 'desc' }
         })
 

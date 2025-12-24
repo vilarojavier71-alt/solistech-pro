@@ -40,7 +40,7 @@ export async function storeTokens(userId: string, tokens: any, email: string) {
     const encryptedRefresh = encrypt(tokens.refresh_token)
     const expiryDate = tokens.expiry_date || Date.now() + 3500 * 1000
 
-    await prisma.gmail_tokens.upsert({
+    await prisma.gmailToken.upsert({
         where: { user_id: userId },
         update: {
             access_token: encryptedAccess,
@@ -64,7 +64,7 @@ export async function storeTokens(userId: string, tokens: any, email: string) {
 }
 
 export async function getGmailClient(userId: string) {
-    const tokenRecord = await prisma.gmail_tokens.findUnique({
+    const tokenRecord = await prisma.gmailToken.findUnique({
         where: { user_id: userId }
     })
 
@@ -94,7 +94,7 @@ export async function getGmailClient(userId: string) {
             const { credentials } = await oauth2Client.refreshAccessToken()
             const newEncryptedAccess = encrypt(credentials.access_token!)
 
-            await prisma.gmail_tokens.update({
+            await prisma.gmailToken.update({
                 where: { user_id: userId },
                 data: {
                     access_token: newEncryptedAccess,

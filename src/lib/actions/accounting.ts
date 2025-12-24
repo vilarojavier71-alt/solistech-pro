@@ -22,7 +22,7 @@ export async function createAccount(data: CreateAccountData) {
     const { code, name, type, parentId, isGroup } = validation.data
 
     try {
-        const account = await prisma.accounting_accounts.create({
+        const account = await prisma.accountingAccount.create({
             data: {
                 organization_id: user.organizationId,
                 code,
@@ -47,7 +47,7 @@ export async function getAccounts() {
     if (!user || !user.organizationId) return { error: "No autenticado" }
 
     try {
-        const accounts = await prisma.accounting_accounts.findMany({
+        const accounts = await prisma.accountingAccount.findMany({
             where: { organization_id: user.organizationId },
             orderBy: { code: 'asc' }
         })
@@ -157,7 +157,7 @@ export async function getJournals() {
     if (!user || !user.organizationId) return { error: "No autenticado" }
 
     try {
-        const journals = await prisma.accounting_journals.findMany({
+        const journals = await prisma.accountingJournal.findMany({
             where: { organization_id: user.organizationId },
             include: {
                 transactions: {
@@ -181,12 +181,12 @@ export async function getTrialBalance(dateStart?: string, dateEnd?: string) {
     if (!user || !user.organizationId) return { error: "No autenticado" }
 
     try {
-        const accounts = await prisma.accounting_accounts.findMany({
+        const accounts = await prisma.accountingAccount.findMany({
             where: { organization_id: user.organizationId, is_active: true },
             orderBy: { code: 'asc' }
         })
 
-        const transactions = await prisma.accounting_transactions.findMany({
+        const transactions = await prisma.accountingTransaction.findMany({
             where: {
                 journal: {
                     organization_id: user.organizationId,
@@ -223,7 +223,7 @@ export async function getCashFlowReport(startDate?: string, endDate?: string) {
     if (!user || !user.organizationId) return { error: "No autenticado" }
 
     try {
-        const invoices = await prisma.invoices.findMany({
+        const invoices = await prisma.invoice.findMany({
             where: {
                 organization_id: user.organizationId,
                 payment_status: 'paid',
@@ -233,7 +233,7 @@ export async function getCashFlowReport(startDate?: string, endDate?: string) {
             select: { id: true, total: true, issue_date: true }
         })
 
-        const expenses = await prisma.operating_expenses.findMany({
+        const expenses = await prisma.operatingExpense.findMany({
             where: {
                 organization_id: user.organizationId,
                 ...(startDate && { date: { gte: new Date(startDate) } }),
@@ -285,7 +285,7 @@ export async function getFinancialKPIs() {
     if (!user || !user.organizationId) return { error: "No autenticado" }
 
     try {
-        const invoices = await prisma.invoices.findMany({
+        const invoices = await prisma.invoice.findMany({
             where: { organization_id: user.organizationId },
             select: { id: true, total: true, status: true, payment_status: true, issue_date: true }
         })
@@ -321,7 +321,7 @@ export async function getRevenueForecasts(months = 3) {
         const sixMonthsAgo = new Date()
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
-        const invoices = await prisma.invoices.findMany({
+        const invoices = await prisma.invoice.findMany({
             where: {
                 organization_id: user.organizationId,
                 issue_date: { gte: sixMonthsAgo }

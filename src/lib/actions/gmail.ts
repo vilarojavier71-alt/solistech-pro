@@ -47,7 +47,7 @@ export async function disconnectGmail() {
     if (!user) return { error: 'Not authenticated' }
 
     try {
-        await prisma.gmail_tokens.deleteMany({
+        await prisma.gmailToken.deleteMany({
             where: { user_id: user.id }
         })
         revalidatePath('/dashboard/mail')
@@ -68,7 +68,7 @@ export async function getGmailStatus() {
 
     try {
         console.log('[MAIL DEBUG] Querying gmail_tokens for user:', user.id)
-        const token = await prisma.gmail_tokens.findUnique({
+        const token = await prisma.gmailToken.findUnique({
             where: { user_id: user.id },
             select: { email: true, is_active: true, updated_at: true }
         })

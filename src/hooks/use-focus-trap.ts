@@ -28,9 +28,9 @@ interface UseFocusTrapOptions {
  * 
  * return (
  *   <div ref={modalRef}>
- *     {/* Modal content */}
+ *     Modal content
  *   </div>
- * )
+  * )
  * ```
  */
 export function useFocusTrap(
@@ -130,4 +130,5 @@ export function useFocusTrap(
     }
   }, [isActive, containerRef, onEscape])
 }
+
 

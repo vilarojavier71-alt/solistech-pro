@@ -21,7 +21,7 @@ export async function getClientProjectStatus(projectId: string) {
 
     try {
         // Buscar proyecto y verificar que el cliente esté asociado
-        const project = await prisma.projects.findFirst({
+        const project = await prisma.project.findFirst({
             where: {
                 id: projectId,
                 client_portal_enabled: true,
@@ -83,7 +83,7 @@ export async function getClientProjects() {
     }
 
     try {
-        const projects = await prisma.projects.findMany({
+        const projects = await prisma.project.findMany({
             where: {
                 client_portal_enabled: true,
                 customer: {
@@ -119,7 +119,7 @@ export async function getProjectPhaseHistory(projectId: string) {
 
     try {
         // Verificar acceso del cliente
-        const project = await prisma.projects.findFirst({
+        const project = await prisma.project.findFirst({
             where: {
                 id: projectId,
                 client_portal_enabled: true,
@@ -131,7 +131,7 @@ export async function getProjectPhaseHistory(projectId: string) {
             return { error: 'Sin acceso al proyecto' }
         }
 
-        const history = await prisma.project_phase_history.findMany({
+        const history = await prisma.projectPhaseHistory.findMany({
             where: { project_id: projectId },
             include: {
                 user: { select: { full_name: true } }
@@ -166,7 +166,7 @@ export async function updateProjectPhase(
     }
 
     // Verificar que el usuario tiene rol de gestión
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true, organization_id: true }
     })
@@ -177,7 +177,7 @@ export async function updateProjectPhase(
 
     try {
         // Obtener proyecto actual
-        const project = await prisma.projects.findFirst({
+        const project = await prisma.project.findFirst({
             where: {
                 id: projectId,
                 organization_id: user.organization_id
@@ -191,7 +191,7 @@ export async function updateProjectPhase(
         // Actualizar fase y registrar historial
         await prisma.$transaction([
             // Actualizar proyecto
-            prisma.projects.update({
+            prisma.project.update({
                 where: { id: projectId },
                 data: {
                     installation_phase: newPhase,
@@ -203,7 +203,7 @@ export async function updateProjectPhase(
                 }
             }),
             // Registrar historial
-            prisma.project_phase_history.create({
+            prisma.projectPhaseHistory.create({
                 data: {
                     project_id: projectId,
                     from_phase: project.installation_phase,
@@ -236,7 +236,7 @@ export async function toggleClientPortal(projectId: string, enabled: boolean) {
         return { error: 'No autenticado' }
     }
 
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true, organization_id: true }
     })
@@ -246,7 +246,7 @@ export async function toggleClientPortal(projectId: string, enabled: boolean) {
     }
 
     try {
-        await prisma.projects.update({
+        await prisma.project.update({
             where: { id: projectId },
             data: {
                 client_portal_enabled: enabled,
@@ -276,7 +276,7 @@ export async function updateLegalizationStatus(
     }
 
     try {
-        await prisma.projects.update({
+        await prisma.project.update({
             where: { id: projectId },
             data: { legalization_status: status }
         })
@@ -315,7 +315,7 @@ export async function uploadDocument(
 
     try {
         // Verificar que el proyecto existe y es accesible
-        const project = await prisma.projects.findFirst({
+        const project = await prisma.project.findFirst({
             where: {
                 id: projectId,
                 customer: { email: session.user.email }
@@ -327,7 +327,7 @@ export async function uploadDocument(
         }
 
         // Buscar documento existente del mismo tipo
-        const existingDoc = await prisma.project_documents.findFirst({
+        const existingDoc = await prisma.projectDocument.findFirst({
             where: {
                 project_id: projectId,
                 type: type
@@ -336,7 +336,7 @@ export async function uploadDocument(
 
         if (existingDoc) {
             // Actualizar documento existente (re-upload después de rechazo)
-            await prisma.project_documents.update({
+            await prisma.projectDocument.update({
                 where: { id: existingDoc.id },
                 data: {
                     url: fileUrl,
@@ -351,7 +351,7 @@ export async function uploadDocument(
             })
         } else {
             // Crear nuevo documento
-            await prisma.project_documents.create({
+            await prisma.projectDocument.create({
                 data: {
                     project_id: projectId,
                     type: type,
@@ -384,7 +384,7 @@ export async function approveDocument(documentId: string) {
     }
 
     // Verificar que es staff
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })
@@ -394,7 +394,7 @@ export async function approveDocument(documentId: string) {
     }
 
     try {
-        await prisma.project_documents.update({
+        await prisma.projectDocument.update({
             where: { id: documentId },
             data: {
                 status: 'APPROVED',
@@ -422,7 +422,7 @@ export async function rejectDocument(documentId: string, reason: string) {
     }
 
     // Verificar que es staff
-    const user = await prisma.User.findUnique({
+    const user = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { role: true }
     })
@@ -436,7 +436,7 @@ export async function rejectDocument(documentId: string, reason: string) {
     }
 
     try {
-        const doc = await prisma.project_documents.update({
+        const doc = await prisma.projectDocument.update({
             where: { id: documentId },
             data: {
                 status: 'REJECTED',
@@ -467,7 +467,7 @@ export async function getProjectDocuments(projectId: string) {
     }
 
     try {
-        const documents = await prisma.project_documents.findMany({
+        const documents = await prisma.projectDocument.findMany({
             where: { project_id: projectId },
             orderBy: { created_at: 'desc' }
         })
@@ -478,4 +478,5 @@ export async function getProjectDocuments(projectId: string) {
         return { error: 'Error al obtener documentos' }
     }
 }
+
 

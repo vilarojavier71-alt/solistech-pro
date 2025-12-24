@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next'
+import { Metadata } from 'next'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { LeadsTable } from '@/components/dashboard/leads-table'
@@ -27,7 +27,7 @@ export default async function LeadsPage({
     const sort = typeof searchParams.sort === 'string' ? searchParams.sort : undefined
 
     // Get user's organization
-    const profile = await prisma.users.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })

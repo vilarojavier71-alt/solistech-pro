@@ -44,7 +44,7 @@ export async function checkIn({ projectId, coords }: CheckInParams) {
         if (!user) return { success: false, error: 'Unauthorized' }
 
         // Check if already active
-        const activeEntry = await prisma.time_entries.findFirst({
+        const activeEntry = await prisma.timeEntry.findFirst({
             where: {
                 user_id: user.id,
                 status: 'active'
@@ -60,7 +60,7 @@ export async function checkIn({ projectId, coords }: CheckInParams) {
 
         // Validate Location if Project ID provided
         if (projectId) {
-            const project = await prisma.projects.findUnique({
+            const project = await prisma.project.findUnique({
                 where: { id: projectId }
             })
 
@@ -84,7 +84,7 @@ export async function checkIn({ projectId, coords }: CheckInParams) {
         }
 
         // Insert Entry
-        await prisma.time_entries.create({
+        await prisma.timeEntry.create({
             data: {
                 user_id: user.id,
                 project_id: projectId || null,
@@ -113,7 +113,7 @@ export async function checkOut({ entryId, coords }: CheckOutParams) {
         if (!user) return { success: false, error: 'Unauthorized' }
 
         // Get Entry
-        const entry = await prisma.time_entries.findUnique({
+        const entry = await prisma.timeEntry.findUnique({
             where: { id: entryId }
         })
 
@@ -127,7 +127,7 @@ export async function checkOut({ entryId, coords }: CheckOutParams) {
         const totalMinutes = Math.round(diffMs / 60000)
 
         // Update
-        await prisma.time_entries.update({
+        await prisma.timeEntry.update({
             where: { id: entryId },
             data: {
                 clock_out: clockOut,
@@ -152,7 +152,7 @@ export async function getActiveEntry() {
     const user = await getCurrentUserWithRole()
     if (!user) return null
 
-    const data = await prisma.time_entries.findFirst({
+    const data = await prisma.timeEntry.findFirst({
         where: {
             user_id: user.id,
             status: 'active'
@@ -169,7 +169,7 @@ export async function getTimeHistory() {
     const user = await getCurrentUserWithRole()
     if (!user) return []
 
-    const data = await prisma.time_entries.findMany({
+    const data = await prisma.timeEntry.findMany({
         where: { user_id: user.id },
         include: {
             project: { select: { name: true } }
@@ -200,7 +200,7 @@ export async function getAdminTimeEntries(month?: string) {
         }
     }
 
-    const data = await prisma.time_entries.findMany({
+    const data = await prisma.timeEntry.findMany({
         where,
         include: {
             user: { select: { full_name: true, email: true } },

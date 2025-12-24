@@ -29,7 +29,7 @@ export interface SalesContext {
 }
 
 export async function getSalesContext(leadId: string, orgId: string): Promise<SalesContext | null> {
-    const lead = await prisma.leads.findFirst({
+    const lead = await prisma.lead.findFirst({
         where: { id: leadId, organization_id: orgId }
     })
 
@@ -73,7 +73,7 @@ export interface TechnicalContext {
 }
 
 export async function getTechnicalContext(projectId: string, orgId: string): Promise<TechnicalContext | null> {
-    const project = await prisma.projects.findFirst({
+    const project = await prisma.project.findFirst({
         where: { id: projectId, organization_id: orgId },
         include: {
             customer: { select: { name: true } },
@@ -125,7 +125,7 @@ export interface AdminContext {
 }
 
 export async function getAdminContext(customerId: string, orgId: string): Promise<AdminContext | null> {
-    const customer = await prisma.customers.findFirst({
+    const customer = await prisma.customer.findFirst({
         where: { id: customerId, organization_id: orgId },
         include: {
             invoices: {
@@ -218,3 +218,4 @@ export const CONTEXT_FIELD_MAPPING = {
         restriction: 'Datos mínimos del usuario'
     }
 } as const
+

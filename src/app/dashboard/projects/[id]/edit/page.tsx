@@ -15,14 +15,14 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
     const session = await auth()
     if (!session?.user) redirect('/auth/login')
 
-    const profile = await prisma.User.findUnique({
+    const profile = await prisma.user.findUnique({
         where: { id: session.user.id },
         select: { organization_id: true }
     })
 
     if (!profile?.organization_id) redirect('/dashboard')
 
-    const project = await prisma.projects.findFirst({
+    const project = await prisma.project.findFirst({
         where: {
             id,
             organization_id: profile.organization_id
@@ -32,7 +32,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
     if (!project) redirect('/dashboard/projects')
 
     // Get customers for dropdown
-    const customers = await prisma.customers.findMany({
+    const customers = await prisma.customer.findMany({
         where: { organization_id: profile.organization_id },
         select: { id: true, name: true },
         orderBy: { name: 'asc' }
