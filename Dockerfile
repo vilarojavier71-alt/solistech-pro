@@ -32,7 +32,8 @@ ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=$NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
 ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 
-# Construir la aplicación
+# Construir la aplicacion
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm run build
 
 # Exponer el puerto
