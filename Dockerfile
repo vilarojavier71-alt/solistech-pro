@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# Instalar compatibilidad para Prisma y OpenSSL (Alpine)
+RUN apk add --no-cache openssl openssl1.1-compat libc6-compat
+
 WORKDIR /app
 
 # Variables para evitar problemas de permisos de npm
@@ -39,5 +42,5 @@ RUN npm run build
 # Exponer el puerto
 EXPOSE 3000
 
-# Comando de inicio
-CMD ["npm", "start"]
+# Comando de inicio CORRECTO para modo standalone
+CMD ["node", ".next/standalone/server.js"]
