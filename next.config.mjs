@@ -1,4 +1,9 @@
 import { withSentryConfig } from '@sentry/nextjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -102,6 +107,10 @@ const nextConfig = {
 
     // Fix for @react-pdf/renderer requiring canvas
     config.resolve.alias.canvas = false;
+
+    // Explicit alias resolution for @/ (Linux path resolution fix)
+    // Why: Ensures webpack resolves @/ alias correctly in case-sensitive filesystems
+    config.resolve.alias['@'] = path.resolve(process.cwd(), 'src');
 
     return config;
   },

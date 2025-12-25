@@ -3,15 +3,28 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
+import { encrypt, decrypt } from '@/lib/google/encryption'
 
-// Función simple de encriptación (en producción usar crypto más robusto)
+/**
+ * ApiKeyVault: Encriptación AES-256-GCM para API Keys
+ * 
+ * Why: ISO 27001 A.8.24 - Post-Quantum Cryptography compliance
+ * Uses AES-256-GCM (resistant to quantum attacks) instead of Base64
+ * 
+ * Security: Keys are encrypted at rest using AES-256-GCM with random IV
+ */
 function encryptApiKey(apiKey: string): string {
-    // Por ahora, simple Base64 (MEJORAR en producción con AES-256)
-    return Buffer.from(apiKey).toString('base64')
+    if (!process.env.GMAIL_ENCRYPTION_KEY) {
+        throw new Error('GMAIL_ENCRYPTION_KEY environment variable is required')
+    }
+    return encrypt(apiKey)
 }
 
 function decryptApiKey(encrypted: string): string {
-    return Buffer.from(encrypted, 'base64').toString('utf-8')
+    if (!process.env.GMAIL_ENCRYPTION_KEY) {
+        throw new Error('GMAIL_ENCRYPTION_KEY environment variable is required')
+    }
+    return decrypt(encrypted)
 }
 
 // Validar API key según el proveedor

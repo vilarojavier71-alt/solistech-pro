@@ -5,12 +5,13 @@
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "npx prisma@5.10 generate && next build",
+    "build": "node scripts/validate-aliases.js && npx prisma@5.10 generate && next build",
     "postinstall": "npx prisma@5.10 generate",
     "start": "next start",
     "lint": "eslint",
+    "validate:aliases": "node scripts/validate-aliases.js",
     "install:coolify": "mkdir -p /tmp/.npm && npm install --cache /tmp/.npm --tmp /tmp",
-    "build:coolify": "npm run install:coolify && prisma generate && npx prisma migrate deploy && npm run build"
+    "build:coolify": "npm run install:coolify && npm run validate:aliases && prisma generate && npx prisma migrate deploy && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",

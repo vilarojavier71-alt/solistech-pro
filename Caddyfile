@@ -6,8 +6,17 @@
 # ============================================================================
 
 motorgap.es {
+    # TLS 1.3 Configuration (ISO 27001 A.8.24 - PQC Compliance)
+    tls {
+        protocols tls1.3
+        ciphers TLS_AES_256_GCM_SHA384 TLS_CHACHA20_POLY1305_SHA256 TLS_AES_128_GCM_SHA256
+    }
+    
     # Reverse proxy to Next.js app
-    reverse_proxy localhost:3000
+    reverse_proxy localhost:3000 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-For {remote}
+    }
 
     # Security headers
     header {

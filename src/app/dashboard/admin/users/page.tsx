@@ -9,13 +9,11 @@ export default async function AdminUsersPage() {
 
     if (!session?.user) redirect("/auth/login")
 
-    // Get current user role
-    const profile = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { role: true }
-    })
-
-    if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
+    // Zero-Flag Policy: Check permissions instead of role
+    const { getUserPermissions } = await import('@/lib/actions/permissions')
+    const permissions = await getUserPermissions()
+    
+    if (!permissions?.manage_users) {
         redirect("/dashboard")
     }
 
@@ -28,7 +26,8 @@ export default async function AdminUsersPage() {
                 <p className="text-muted-foreground">Administra los roles y accesos de tu equipo.</p>
             </div>
 
-            <UserRoleManager users={users} currentUserRole={profile.role} />
+            {/* Zero-Flag Policy: Pass permissions instead of role */}
+            <UserRoleManager users={users} currentUserRole={null} />
         </div>
     )
 }

@@ -44,7 +44,7 @@ Sigue estos pasos para levantar un entorno de desarrollo funcional en menos de 5
 ### Requisitos Previos
 
 - Docker Desktop (corriendo).
-- Node.js 18+ (LTS recomendado).
+- Node.js 20+ (LTS recomendado). **Nota:** El proyecto requiere Node.js 20 específicamente para compatibilidad con Prisma y Next.js 14.
 
 ### Pasos de Instalación
 
@@ -62,25 +62,50 @@ Sigue estos pasos para levantar un entorno de desarrollo funcional en menos de 5
     # Configurar DATABASE_URL=postgresql://postgres:postgres@localhost:5432/motorgap
     ```
 
-3. **Levantar Infraestructura:**
+3. **Validar Configuración (Pre-Build):**
+
+    ```bash
+    npm run validate:aliases
+    ```
+
+4. **Levantar Infraestructura:**
 
     ```bash
     docker compose up -d --build
     ```
 
-4. **Inicializar Base de Datos:**
+5. **Inicializar Base de Datos:**
 
     ```bash
     npx prisma migrate dev
     ```
 
-5. **Iniciar Aplicación:**
+6. **Iniciar Aplicación:**
 
     ```bash
     npm run dev
     ```
 
     > Accede a `http://localhost:3000`.
+
+### 🐳 Despliegue en Producción (Coolify/Docker)
+
+El `Dockerfile` utiliza un **multi-stage build** optimizado para producción:
+
+- **Stage 1 (deps):** Instalación de dependencias con cache layer
+- **Stage 2 (builder):** Build de la aplicación con limpieza de caché `.next`
+- **Stage 3 (runner):** Runtime mínimo con usuario no-root y HEALTHCHECK
+
+**Variables de Entorno Requeridas:**
+- `DATABASE_URL`: Connection string de PostgreSQL
+- `NEXTAUTH_SECRET`: Secret para NextAuth.js
+- `NEXT_PUBLIC_APP_URL`: URL pública de la aplicación
+
+**Health Check:**
+El contenedor expone un endpoint de health check en `/api/health` que verifica:
+- Conexión a base de datos
+- Variables de entorno críticas
+- Uso de memoria
 
 ### 🔧 Troubleshooting
 
@@ -89,6 +114,10 @@ Sigue estos pasos para levantar un entorno de desarrollo funcional en menos de 5
 - **Problemas de Encoding (Ã³):**
   - Asegúrate de que todos los archivos fuente estén guardados en **UTF-8**.
   - Verifica que `src/app/layout.tsx` incluya `<meta charset="utf-8" />` en el `<head>`.
+- **Error de resolución de alias `@/` en Linux:**
+  - Verifica que `tsconfig.json` tenga `baseUrl: "."` configurado
+  - Ejecuta `npm run validate:aliases` antes del build
+  - Asegúrate de que el build limpie `.next` antes de compilar (`rm -rf .next`)
 
 ---
 
