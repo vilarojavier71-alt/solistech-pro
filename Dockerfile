@@ -13,8 +13,7 @@ COPY prisma ./prisma/
 # Install dependencies
 RUN npm ci --legacy-peer-deps
 
-# Generate Prisma client
-RUN npx prisma generate
+# Prisma client is generated via postinstall in package.json
 
 # Copy source code
 COPY . .
