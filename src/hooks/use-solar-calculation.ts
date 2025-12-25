@@ -7,7 +7,8 @@
 
 import { useState } from 'react'
 import { useApiMutation } from './use-api-request'
-import { saveCalculation, calculateFullROI } from '@/lib/actions/calculator'
+import { saveCalculation } from '@/lib/actions/calculator'
+import { calculateFullROI } from '@/lib/actions/roi-calculator'
 
 interface SolarCalculationInput {
     consumption: number

@@ -297,3 +297,4 @@ npm audit fix
 **Fecha:** 2025-01-XX  
 **Versión:** 3.0.0
 
+

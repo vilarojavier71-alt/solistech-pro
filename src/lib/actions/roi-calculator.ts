@@ -1,38 +1,37 @@
 'use server'
 
-import { getCurrentUserWithRole } from '@/lib/session'
+import { prisma } from '@/lib/db'
 import { getMunicipalBenefitsByCoordinates } from './municipal-benefits'
 import { calculateROI, suggestIRPFType, validateROIInputs, type IRPFDeductionType } from '@/lib/solar/roi-calculator'
 
 /**
  * Calcula el ROI completo para un cálculo existente
  * Integra automáticamente las bonificaciones municipales
+ * REFACTORED: Migrado de Supabase a Prisma Client
+ * NOTE: El esquema actual de Calculation no tiene campos de subsidios,
+ *       por lo que los datos de ROI se retornan pero no se persisten.
  */
 export async function calculateFullROI(calculationId: string) {
-    const supabase = await createClient()
-
     try {
-        // 1. Obtener datos del cálculo con relaciones
-        const { data: calc, error: calcError } = await supabase
-            .from('calculations')
-            .select(`
-                *,
-                project:projects(
-                    *,
-                    customer:customers(*)
-                ),
-                organization:organizations(*)
-            `)
-            .eq('id', calculationId)
-            .single()
+        // 1. Obtener datos del cálculo con relaciones via Prisma
+        const calc = await prisma.calculation.findUnique({
+            where: { id: calculationId },
+            include: {
+                project: {
+                    include: { customer: true }
+                },
+                organization: true
+            }
+        })
 
-        if (calcError || !calc) {
+        if (!calc) {
             return { error: 'Cálculo no encontrado' }
         }
 
         // 2. Validar que tenemos los datos necesarios
-        const totalCost = calc.components?.total_cost || 0
-        const estimatedSavings = calc.estimated_savings || 0
+        const components = calc.components as { total_cost?: number } | null
+        const totalCost = components?.total_cost || 0
+        const estimatedSavings = calc.estimated_savings?.toNumber() || 0
         const annualSavings = estimatedSavings * 12 // Convertir mensual a anual
 
         const validation = validateROIInputs(totalCost, annualSavings)
@@ -41,30 +40,33 @@ export async function calculateFullROI(calculationId: string) {
         }
 
         // 3. Obtener bonificaciones municipales por coordenadas
-        const location = calc.location as { lat: number; lng: number; address?: string }
-        const { data: benefits, error: benefitsError } = await getMunicipalBenefitsByCoordinates(
-            location.lat,
-            location.lng
-        )
+        const location = calc.location as { lat: number; lng: number; address?: string } | null
+        if (!location?.lat || !location?.lng) {
+            return { error: 'Ubicación no válida para calcular bonificaciones' }
+        }
+
+        const benefitsResult = await getMunicipalBenefitsByCoordinates(location.lat, location.lng)
 
         // Si no hay bonificaciones municipales, usar valores por defecto (0)
+        const benefits = benefitsResult.data
         const ibiPercentage = benefits?.ibi_percentage || 0
         const ibiDuration = benefits?.ibi_duration_years || 0
         const icioPercentage = benefits?.icio_percentage || 0
         const municipality = benefits?.municipality || null
         const autonomousCommunity = benefits?.autonomous_community || null
 
-        // 4. Obtener configuración de organización (IRPF por defecto)
-        const { data: orgSettings } = await supabase
-            .from('organization_settings')
-            .select('default_fiscal_deduction')
-            .eq('organization_id', calc.organization_id)
-            .single()
+        // 4. Obtener configuración de organización (IRPF por defecto) via Prisma
+        const orgSettings = await prisma.organizationSettings.findUnique({
+            where: { organization_id: calc.organization_id },
+            select: { default_fiscal_deduction: true }
+        })
 
         // Determinar tipo de IRPF (usar configuración org o sugerir automáticamente)
+        // El campo subsidy_irpf_type existe en el esquema y contiene el tipo por defecto
         const irpfType: IRPFDeductionType =
             (orgSettings?.default_fiscal_deduction as IRPFDeductionType) ||
-            suggestIRPFType(calc.system_size_kwp || 0)
+            (calc.subsidy_irpf_type as IRPFDeductionType) ||
+            suggestIRPFType(calc.system_size_kwp?.toNumber() || 0)
 
         // 5. Calcular ROI completo
         const roi = calculateROI(
@@ -76,46 +78,14 @@ export async function calculateFullROI(calculationId: string) {
             annualSavings
         )
 
-        // 6. Actualizar cálculo con datos fiscales
-        const { error: updateError } = await supabase
-            .from('calculations')
-            .update({
-                // Región y municipio
-                subsidy_region: autonomousCommunity,
-                subsidy_municipality: municipality,
-
-                // IRPF
+        // 6. Actualizar solo el campo subsidy_irpf_type que SÍ existe en el esquema
+        await prisma.calculation.update({
+            where: { id: calculationId },
+            data: {
                 subsidy_irpf_type: roi.irpf.type,
-                subsidy_irpf_percentage: roi.irpf.percentage,
-                subsidy_irpf_amount: roi.irpf.amount,
-                subsidy_irpf_max_amount: roi.irpf.maxAmount,
-
-                // IBI
-                subsidy_ibi_percentage: roi.ibi.percentage,
-                subsidy_ibi_duration_years: roi.ibi.durationYears,
-                subsidy_ibi_annual: roi.ibi.annualSavings,
-                subsidy_ibi_total: roi.ibi.totalSavings,
-
-                // ICIO
-                subsidy_icio_percentage: roi.icio.percentage,
-                subsidy_icio_amount: roi.icio.amount,
-
-                // Totales
-                total_subsidies: roi.totalSubsidies,
-                net_cost: roi.netCost,
-
-                // ROI
-                roi_with_subsidies: roi.roi25Years,
-                annual_roi_with_subsidies: roi.annualROI,
-
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', calculationId)
-
-        if (updateError) {
-            console.error('Error updating calculation:', updateError)
-            return { error: 'Error al actualizar el cálculo' }
-        }
+                updated_at: new Date()
+            }
+        })
 
         return {
             success: true,
@@ -134,57 +104,59 @@ export async function calculateFullROI(calculationId: string) {
 /**
  * Recalcula el ROI con un tipo de IRPF diferente
  * (sin cambiar la configuración por defecto de la organización)
+ * REFACTORED: Migrado de Supabase a Prisma Client
  */
 export async function recalculateWithIRPFType(
     calculationId: string,
     irpfType: IRPFDeductionType
 ) {
-    const supabase = await createClient()
-
     try {
-        // Obtener datos actuales
-        const { data: calc } = await supabase
-            .from('calculations')
-            .select('*')
-            .eq('id', calculationId)
-            .single()
+        // Obtener datos actuales via Prisma
+        const calc = await prisma.calculation.findUnique({
+            where: { id: calculationId }
+        })
 
         if (!calc) {
             return { error: 'Cálculo no encontrado' }
         }
 
-        const totalCost = calc.components?.total_cost || 0
-        const annualSavings = (calc.estimated_savings || 0) * 12
+        const components = calc.components as { total_cost?: number } | null
+        const totalCost = components?.total_cost || 0
+        const annualSavings = (calc.estimated_savings?.toNumber() || 0) * 12
+
+        // Obtener beneficios municipales para recálculo
+        const location = calc.location as { lat: number; lng: number } | null
+        let ibiPercentage = 0
+        let ibiDuration = 0
+        let icioPercentage = 0
+
+        if (location?.lat && location?.lng) {
+            const benefitsResult = await getMunicipalBenefitsByCoordinates(location.lat, location.lng)
+            if (benefitsResult.data) {
+                ibiPercentage = benefitsResult.data.ibi_percentage || 0
+                ibiDuration = benefitsResult.data.ibi_duration_years || 0
+                icioPercentage = benefitsResult.data.icio_percentage || 0
+            }
+        }
 
         // Recalcular con nuevo tipo de IRPF
         const roi = calculateROI(
             totalCost,
             irpfType,
-            calc.subsidy_ibi_percentage || 0,
-            calc.subsidy_ibi_duration_years || 0,
-            calc.subsidy_icio_percentage || 0,
+            ibiPercentage,
+            ibiDuration,
+            icioPercentage,
             annualSavings
         )
 
-        // Actualizar solo los campos de IRPF y totales
-        const { error: updateError } = await supabase
-            .from('calculations')
-            .update({
+        // Actualizar solo el campo que existe en el esquema
+        await prisma.calculation.update({
+            where: { id: calculationId },
+            data: {
                 subsidy_irpf_type: roi.irpf.type,
-                subsidy_irpf_percentage: roi.irpf.percentage,
-                subsidy_irpf_amount: roi.irpf.amount,
-                subsidy_irpf_max_amount: roi.irpf.maxAmount,
-                total_subsidies: roi.totalSubsidies,
-                net_cost: roi.netCost,
-                roi_with_subsidies: roi.roi25Years,
-                annual_roi_with_subsidies: roi.annualROI,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', calculationId)
-
-        if (updateError) {
-            return { error: 'Error al actualizar el cálculo' }
-        }
+                updated_at: new Date()
+            }
+        })
 
         return { success: true, data: roi }
 
@@ -197,32 +169,30 @@ export async function recalculateWithIRPFType(
 
 /**
  * Obtiene un resumen del ROI para mostrar en la UI
+ * REFACTORED: Migrado de Supabase a Prisma Client
+ * NOTE: Los campos de subsidios detallados no existen en el esquema,
+ *       se devuelven los datos disponibles.
  */
 export async function getROISummary(calculationId: string) {
-    const supabase = await createClient()
+    try {
+        const data = await prisma.calculation.findUnique({
+            where: { id: calculationId },
+            select: {
+                subsidy_irpf_type: true,
+                estimated_savings: true,
+                system_size_kwp: true,
+                components: true,
+                location: true
+            }
+        })
 
-    const { data, error } = await supabase
-        .from('calculations')
-        .select(`
-            total_subsidies,
-            net_cost,
-            roi_with_subsidies,
-            annual_roi_with_subsidies,
-            subsidy_irpf_type,
-            subsidy_irpf_amount,
-            subsidy_ibi_total,
-            subsidy_icio_amount,
-            subsidy_region,
-            subsidy_municipality,
-            estimated_savings
-        `)
-        .eq('id', calculationId)
-        .single()
+        if (!data) {
+            return { error: 'No se pudo obtener el resumen de ROI' }
+        }
 
-    if (error || !data) {
-        return { error: 'No se pudo obtener el resumen de ROI' }
+        return { data }
+    } catch (error: unknown) {
+        console.error('Error in getROISummary:', error)
+        return { error: 'Error al obtener el resumen de ROI' }
     }
-
-    return { data }
 }
-

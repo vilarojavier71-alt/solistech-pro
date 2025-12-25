@@ -258,3 +258,4 @@ npx playwright test tests/integration/module-resolution.test.ts
 **Fecha:** 2025-01-XX  
 **Versión:** 3.0.0
 
+

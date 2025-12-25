@@ -28,7 +28,7 @@ export async function createOrganization(formData: FormData) {
     const validation = CreateOrgSchema.safeParse(rawData)
 
     if (!validation.success) {
-        return { error: validation.error.errors[0].message }
+        return { error: validation.error.issues[0].message }
     }
 
     const { name, tax_id } = validation.data
@@ -77,7 +77,7 @@ export async function createOrganization(formData: FormData) {
         const result = await prisma.$transaction(async (tx) => {
             // A. Create Organization
             console.log('[CreateOrg] Inserting organization via Prisma...')
-            const newOrg = await tx.organizations.create({
+            const newOrg = await tx.organization.create({
                 data: {
                     name,
                     slug,
@@ -89,7 +89,7 @@ export async function createOrganization(formData: FormData) {
 
             // B. Update User
             console.log('[CreateOrg] Linking user via Prisma...')
-            await tx.users.update({
+            await tx.user.update({
                 where: { id: userId },
                 data: {
                     organization_id: newOrg.id,
@@ -99,7 +99,7 @@ export async function createOrganization(formData: FormData) {
 
             // C. Initialize Settings
             console.log('[CreateOrg] Creating settings via Prisma...')
-            await tx.organization_settings.create({
+            await tx.organizationSettings.create({
                 data: {
                     organization_id: newOrg.id,
                     presentation_template: 'ebro-solar',

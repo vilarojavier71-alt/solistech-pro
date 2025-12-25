@@ -8,7 +8,8 @@
 
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { saveCalculation, calculateFullROI } from '@/lib/actions/calculator'
+import { saveCalculation } from '@/lib/actions/calculator'
+import { calculateFullROI } from '@/lib/actions/roi-calculator'
 import { generateTechnicalMemory } from '@/lib/actions/technical-memory'
 
 interface SolarCalculationInput {
