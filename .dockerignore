@@ -1,3 +1,10 @@
-# Force Coolify to use Nixpacks instead of Dockerfile
-# Dockerfile has been renamed to Dockerfile.backup
-# Coolify will auto-detect nixpacks.toml when no Dockerfile is present
+# Docker ignore - exclude files that shouldn't be in the container
+node_modules
+.next
+.git
+.gitignore
+*.md
+*.log
+.env*
+!.env.example
+.npmrc
