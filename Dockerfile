@@ -1,21 +1,22 @@
-FROM node:20-alpine
+# Use Debian-based image for stability (fixes Alpine exit 127 issues)
+FROM node:20-slim
 
-# CRITICAL: Ensure npm/node binaries exist (fixes exit code 127)
-RUN apk add --no-cache openssl libc6-compat wget nodejs npm
+# Install system dependencies for Prisma
+RUN apt-get update && apt-get install -y openssl wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy dependency files first for Docker cache optimization
+# Copy dependency files
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Verify npm exists then install dependencies
-RUN which npm && npm ci --legacy-peer-deps
+# Install dependencies
+RUN npm ci --legacy-peer-deps
 
 # Generate Prisma client
 RUN npx prisma generate
 
-# Copy remaining source code
+# Copy source code
 COPY . .
 
 # Build-time variables
