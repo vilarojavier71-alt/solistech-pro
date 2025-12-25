@@ -1,24 +1,24 @@
 FROM node:20-alpine
 
-# Instalar dependencias del sistema para Prisma y healthcheck
-RUN apk add --no-cache openssl libc6-compat wget
+# CRITICAL: Ensure npm/node binaries exist (fixes exit code 127)
+RUN apk add --no-cache openssl libc6-compat wget nodejs npm
 
 WORKDIR /app
 
-# Copiar archivos de dependencias primero (para cache de Docker)
+# Copy dependency files first for Docker cache optimization
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Instalar dependencias
-RUN npm ci --legacy-peer-deps
+# Verify npm exists then install dependencies
+RUN which npm && npm ci --legacy-peer-deps
 
-# Generar cliente Prisma
+# Generate Prisma client
 RUN npx prisma generate
 
-# Copiar el resto del codigo
+# Copy remaining source code
 COPY . .
 
-# Variables de build
+# Build-time variables
 ARG DATABASE_URL
 ARG NEXT_PUBLIC_APP_URL
 ARG NEXTAUTH_SECRET
@@ -28,11 +28,10 @@ ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Build de la aplicacion
+# Build application
 RUN npm run build
 
-# Puerto
 EXPOSE 3000
 
-# Comando de inicio para modo standalone
+# Standalone mode startup
 CMD ["node", ".next/standalone/server.js"]
