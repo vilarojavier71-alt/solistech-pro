@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "prisma generate && next build",
-    "postinstall": "npx prisma generate",
+    "postinstall": "npx prisma@5.10 generate",
     "start": "next start",
     "lint": "eslint",
     "install:coolify": "mkdir -p /tmp/.npm && npm install --cache /tmp/.npm --tmp /tmp",
