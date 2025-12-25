@@ -18,6 +18,9 @@ RUN npm ci --legacy-peer-deps
 # Copy source code
 COPY . .
 
+# Debug: verify lib files exist
+RUN ls -la src/lib/ && ls -la src/lib/actions/
+
 # Build-time variables
 ARG DATABASE_URL
 ARG NEXT_PUBLIC_APP_URL
