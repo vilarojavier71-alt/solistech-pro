@@ -57,9 +57,9 @@ RUN npx prisma@5.10 generate && \
 # Stage 3: Production Runtime
 FROM node:20-slim AS runner
 
-# Install runtime dependencies only
+# Install runtime dependencies only (wget for healthcheck)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openssl && \
+    apt-get install -y --no-install-recommends openssl wget && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -88,9 +88,9 @@ USER node
 EXPOSE 3000
 
 # Healthcheck (ISO 27001: Monitoring & Availability)
-# Uses dedicated health endpoint for comprehensive system checks
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => { process.exit(r.statusCode < 500 ? 0 : 1) }).on('error', () => process.exit(1))" || exit 1
+# Uses wget (installed in deps stage) for Coolify compatibility
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://0.0.0.0:3000/api/health || exit 1
 
 # Use entrypoint script for robust startup
 # SECRETS (DATABASE_URL, NEXTAUTH_SECRET, etc.) are injected at runtime by Coolify
