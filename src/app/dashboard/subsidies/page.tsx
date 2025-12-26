@@ -126,7 +126,7 @@ export default function SubsidiesPage() {
                                             <CardHeader className="p-4 pb-2">
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <CardTitle className="text-sm">{app.customers?.full_name || 'Cliente Desconocido'}</CardTitle>
+                                                        <CardTitle className="text-sm">{app.customer?.name || 'Cliente Desconocido'}</CardTitle>
                                                         <CardDescription className="text-xs mt-1">
                                                             {app.application_number}
                                                         </CardDescription>

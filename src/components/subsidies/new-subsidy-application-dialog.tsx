@@ -13,7 +13,7 @@ import { toast } from 'sonner'
 
 interface Customer {
     id: string
-    full_name: string
+    name: string
 }
 
 interface NewSubsidyApplicationDialogProps {
@@ -45,27 +45,39 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
         setLoading(true)
 
         try {
-            // TODO: Replace with server action
-            const applicationNumber = `EXP-${Date.now()}`
-            console.log('[NewSubsidyApplication] TODO: Create via server action', {
-                applicationNumber,
-                ...formData
+            const response = await fetch('/api/subsidy-applications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer_id: formData.customerId,
+                    subsidy_type: formData.subsidyType,
+                    region: formData.region,
+                    estimated_amount: formData.estimatedAmount || null,
+                    submission_deadline: formData.submissionDeadline || null,
+                    notes: formData.notes || null
+                })
             })
 
-            toast.success('✅ Expediente creado (TODO: implementar server action)')
-            setOpen(false)
-            setFormData({
-                customerId: '',
-                region: '',
-                subsidyType: 'ibi_icio',
-                estimatedAmount: '',
-                submissionDeadline: '',
-                notes: ''
-            })
-            onSuccess()
+            if (response.ok) {
+                const data = await response.json()
+                toast.success(`✅ Expediente ${data.application?.application_number || ''} creado`)
+                setOpen(false)
+                setFormData({
+                    customerId: '',
+                    region: '',
+                    subsidyType: 'ibi_icio',
+                    estimatedAmount: '',
+                    submissionDeadline: '',
+                    notes: ''
+                })
+                onSuccess()
+            } else {
+                const error = await response.json()
+                toast.error(error.error || 'Error al crear el expediente')
+            }
         } catch (error: any) {
             console.error('Error creating subsidy application:', error)
-            toast.error('Error al crear el expediente')
+            toast.error('Error de conexión')
         } finally {
             setLoading(false)
         }
@@ -101,7 +113,7 @@ export function NewSubsidyApplicationDialog({ customers, onSuccess }: NewSubsidy
                             <SelectContent>
                                 {customers.filter(c => c.id && c.id !== "").map((customer) => (
                                     <SelectItem key={customer.id} value={customer.id}>
-                                        {customer.full_name}
+                                        {customer.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
