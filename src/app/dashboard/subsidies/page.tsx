@@ -20,7 +20,12 @@ export default function SubsidiesPage() {
     // STUB: subsidy_applications table doesn't exist in Prisma schema
     const [applications, setApplications] = useState<any[]>([])
     const [customers, setCustomers] = useState<any[]>([])
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    // Cargar clientes al montar el componente
+    useEffect(() => {
+        fetchCustomers()
+    }, [])
 
     // Stubs - no data fetching until tables exist
     const fetchApplications = async () => {
@@ -28,7 +33,17 @@ export default function SubsidiesPage() {
     }
 
     const fetchCustomers = async () => {
-        // TODO: Use API route for client-side customer fetching
+        try {
+            const response = await fetch('/api/customers')
+            if (response.ok) {
+                const data = await response.json()
+                setCustomers(data.customers || [])
+            }
+        } catch (error) {
+            console.error('Error fetching customers:', error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const getApplicationsByStatus = (status: string) => {
