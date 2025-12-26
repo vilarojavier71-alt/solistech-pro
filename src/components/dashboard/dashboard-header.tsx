@@ -172,7 +172,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild className="cursor-pointer">
-                                <a href="/dashboard/settings/profile">Perfil</a>
+                                <a href="/dashboard/settings">Perfil</a>
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild className="cursor-pointer">
                                 <a href="/dashboard/settings">Configuración</a>
