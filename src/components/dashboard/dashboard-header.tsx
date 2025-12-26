@@ -171,8 +171,12 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Perfil</DropdownMenuItem>
-                            <DropdownMenuItem>Configuración</DropdownMenuItem>
+                            <DropdownMenuItem asChild className="cursor-pointer">
+                                <a href="/dashboard/settings/profile">Perfil</a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild className="cursor-pointer">
+                                <a href="/dashboard/settings">Configuración</a>
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleSignOut} className="text-red-500 cursor-pointer">
                                 Cerrar Sesión
