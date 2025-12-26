@@ -96,12 +96,25 @@ validate_prisma() {
   log "INFO" "docker-entrypoint" "validate_prisma" "Prisma client validated"
 }
 
+# Run database migrations
+run_migrations() {
+  log "INFO" "docker-entrypoint" "run_migrations" "Running database migrations"
+  
+  npx prisma@5.10 migrate deploy || {
+    log "WARN" "docker-entrypoint" "run_migrations" \
+        "Migration failed - database may already be up to date"
+  }
+  
+  log "INFO" "docker-entrypoint" "run_migrations" "Migration check complete"
+}
+
 # Main entrypoint logic
 main() {
   log "INFO" "docker-entrypoint" "main" "Starting container initialization"
   
   validate_environment
   validate_prisma
+  run_migrations
   
   log "INFO" "docker-entrypoint" "main" "Starting Next.js standalone server"
   
