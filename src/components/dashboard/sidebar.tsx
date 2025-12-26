@@ -83,8 +83,11 @@ const getSidebarItems = (permissions: string[] = [], plan: string = 'basic') => 
                 { href: "/dashboard/catastro", label: "Consulta Catastral", icon: Search, permission: "calculator:use" as const },
                 { href: "/dashboard/solar-brain", label: "SolarBrain AI", icon: BrainCircuit, highlight: true, locked: !isPro, permission: "solar-brain:use" as const },
                 { href: "/dashboard/presentations", label: "Presentaciones", icon: Presentation, permission: "projects:view" as const },
+                { href: "/dashboard/switching", label: "Cambio Comercializadora", icon: TrendingUp, permission: "projects:view" as const },
+                { href: "/dashboard/benefits-search", label: "Buscador Beneficios", icon: HandCoins, permission: "finance:view" as const },
                 { href: "/dashboard/mail", label: "Correo", icon: Mail, permission: "dashboard:view" as const },
                 { href: "/dashboard/import", label: "Importador", icon: Upload, permission: "import:use" as const },
+                { href: "/dashboard/tools", label: "Herramientas", icon: BarChart3, permission: "dashboard:view" as const },
             ]
         },
         {

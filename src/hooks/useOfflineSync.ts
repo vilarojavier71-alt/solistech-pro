@@ -12,8 +12,8 @@
 import * as React from "react"
 import { toast } from "sonner"
 
-// Tipos de entidades soportadas
-export type SyncEntity = 'time_entry' | 'lead' | 'client' | 'test_entity'
+// Tipos de entidades soportadas (solo las que tienen backend implementado)
+export type SyncEntity = 'time_entry'
 export type SyncAction = 'create' | 'update' | 'delete' | 'clock_in' | 'clock_out'
 
 export interface QueueItem {
@@ -49,11 +49,11 @@ const MAX_RETRIES = 5
 const RETRY_DELAY_BASE = 1000 // 1 segundo
 
 // Mapa de endpoints para sincronización
+// NOTA: Solo incluir entidades con backend implementado
 const SYNC_CONFIG: Record<SyncEntity, { endpoint: string, method?: string }> = {
-    'time_entry': { endpoint: "/api/time-entries/sync" },
-    'lead': { endpoint: "/api/sales/leads/sync" },
-    'client': { endpoint: "/api/clients/sync" },
-    'test_entity': { endpoint: "/api/test/sync" } // Para pruebas
+    'time_entry': { endpoint: "/api/time-entries/sync" }
+    // ELIMINADOS: lead, client, test_entity - No tienen endpoints implementados
+    // Añadir aquí cuando se implementen los backends correspondientes
 }
 
 export function useOfflineSync(): UseOfflineSyncReturn {
