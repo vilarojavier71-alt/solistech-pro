@@ -285,10 +285,10 @@ export function MunicipalBenefitsSearch() {
                                                 Ahorro Estimado
                                             </p>
                                             <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                                                {estimatedSavings.toLocaleString()}â‚¬
+                                                {estimatedSavings.toLocaleString()}€
                                             </p>
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                Para proyecto de 15.000â‚¬
+                                                Para proyecto de 15.000€
                                             </p>
                                         </div>
                                     </div>
