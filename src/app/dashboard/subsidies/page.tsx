@@ -17,19 +17,31 @@ const KANBAN_COLUMNS = [
 ]
 
 export default function SubsidiesPage() {
-    // STUB: subsidy_applications table doesn't exist in Prisma schema
     const [applications, setApplications] = useState<any[]>([])
     const [customers, setCustomers] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
-    // Cargar clientes al montar el componente
+    // Cargar datos al montar el componente
     useEffect(() => {
-        fetchCustomers()
+        fetchData()
     }, [])
 
-    // Stubs - no data fetching until tables exist
+    const fetchData = async () => {
+        setLoading(true)
+        await Promise.all([fetchApplications(), fetchCustomers()])
+        setLoading(false)
+    }
+
     const fetchApplications = async () => {
-        // TODO: Add subsidy_applications table to Prisma schema
+        try {
+            const response = await fetch('/api/subsidy-applications')
+            if (response.ok) {
+                const data = await response.json()
+                setApplications(data.applications || [])
+            }
+        } catch (error) {
+            console.error('Error fetching applications:', error)
+        }
     }
 
     const fetchCustomers = async () => {
@@ -41,8 +53,6 @@ export default function SubsidiesPage() {
             }
         } catch (error) {
             console.error('Error fetching customers:', error)
-        } finally {
-            setLoading(false)
         }
     }
 
@@ -51,7 +61,21 @@ export default function SubsidiesPage() {
     }
 
     const moveApplication = async (appId: string, newStatus: string) => {
-        toast.error('Subvenciones no disponible - tablas pendientes de migración')
+        try {
+            const response = await fetch(`/api/subsidy-applications/${appId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            })
+            if (response.ok) {
+                toast.success('Estado actualizado')
+                fetchApplications()
+            } else {
+                toast.error('Error al actualizar estado')
+            }
+        } catch (error) {
+            toast.error('Error de conexión')
+        }
     }
 
     const isUrgent = (deadline: string | null) => {
