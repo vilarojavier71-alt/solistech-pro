@@ -85,12 +85,18 @@ RUN chmod +x /app/entrypoint.sh && \
 # Switch to non-root user (existing 'node' user from base image)
 USER node
 
+# Environment variables for Next.js standalone server
+# HOSTNAME=0.0.0.0 makes server listen on all interfaces
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
 EXPOSE 3000
 
 # Healthcheck (ISO 27001: Monitoring & Availability)
-# Uses wget (installed in deps stage) for Coolify compatibility
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://0.0.0.0:3000/api/health || exit 1
+# Uses wget (installed in runner stage) for Coolify compatibility
+# Note: Using 127.0.0.1 because Next.js standalone binds to localhost
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1
 
 # Use entrypoint script for robust startup
 # SECRETS (DATABASE_URL, NEXTAUTH_SECRET, etc.) are injected at runtime by Coolify
