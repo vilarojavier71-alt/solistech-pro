@@ -109,13 +109,7 @@ export function DynamicHelpCenter() {
                                         <p className="text-muted-foreground mt-2">{selectedTopic.description}</p>
                                     </div>
 
-                                    {/* Video Placeholder */}
-                                    <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border border-dashed border-border">
-                                        <div className="text-center text-muted-foreground">
-                                            <Video className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                                            <p>Video Tutorial no disponible en demo</p>
-                                        </div>
-                                    </div>
+
 
                                     <div className="space-y-4">
                                         <h3 className="font-semibold text-lg">Pasos a seguir</h3>
