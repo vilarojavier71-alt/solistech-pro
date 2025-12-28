@@ -107,19 +107,28 @@ export function TimeTracker() {
     const handleCheckOut = async () => {
         if (!activeEntry) return
         setStatus('loading')
+
+        let pos = { lat: 0, lng: 0 }
         try {
-            const pos = await getLocation()
+            pos = await getLocation()
+        } catch (error) {
+            console.warn('Geolocation failed:', error)
+            toast.warning('No se pudo obtener ubicación. Registrando salida sin GPS.')
+        }
+
+        try {
             const result = await checkOut({ entryId: activeEntry.id, coords: pos })
 
             if (result.success) {
-                toast.success('Salida registrada')
+                toast.success('Salida registrada correctamente')
                 loadData() // Will reset to idle
             } else {
                 toast.error(result.error)
                 setStatus('active')
             }
         } catch (error) {
-            toast.error('Error obteniendo ubicación')
+            console.error('CheckOut Server Error:', error)
+            toast.error('Error de servidor al registrar salida')
             setStatus('active')
         }
     }
