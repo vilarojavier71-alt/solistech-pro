@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation"
 import { getSetting } from "@/lib/actions/settings"
 import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client"
+import { LayoutWrapper } from "@/components/layout-wrapper"
 
 export const dynamic = 'force-dynamic'
 
@@ -32,7 +33,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const googleApiKey = await getSetting('google_maps_api_key');
 
     return (
-        <>
+        <LayoutWrapper>
             <DashboardLayoutClient user={user}>
                 {children}
             </DashboardLayoutClient>
@@ -45,7 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                     src={`https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&libraries=places`}
                 ></script>
             )}
-        </>
+        </LayoutWrapper>
     )
 }
 
