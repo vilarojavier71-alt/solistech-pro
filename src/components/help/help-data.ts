@@ -26,10 +26,10 @@ export const HELP_TOPICS: HelpTopic[] = [
         category: 'tools',
         iconName: 'FileSpreadsheet',
         steps: [
-            '1. Ve a "Importar" en el menú lateral',
-            '2. Arrastra tu archivo Excel o CSV',
-            '3. Revisa la detección automática de columnas',
-            '4. Confirma y listo - tus clientes están importados'
+            'Ve a "Importar" en el menú lateral',
+            'Arrastra tu archivo Excel o CSV',
+            'Revisa la detección automática de columnas',
+            'Confirma y listo - tus clientes están importados'
         ],
         tips: [
             '✅ Formatos soportados: .xlsx, .xls, .csv',
@@ -48,10 +48,10 @@ export const HELP_TOPICS: HelpTopic[] = [
         category: 'basics',
         iconName: 'Sparkles',
         steps: [
-            '1. Abre un proyecto existente',
-            '2. Pulsa "Generar Presentación"',
-            '3. La IA analiza los datos y crea las diapositivas',
-            '4. Descarga el PDF o envíalo por email al cliente'
+            'Abre un proyecto existente',
+            'Pulsa "Generar Presentación"',
+            'La IA analiza los datos y crea las diapositivas',
+            'Descarga el PDF o envíalo por email al cliente'
         ],
         tips: [
             '✅ Incluye: ROI, ahorro anual, gráficos de producción',
@@ -70,10 +70,10 @@ export const HELP_TOPICS: HelpTopic[] = [
         category: 'troubleshooting',
         iconName: 'MapPin',
         steps: [
-            '1. Verifica que has dado permisos de ubicación a la app',
-            '2. Activa el GPS en los ajustes del móvil',
-            '3. Si estás en interior, sal al exterior para mejor señal',
-            '4. En modo offline, los fichajes se sincronizan automáticamente'
+            'Verifica que has dado permisos de ubicación a la app',
+            'Activa el GPS en los ajustes del móvil',
+            'Si estás en interior, sal al exterior para mejor señal',
+            'En modo offline, los fichajes se sincronizan automáticamente'
         ],
         tips: [
             '✅ Precisión típica: 10-50 metros',
@@ -106,10 +106,10 @@ export const HELP_TOPICS: HelpTopic[] = [
         category: 'tools',
         iconName: 'Calculator',
         steps: [
-            '1. Introduce la dirección del cliente en la calculadora',
-            '2. Dibuja el polígono sobre el tejado en el mapa',
-            '3. Ajusta el número de paneles y su orientación',
-            '4. Obtén la producción estimada y el presupuesto preliminar'
+            'Introduce la dirección del cliente en la calculadora',
+            'Dibuja el polígono sobre el tejado en el mapa',
+            'Ajusta el número de paneles y su orientación',
+            'Obtén la producción estimada y el presupuesto preliminar'
         ],
         tips: [
             '✅ Usa la vista de satélite para mayor precisión',
@@ -128,10 +128,10 @@ export const HELP_TOPICS: HelpTopic[] = [
         category: 'admin',
         iconName: 'Users',
         steps: [
-            '1. Ve a Administración > Gestión de Usuarios',
-            '2. Haz clic en "Invitar Usuario"',
-            '3. Introduce el email y selecciona el rol (Comercial, Instalador, etc.)',
-            '4. El usuario recibirá un email para establecer su contraseña'
+            'Ve a Administración > Gestión de Usuarios',
+            'Haz clic en "Invitar Usuario"',
+            'Introduce el email y selecciona el rol (Comercial, Instalador, etc.)',
+            'El usuario recibirá un email para establecer su contraseña'
         ],
         tips: [
             '✅ Los roles definen qué puede ver y hacer cada usuario',

@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Bot, BookOpen, Video, ChevronRight, MessageSquare } from 'lucide-react'
+import Link from 'next/link'
+import * as Icons from 'lucide-react'
+import { Search, Bot, BookOpen, Video, ChevronRight, MessageSquare, ExternalLink } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { HELP_TOPICS } from './help-data'
+import { HELP_TOPICS, HelpTopic } from './help-data'
 
 export function DynamicHelpCenter() {
     const [search, setSearch] = useState('')
@@ -54,22 +56,36 @@ export function DynamicHelpCenter() {
 
                 <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-2">
-                        {filteredTopics.map((topic, i) => (
-                            <button
-                                key={i}
-                                onClick={() => {
-                                    setSelectedTopic(topic)
-                                    setActiveTab('guides')
-                                }}
-                                className={`w-full text-left p-3 rounded-lg border transition-all ${selectedTopic?.id === topic.id
-                                        ? 'bg-primary/10 border-primary/50'
-                                        : 'bg-card border-border hover:border-primary/30'
-                                    }`}
-                            >
-                                <div className="font-medium text-sm">{topic.title}</div>
-                                <div className="text-xs text-muted-foreground line-clamp-1 mt-1">{topic.description}</div>
-                            </button>
-                        ))}
+                        {filteredTopics.map((topic, i) => {
+                            const Icon = Icons[topic.iconName] as any || BookOpen
+                            return (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => {
+                                        setSelectedTopic(topic)
+                                        setActiveTab('guides')
+                                    }}
+                                    className={`w-full text-left p-3 rounded-lg border transition-all flex gap-3 items-start group ${selectedTopic?.id === topic.id
+                                        ? 'bg-primary/10 border-primary/50 shadow-sm'
+                                        : 'bg-card border-border hover:border-primary/30 hover:bg-muted/50'
+                                        }`}
+                                >
+                                    <div className={`mt-0.5 p-1.5 rounded-md ${selectedTopic?.id === topic.id ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground group-hover:text-primary transition-colors'}`}>
+                                        <Icon className="h-4 w-4" />
+                                    </div>
+                                    <div>
+                                        <div className={`font-medium text-sm ${selectedTopic?.id === topic.id ? 'text-primary' : 'text-foreground'}`}>
+                                            {topic.title}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                                            {topic.description}
+                                        </div>
+                                    </div>
+                                    <ChevronRight className={`ml-auto h-4 w-4 text-muted-foreground self-center opacity-0 -translate-x-2 transition-all ${selectedTopic?.id === topic.id ? 'opacity-100 translate-x-0 text-primary' : 'group-hover:opacity-100 group-hover:translate-x-0'}`} />
+                                </button>
+                            )
+                        })}
                     </div>
                 </ScrollArea>
             </Card>
@@ -116,10 +132,10 @@ export function DynamicHelpCenter() {
                                     </div>
 
                                     <div className="pt-4 border-t border-border">
-                                        <Button className="w-full sm:w-auto" asChild>
-                                            <a href={selectedTopic.cta.link}>
-                                                {selectedTopic.cta.text} <ChevronRight className="ml-2 h-4 w-4" />
-                                            </a>
+                                        <Button className="w-full sm:w-auto cursor-pointer" asChild>
+                                            <Link href={selectedTopic.cta.link}>
+                                                {selectedTopic.cta.text} <ExternalLink className="ml-2 h-4 w-4" />
+                                            </Link>
                                         </Button>
                                     </div>
                                 </div>
