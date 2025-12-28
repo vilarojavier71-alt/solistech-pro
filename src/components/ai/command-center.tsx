@@ -141,16 +141,17 @@ export function CommandCenter() {
                                         : "bg-slate-100 dark:bg-slate-800 text-foreground rounded-tl-none"
                                 )}
                             >
-                                <ReactMarkdown
-                                    className="prose dark:prose-invert prose-sm max-w-none break-words"
-                                    components={{
-                                        p: ({ children }) => <p className="m-0 leading-relaxed">{children}</p>,
-                                        ul: ({ children }) => <ul className="m-0 pl-4 list-disc">{children}</ul>,
-                                        li: ({ children }) => <li className="m-0">{children}</li>
-                                    }}
-                                >
-                                    {msg.content}
-                                </ReactMarkdown>
+                                <div className="prose dark:prose-invert prose-sm max-w-none break-words">
+                                    <ReactMarkdown
+                                        components={{
+                                            p: ({ children }) => <p className="m-0 leading-relaxed">{children}</p>,
+                                            ul: ({ children }) => <ul className="m-0 pl-4 list-disc">{children}</ul>,
+                                            li: ({ children }) => <li className="m-0">{children}</li>
+                                        }}
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                </div>
                             </div>
                         ))}
                         {isLoading && (
