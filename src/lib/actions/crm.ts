@@ -1,117 +1,96 @@
-'use server'
 
-import { getCurrentUserWithRole } from '@/lib/session'
-import { revalidatePath } from 'next/cache'
+import { prisma } from "@/lib/db"
+import { revalidatePath } from "next/cache"
+import { logAudit, AuditAction, AuditSeverity } from "@/lib/security/audit"
+import { getCurrentUserWithRole } from "@/lib/session"
 
-// NOTE: Las tablas 'contacts', 'opportunities', 'activities' no existen en Docker schema.
-// Este archivo está stub-eado hasta que se migren esas tablas.
-
-export interface Contact {
+export type SerializedCrmAccount = {
     id: string
-    organization_id: string
-    customer_id: string
-    first_name: string
-    last_name: string | null
+    name: string
+    status: string
+    type: string
     email: string | null
     phone: string | null
-    role: string | null
-    is_primary: boolean
-    notes: string | null
-}
-
-export interface Opportunity {
-    id: string
-    organization_id: string
-    customer_id: string
-    title: string
-    stage: 'prospecting' | 'qualification' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost'
-    amount: number
-    currency: string
-    probability: number
-    expected_close_date: string | null
-    source: string | null
+    updated_at: Date
     assigned_to: string | null
-    notes: string | null
-    priority: 'low' | 'medium' | 'high'
-    created_at: string
 }
 
-export interface Activity {
-    id: string
-    organization_id: string
-    opportunity_id: string | null
-    customer_id: string | null
-    user_id: string | null
-    type: 'call' | 'email' | 'meeting' | 'note' | 'task'
-    subject: string
-    description: string | null
-    status: 'pending' | 'completed' | 'cancelled'
-    due_date: string | null
-    completed_at: string | null
-    created_at: string
+
+export async function getCrmPipeline() {
+    const user = await getCurrentUserWithRole()
+    if (!user?.organizationId) return []
+
+    // 1. Fetch all accounts with relevant statuses
+    const accounts = await prisma.crmAccount.findMany({
+        where: {
+            organization_id: user.organizationId
+        },
+        orderBy: { updated_at: 'desc' },
+        take: 100 // Limit for performance
+    })
+
+    return accounts
 }
 
-// CONTACTS (stub)
-export async function getContacts(customerId: string) {
-    console.log('getContacts stub called', customerId)
-    return { success: true, data: [] as Contact[] }
+export async function updateAccountStatus(accountId: string, newStatus: string) {
+    const user = await getCurrentUserWithRole()
+    if (!user?.organizationId) throw new Error("Unauthorized")
+
+    const oldAccount = await prisma.crmAccount.findUnique({
+        where: { id: accountId }
+    })
+
+    if (!oldAccount) throw new Error("Account not found")
+
+    const updated = await prisma.crmAccount.update({
+        where: { id: accountId },
+        data: { status: newStatus }
+    })
+
+    // Log Audit
+    await logAudit({
+        action: AuditAction.UPDATE,
+        resource: 'CrmAccount',
+        resourceId: accountId,
+        userId: user.id,
+        organizationId: oldAccount.organization_id, // assuming accessible
+        details: { field: 'status', from: oldAccount.status, to: newStatus },
+        severity: AuditSeverity.INFO
+    })
+
+    revalidatePath('/dashboard/crm')
+    return updated
 }
 
-export async function createContact(data: Partial<Contact>) {
-    console.log('createContact stub called', data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
+export async function createQuickLead(formData: FormData) {
+    const user = await getCurrentUserWithRole()
+    if (!user?.organizationId) throw new Error("Unauthorized")
 
-export async function updateContact(id: string, data: Partial<Contact>) {
-    console.log('updateContact stub called', id, data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
 
-export async function deleteContact(id: string) {
-    console.log('deleteContact stub called', id)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
+    if (!name) throw new Error("Name required")
 
-// OPPORTUNITIES (stub)
-export async function getOpportunities(filters: { customerId?: string, stage?: string } = {}) {
-    console.log('getOpportunities stub called', filters)
-    return { success: true, data: [] }
-}
-
-export async function createOpportunity(data: Partial<Opportunity>) {
-    console.log('createOpportunity stub called', data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
-
-export async function updateOpportunity(id: string, data: Partial<Opportunity>) {
-    console.log('updateOpportunity stub called', id, data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
-
-// ACTIVITIES (stub)
-export async function getActivities(filters: { opportunityId?: string, customerId?: string, limit?: number } = {}) {
-    console.log('getActivities stub called', filters)
-    return { success: true, data: [] }
-}
-
-export async function createActivity(data: Partial<Activity>) {
-    console.log('createActivity stub called', data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
-
-export async function updateActivity(id: string, data: Partial<Activity>) {
-    console.log('updateActivity stub called', id, data)
-    return { success: false, error: 'CRM no migrado aún a Docker.' }
-}
-
-// METRICS (stub)
-export async function getCrmMetrics() {
-    return {
-        success: true,
+    const account = await prisma.crmAccount.create({
         data: {
-            totalPipelineValue: 0,
-            valueByStage: {},
-            recentActivitiesCount: 0
+            organization_id: user.organizationId,
+            name,
+            email,
+            type: 'lead',
+            status: 'new'
         }
-    }
+    })
+
+    await logAudit({
+        action: AuditAction.CREATE,
+        resource: 'CrmAccount',
+        resourceId: account.id,
+        userId: user.id,
+        organizationId: user.organizationId,
+        details: { name, email },
+        severity: AuditSeverity.INFO
+    })
+
+    revalidatePath('/dashboard/crm')
+    return account
 }

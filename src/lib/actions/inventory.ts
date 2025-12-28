@@ -1,138 +1,164 @@
-"use server"
 
-import { getCurrentUserWithRole } from "@/lib/session"
+'use server'
+
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
+// -- TYPES --
 export interface InventoryItem {
     id: string
-    name: string
-    sku: string | null
-    category: string | null
-    quantity: number
-    min_quantity: number | null
-    unit_price: number | null
-    location: string | null
-    updated_at: string
+    manufacturer: string
+    model: string
+    type: string
+    stock_quantity: number
+    min_stock_alert: number
+    cost_price: number
+    sale_price: number
+    supplier?: { name: string }
 }
 
-// Helper to get organization ID reliably
-async function getOrganizationId(): Promise<string | null> {
-    const user = await getCurrentUserWithRole()
-    if (!user) return null
+export interface Supplier {
+    id: string
+    name: string
+    contact_name?: string
+    email?: string
+    phone?: string
+}
 
-    // 1. Try Session
-    let orgId = user.organizationId
+export interface StockMovement {
+    id: string
+    date: Date
+    type: 'in' | 'out'
+    quantity: number
+    reason: string
+    item_name: string
+    user_name: string
+}
 
-    // 2. If missing, Try DB (Re-hydration)
-    if (!orgId) {
-        const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
+// -- ACTIONS --
+
+export async function getInventoryItems() {
+    const session = await auth()
+    if (!session?.user) return []
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { organization_id: true }
+    })
+
+    if (!user?.organization_id) return []
+
+    const items = await prisma.inventoryItem.findMany({
+        where: { organization_id: user.organization_id },
+        include: { supplier: { select: { name: true } } },
+        orderBy: { manufacturer: 'asc' }
+    })
+
+    return items.map(i => ({
+        ...i,
+        cost_price: Number(i.cost_price || 0),
+        sale_price: Number(i.sale_price || 0)
+    }))
+}
+
+export async function getSuppliers() {
+    const session = await auth()
+    if (!session?.user) return []
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { organization_id: true }
+    })
+
+    if (!user?.organization_id) return []
+
+    return await prisma.supplier.findMany({
+        where: { organization_id: user.organization_id },
+        orderBy: { name: 'asc' }
+    })
+}
+
+export async function getRecentMovements() {
+    const session = await auth()
+    if (!session?.user) return []
+
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { organization_id: true }
+    })
+
+    if (!user?.organization_id) return []
+
+    const movements = await prisma.stockMovement.findMany({
+        where: { organization_id: user.organization_id },
+        include: {
+            item: { select: { manufacturer: true, model: true } },
+            user: { select: { full_name: true } }
+        },
+        orderBy: { created_at: 'desc' },
+        take: 20
+    })
+
+    return movements.map(m => ({
+        id: m.id,
+        date: m.created_at,
+        type: m.type as 'in' | 'out',
+        quantity: m.quantity,
+        reason: m.reason || '-',
+        item_name: `${m.item.manufacturer} ${m.item.model}`,
+        user_name: m.user.full_name || 'Desconocido'
+    }))
+}
+
+// -- MUTATIONS --
+
+export async function updateStock(itemId: string, type: 'in' | 'out', quantity: number, reason: string) {
+    const session = await auth()
+    if (!session?.user) return { success: false, message: 'No autorizado' }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
             select: { organization_id: true }
         })
-        if (dbUser?.organization_id) orgId = dbUser.organization_id
-    }
 
-    return orgId || null
-}
+        if (!user?.organization_id) return { success: false, message: 'Org no encontrada' }
 
-export async function getInventoryItems(): Promise<InventoryItem[]> {
-    try {
-        const orgId = await getOrganizationId()
-        if (!orgId) return []
+        // UPDATE Transaction
+        await prisma.$transaction(async (tx) => {
+            // Update item stock
+            const item = await tx.inventoryItem.findUnique({ where: { id: itemId } })
+            if (!item) throw new Error('Artículo no encontrado')
 
-        // Use Prisma directly (Admin Context)
-        const items = await prisma.inventoryItem.findMany({
-            where: { organization_id: orgId },
-            orderBy: { name: 'asc' }
+            const newStock = type === 'in'
+                ? item.stock_quantity + quantity
+                : item.stock_quantity - quantity
+
+            if (newStock < 0) throw new Error('Stock insuficiente')
+
+            await tx.inventoryItem.update({
+                where: { id: itemId },
+                data: { stock_quantity: newStock }
+            })
+
+            // Log movement
+            await tx.stockMovement.create({
+                data: {
+                    organization_id: user.organization_id!,
+                    item_id: itemId,
+                    user_id: session.user.id,
+                    type,
+                    quantity,
+                    reason
+                }
+            })
         })
 
-        return items.map(item => ({
-            ...item,
-            sku: item.sku,
-            category: item.category,
-            min_quantity: item.min_quantity,
-            unit_price: item.unit_price ? Number(item.unit_price) : 0,
-            updated_at: item.updated_at.toISOString()
-        }))
-    } catch (error) {
-        console.error("Error fetching inventory:", error)
-        return []
-    }
-}
-
-export async function createInventoryItem(data: { name: string; quantity: number; category: string; sku?: string, unit_price?: number }) {
-    try {
-        const orgId = await getOrganizationId()
-        if (!orgId) return { success: false, message: "Organización no válida o usuario no autenticado." }
-
-        await prisma.inventoryItem.create({
-            data: {
-                organization_id: orgId,
-                name: data.name,
-                quantity: data.quantity,
-                category: data.category,
-                sku: data.sku,
-                unit_price: data.unit_price
-            }
-        })
-
-        revalidatePath("/dashboard/inventory")
+        revalidatePath('/dashboard/inventory')
         return { success: true }
     } catch (error) {
-        console.error("Error creating inventory item:", error)
-        return { success: false, message: "Error al crear item de inventario." }
+        return { success: false, message: error instanceof Error ? error.message : 'Error de inventario' }
     }
 }
-
-// ✅ SEGURO: Validación de ownership y cantidades
-export async function updateStock(itemId: string, quantity: number, type: 'in' | 'out', reason: string) {
-    const user = await getCurrentUserWithRole()
-    if (!user?.organizationId) return { success: false, message: "No autorizado" }
-
-    // Validar cantidad positiva
-    if (quantity <= 0) {
-        return { success: false, message: "La cantidad debe ser positiva" }
-    }
-
-    try {
-        // ✅ Validar ownership ANTES de actualizar (IDOR Prevention)
-        const item = await prisma.inventoryItem.findFirst({
-            where: {
-                id: itemId,
-                organization_id: user.organizationId
-            }
-        })
-
-        if (!item) {
-            return { success: false, message: "Item no encontrado o no pertenece a tu organización" }
-        }
-
-        // Validar stock suficiente para salida
-        if (type === 'out' && item.quantity < quantity) {
-            return { success: false, message: "Stock insuficiente" }
-        }
-
-        const newQuantity = type === 'in' ? item.quantity + quantity : item.quantity - quantity
-
-        await prisma.inventoryItem.update({
-            where: { id: itemId },
-            data: { quantity: newQuantity }
-        })
-
-        revalidatePath("/dashboard/inventory")
-        return { success: true }
-    } catch (error) {
-        return { success: false, message: "Error al actualizar stock" }
-    }
-}
-
-export async function createSupplier(data: any) {
-    return { success: false, message: "Funcionalidad en desarrollo" }
-}
-
-export async function createComponent(data: any) {
-    return { success: false, message: "Funcionalidad en desarrollo" }
-}
-

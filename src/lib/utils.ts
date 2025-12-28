@@ -13,3 +13,11 @@ export function formatDate(dateString: string | Date): string {
     day: 'numeric'
   }).format(date)
 }
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(amount)
+}
+

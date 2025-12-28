@@ -129,7 +129,13 @@ export async function getOrganizationRoles(organizationId: string) {
 
 export async function getOrganizationMembers(organizationId: string) {
     const session = await auth()
-    if (!session?.user) return []
+    if (!session?.user?.organizationId) return []
+
+    // Security Check: prevent IDOR (Horizontal Privilege Escalation)
+    if (session.user.organizationId !== organizationId) {
+        console.error(`Security Alert: User ${session.user.id} attempted to access org ${organizationId}`)
+        return []
+    }
 
     try {
         const members = await prisma.user.findMany({

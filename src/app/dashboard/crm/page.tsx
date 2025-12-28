@@ -1,39 +1,40 @@
-﻿import { PageShell } from "@/components/ui/page-shell"
-import { OverviewMetrics } from "@/components/crm/overview-metrics"
-import { OverviewPipeline } from "@/components/crm/overview-pipeline"
-import { MetricsSkeleton, PipelineSkeleton } from "@/components/crm/crm-skeletons"
+﻿
+import { PageShell } from "@/components/ui/page-shell"
+import { KanbanBoard } from "@/components/crm/kanban-board"
+import { AddLeadDialog } from "@/components/crm/add-lead-dialog"
+import { getCrmPipeline } from "@/lib/actions/crm"
 import { Suspense } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default async function CRMDashboardPage() {
+    const pipelineData = await getCrmPipeline()
+
     return (
         <PageShell
-            title="Resumen Comercial"
-            description="Métricas clave y actividad reciente de tu equipo."
+            title="CRM & Pipeline"
+            description="Gestiona tus oportunidades en tiempo real con vista Kanban."
+            action={<AddLeadDialog />}
         >
-            <div className="space-y-6">
-
-                <Suspense fallback={<MetricsSkeleton />}>
-                    <OverviewMetrics />
+            <div className="h-[calc(100vh-200px)]">
+                <Suspense fallback={<KanbanSkeleton />}>
+                    <KanbanBoard initialData={pipelineData} />
                 </Suspense>
-
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                    <Suspense fallback={<PipelineSkeleton />}>
-                        <OverviewPipeline />
-                    </Suspense>
-
-                    <Card className="col-span-3 bg-card border-border shadow-sm">
-                        <CardHeader>
-                            <CardTitle className="text-card-foreground">Acciones Rápidas</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <div className="p-4 rounded border border-dashed border-border bg-muted/50 text-center text-muted-foreground flex flex-col justify-center items-center h-[200px]">
-                                <p>Próximamente: Crear Oportunidad, Registrar Llamada</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
             </div>
-        </PageShell >
+        </PageShell>
+    )
+}
+
+function KanbanSkeleton() {
+    return (
+        <div className="flex gap-4 overflow-x-auto pb-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="flex flex-col w-80 shrink-0 gap-3">
+                    <Skeleton className="h-8 w-1/2" />
+                    <Skeleton className="h-32 w-full rounded-xl" />
+                    <Skeleton className="h-32 w-full rounded-xl" />
+                    <Skeleton className="h-32 w-full rounded-xl" />
+                </div>
+            ))}
+        </div>
     )
 }

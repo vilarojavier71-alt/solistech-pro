@@ -5,13 +5,15 @@ import { ErrorBoundary as GlobalErrorBoundary } from '@/components/ui/error-boun
 import { motion, AnimatePresence } from 'framer-motion'
 import { Toaster } from 'sonner'
 
+import { CommandCenter } from '@/components/ai/command-center'
+
 /**
  * LayoutWrapper
  * 
  * Envoltorio maestro para las páginas del dashboard.
  * - ErrorBoundary: Captura errores de renderizado.
  * - Animations: Transiciones suaves entre páginas.
- * - Toaster: Notificaciones globales (si no están ya en RootLayout, pero aquí seguro).
+ * - CommandCenter: AI Floating Interface (GOD MODE).
  */
 export function LayoutWrapper({ children }: { children: React.ReactNode }) {
     return (
@@ -27,6 +29,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
                     {children}
                 </motion.div>
             </AnimatePresence>
+            <CommandCenter />
         </GlobalErrorBoundary>
     )
 }

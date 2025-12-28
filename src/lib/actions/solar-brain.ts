@@ -1,93 +1,77 @@
 'use server'
 
+import { generateObject } from 'ai'
 import { z } from 'zod'
+import { openai } from '@/lib/ai/provider'
+import { prisma } from '@/lib/db'
+import { MunicipalBenefit } from '@prisma/client'
 
-// Types based on Google Solar API
-export interface SolarPotential {
-    maxArrayPanelsCount: number
-    maxArrayAreaMeters2: number
-    maxSunshineHoursPerYear: number
-    carbonOffsetFactorKgPerMwh: number
-    wholeRoofStats: {
-        areaMeters2: number
-        sunshineQuantiles: number[]
-        groundAreaMeters2: number
+// Schema for AI Extraction
+const SearchFiltersSchema = z.object({
+    municipality: z.string().optional().describe('Name of the municipality or city mentioned'),
+    province: z.string().optional().describe('Name of the province mentioned'),
+    min_ibi: z.number().optional().describe('Minimum IBI bonification percentage mentioned (0-100)'),
+    min_icio: z.number().optional().describe('Minimum ICIO bonification percentage mentioned (0-100)'),
+    region: z.string().optional().describe('Autonomous community if mentioned (e.g. Madrid, Cataluña)'),
+})
+
+/**
+ * SolarBrain: Semantic Search for Benefits
+ * Transforms natural language query into database filters
+ */
+export async function searchBenefitsAI(userQuery: string): Promise<MunicipalBenefit[]> {
+    if (!userQuery || userQuery.trim().length === 0) {
+        // Fallback: Return top benefits if no query
+        return await prisma.municipalBenefit.findMany({ take: 20 })
     }
-    solarPanels: SolarPanelConfig[]
-    solarParts: SolarPart[]
-    shadowAnalysis?: {
-        avgShadingLoss: number
-        shadingMapUrl: string
-        optimalHours: string
+
+    // 1. AI Extraction
+    const { object: filters } = await generateObject({
+        model: openai('gpt-4o'),
+        schema: SearchFiltersSchema,
+        system: `You are a search query parser for a Spanish Solar Energy database.
+        Extract filters from the user's natural language search.
+        - "Ayudas en Madrid" -> { municipality: "Madrid" } (or region if context implies)
+        - "Bonificación IBI del 50%" -> { min_ibi: 50 }
+        - "Impuesto construccion" -> refers to ICIO
+        - If the user mentions a specific town (e.g. "Alcobendas"), put it in municipality.
+        `,
+        prompt: userQuery
+    })
+
+    console.log("🧠 SolarBrain Filters:", filters)
+
+    // 2. Build Prisma Query
+    const where: any = {}
+
+    if (filters.municipality) {
+        where.municipality = { contains: filters.municipality, mode: 'insensitive' }
+    } else if (filters.province) {
+        where.province = { contains: filters.province, mode: 'insensitive' }
+    } else if (filters.region) {
+        where.autonomous_community = { contains: filters.region, mode: 'insensitive' }
     }
-}
 
-export interface SolarPanelConfig {
-    center: { latitude: number; longitude: number }
-    orientation: 'LANDSCAPE' | 'PORTRAIT'
-    segmentIndex: number
-    yearlyEnergyDcKwh: number
-}
-
-export interface SolarPart {
-    segmentIndex: number
-    roofSegmentStats: {
-        pitchDegrees: number
-        azimuthDegrees: number
-        stats: {
-            areaMeters2: number
-            sunshineQuantiles: number[]
-        }
+    if (filters.min_ibi) {
+        where.ibi_percentage = { gte: filters.min_ibi }
     }
-}
 
-// Mock Data Generator
-export async function analyzeRoof(address: string, lat: number, lng: number): Promise<{ success: boolean; data?: SolarPotential; error?: string }> {
-    console.log(`Analyzing roof for ${address} at ${lat}, ${lng}`)
+    if (filters.min_icio) {
+        where.icio_percentage = { gte: filters.min_icio }
+    }
 
-    // Simulate API delay (Optimized for MVP)
-    await new Promise(resolve => setTimeout(resolve, 800))
-
-    // Return Mock Data simulating a typical Spanish roof
-    const mockData: SolarPotential = {
-        maxArrayPanelsCount: 24,
-        maxArrayAreaMeters2: 48.5,
-        maxSunshineHoursPerYear: 1850,
-        carbonOffsetFactorKgPerMwh: 0.4,
-        wholeRoofStats: {
-            areaMeters2: 120,
-            sunshineQuantiles: [800, 1200, 1600, 2100],
-            groundAreaMeters2: 110
-        },
-        solarPanels: Array.from({ length: 12 }).map((_, i) => ({
-            center: { latitude: lat + (i * 0.00001), longitude: lng + (i * 0.00001) },
-            orientation: 'PORTRAIT',
-            segmentIndex: 0,
-            yearlyEnergyDcKwh: 550
-        })),
-        solarParts: [
-            {
-                segmentIndex: 0,
-                roofSegmentStats: {
-                    pitchDegrees: 30, // 30 degrees tilt
-                    azimuthDegrees: 180, // South facing
-                    stats: {
-                        areaMeters2: 60,
-                        sunshineQuantiles: [1400, 1800]
-                    }
-                }
-            }
+    // If AI found nothing specific, behave like a text search on the raw query
+    if (Object.keys(where).length === 0) {
+        where.OR = [
+            { municipality: { contains: userQuery, mode: 'insensitive' } },
+            { province: { contains: userQuery, mode: 'insensitive' } }
         ]
     }
 
-    // Add simulated shadow data (mocking a "shading map")
-    const shadowMap = {
-        avgShadingLoss: 2.5, // 2.5% loss due to shading
-        shadingMapUrl: "https://via.placeholder.com/800x600.png?text=Shadow+Map+Simulation", // Placeholder
-        optimalHours: "10:00 - 18:00"
-    }
-
-    mockData.shadowAnalysis = shadowMap
-
-    return { success: true, data: mockData }
+    // 3. Execute Search
+    return await prisma.municipalBenefit.findMany({
+        where,
+        take: 50,
+        orderBy: { ibi_percentage: 'desc' }
+    })
 }

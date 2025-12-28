@@ -43,6 +43,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
     const [isPending, startTransition] = useTransition()
 
     const currentSort = searchParams.get('sort') || ''
+    const [sortField, sortOrder] = currentSort.split('-')
 
     const handleSort = (field: string) => {
         const params = new URLSearchParams(searchParams)
@@ -108,8 +109,8 @@ export function LeadsTable({ leads }: { leads: any[] }) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead 
-                            className="cursor-pointer hover:text-primary transition-colors" 
+                        <TableHead
+                            className="cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('name')}
                             role="columnheader"
                             aria-sort={sortField === 'name' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -120,8 +121,8 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                         </TableHead>
                         <TableHead>Empresa</TableHead>
                         <TableHead>Contacto</TableHead>
-                        <TableHead 
-                            className="cursor-pointer hover:text-primary transition-colors" 
+                        <TableHead
+                            className="cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('status')}
                             role="columnheader"
                             aria-sort={sortField === 'status' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -130,8 +131,8 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                                 Estado <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
                             </div>
                         </TableHead>
-                        <TableHead 
-                            className="cursor-pointer hover:text-primary transition-colors" 
+                        <TableHead
+                            className="cursor-pointer hover:text-primary transition-colors"
                             onClick={() => handleSort('estimated_value')}
                             role="columnheader"
                             aria-sort={sortField === 'estimated_value' ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -140,6 +141,7 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                                 Valor <ArrowUpDown className="h-3 w-3" aria-hidden="true" />
                             </div>
                         </TableHead>
+
                         <TableHead>Origen</TableHead>
                         <TableHead className="w-[70px]"></TableHead>
                     </TableRow>
@@ -210,8 +212,8 @@ export function LeadsTable({ leads }: { leads: any[] }) {
                             <TableCell>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button 
-                                            variant="ghost" 
+                                        <Button
+                                            variant="ghost"
                                             className="h-8 w-8 p-0 hover:bg-muted"
                                             aria-label={`Acciones para lead ${lead.name}`}
                                         >

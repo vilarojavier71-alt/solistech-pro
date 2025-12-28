@@ -15,8 +15,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
-# Install dependencies with legacy peer deps
-RUN npm ci --legacy-peer-deps --omit=dev
+# Install dependencies (include devDependencies for build)
+RUN npm ci --legacy-peer-deps
 
 # ============================================
 # Stage 2: Build Application
@@ -50,8 +50,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 # Generate Prisma Client and build application
 # Note: DATABASE_URL and NEXTAUTH_SECRET are NOT needed at build time
 # They will be injected at runtime by Coolify
-RUN npx prisma@5.10 generate && \
-    npm run build
+RUN npm run build
 
 # ============================================
 # Stage 3: Production Runtime

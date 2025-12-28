@@ -1,19 +1,35 @@
+version: '3.8'
+
 services:
-  app:
-    container_name: solistech-pro
+  solistech-pro:
+    container_name: solistech-pro-crm
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://motorgap.es}
     restart: always
     ports:
       - "3000:3000"
-    env_file:
-      - .env.production
     environment:
       - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - BUCKET_NAME=${BUCKET_NAME}
+      - BUCKET_REGION=${BUCKET_REGION}
+      - BUCKET_ACCESS_KEY=${BUCKET_ACCESS_KEY}
+      - BUCKET_SECRET_KEY=${BUCKET_SECRET_KEY}
+    # Healthcheck aligned with Dockerfile
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
-      - solistech_network
+      - crm_network
 
 networks:
-  solistech_network:
-    external: true
+  crm_network:
+    driver: bridge

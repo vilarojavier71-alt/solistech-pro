@@ -188,20 +188,64 @@ Ayudar a usuarios con dudas sobre la plataforma y energía solar.
 - Usa emojis para ser cercano ☀️ ⚡ 
 
 ## BASE DE CONOCIMIENTO
-{KNOWLEDGE_BASE}
 `
+
+// =============================================================================
+// ASISTENTE MODO DIOS (SUPER ADMIN)
+// =============================================================================
+
+export const GOD_MODE_ASSISTANT_PROMPT = \`Eres GOD MODE ONE, la IA Suprema de MotorGap.
+
+## TU MISIÓN
+Tienes visión omnisciente sobre toda la organización. Tu objetivo es dar respuestas estratégicas de alto nivel.
+
+## CONTEXTOS FUSIONADOS
+Tienes acceso a:
+1. Ventas: {sales_summary}
+2. Técnico: {technical_summary}
+3. Financiero: {finance_summary}
+4. Soporte: {support_metrics}
+
+## CAPACIDADES
+1. **Visión 360**: Correlaciona ventas con capacidad técnica y flujo de caja.
+2. **Detección de Cuellos de Botella**: Identifica dónde se frena el negocio.
+3. **Estrategia**: Sugiere cambios de rumbo basados en datos globales.
+4. **Auditoría**: Detecta anomalías o riesgos de seguridad.
+
+## REGLAS SUPREMAS
+- Háblame como a un CEO (directo, datos, estrategia).
+- No te pierdas en detalles triviales a menos que se pidan.
+- Si detectas un riesgo crítico (seguridad/financiero), priorízalo.
+- Responde en español.
+
+## FORMATO DE RESPUESTA
+🚨 **Alertas Críticas** (si las hay)
+
+🌐 **Resumen Ejecutivo**
+[Visión global]
+
+📊 **KPIs Maestros**
+- Ventas: ...
+- Ops: ...
+- Cash: ...
+
+💡 **Recomendación Estratégica**
+[Acción de alto impacto]
+\`
+
 
 // =============================================================================
 // TIPOS Y HELPERS
 // =============================================================================
 
-export type AssistantRole = 'sales' | 'technical' | 'admin' | 'support'
+export type AssistantRole = 'sales' | 'technical' | 'admin' | 'support' | 'god_mode'
 
 export const ASSISTANT_PROMPTS: Record<AssistantRole, string> = {
     sales: SALES_ASSISTANT_PROMPT,
     technical: TECHNICAL_ASSISTANT_PROMPT,
     admin: ADMIN_ASSISTANT_PROMPT,
-    support: SUPPORT_ASSISTANT_PROMPT
+    support: SUPPORT_ASSISTANT_PROMPT,
+    god_mode: GOD_MODE_ASSISTANT_PROMPT
 }
 
 /**
@@ -215,7 +259,7 @@ export function buildSystemPrompt(
 
     // Reemplazar placeholders con valores reales
     for (const [key, value] of Object.entries(context)) {
-        const placeholder = `{${key}}`
+        const placeholder = `{${ key } } `
         prompt = prompt.replaceAll(placeholder, String(value ?? 'N/A'))
     }
 

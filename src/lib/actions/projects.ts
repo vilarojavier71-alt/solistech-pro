@@ -19,6 +19,10 @@ export interface ProjectListItem {
     system_size_kwp: number | null
     created_at: Date
     location: any
+    // Timeline fields
+    start_date?: Date | null
+    end_date?: Date | null
+    installation_date?: Date | null
 }
 
 export interface ProjectsListResult {
@@ -29,8 +33,9 @@ export interface ProjectsListResult {
     totalPages: number
 }
 
-// ============================================================================
-// SCHEMAS
+// ... existing schemas ...
+
+
 // ============================================================================
 
 const CreateProjectSchema = z.object({
@@ -139,6 +144,9 @@ export async function getProjectsList(params: {
             system_size_kwp: p.system_size_kwp ? Number(p.system_size_kwp) : null,
             created_at: p.created_at,
             location: p.location,
+            start_date: p.start_date,
+            end_date: p.end_date || p.expected_completion,
+            installation_date: p.installation_date
         }))
 
         return {

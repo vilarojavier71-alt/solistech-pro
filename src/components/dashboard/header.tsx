@@ -44,7 +44,7 @@ export function DashboardHeader({ user }: { user: any }) {
     }
 
     return (
-        <header className="flex h-16 items-center justify-between border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-6" id="dashboard-header">
+        <header className="flex h-16 items-center justify-between border-b bg-background px-6" id="dashboard-header">
             <div className="flex items-center gap-4">
                 {/* Breadcrumbs or page title could go here */}
             </div>

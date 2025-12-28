@@ -31,9 +31,15 @@ export async function getCustomersForSelect() {
 }
 
 export async function getTeamForSelect(roles: string[]) {
+    const user = await getCurrentUserWithRole()
+    if (!user || !user.organizationId) return { data: [], error: 'No autenticado' }
+
     try {
         const team = await prisma.user.findMany({
-            where: { role: { in: roles } },
+            where: {
+                role: { in: roles },
+                organization_id: user.organizationId // ✅ FIXED: Enforce tenant isolation
+            },
             select: { id: true, full_name: true, role: true },
             orderBy: { full_name: 'asc' }
         })

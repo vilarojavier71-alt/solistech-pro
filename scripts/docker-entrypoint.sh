@@ -101,8 +101,9 @@ run_migrations() {
   log "INFO" "docker-entrypoint" "run_migrations" "Running database migrations"
   
   npx prisma@5.10 migrate deploy || {
-    log "WARN" "docker-entrypoint" "run_migrations" \
-        "Migration failed - database may already be up to date"
+    log "ERROR" "docker-entrypoint" "run_migrations" \
+        "Migration failed - preventing startup to protect data integrity"
+    exit 1
   }
   
   log "INFO" "docker-entrypoint" "run_migrations" "Migration check complete"

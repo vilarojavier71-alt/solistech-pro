@@ -4,10 +4,12 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
+
 interface PageShellProps extends React.HTMLAttributes<HTMLDivElement> {
     title?: string;
     description?: string;
     action?: React.ReactNode;
+    backButton?: React.ReactNode;
     children: React.ReactNode;
     fullWidth?: boolean;
 }
@@ -16,6 +18,7 @@ export function PageShell({
     title,
     description,
     action,
+    backButton,
     children,
     fullWidth = false,
     className,
@@ -36,28 +39,32 @@ export function PageShell({
                 )}
             >
                 {/* Header Section */}
-                {(title || action) && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
-                        className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-                    >
-                        <div className="space-y-1.5">
-                            {title && (
-                                <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-gradient-silver">
-                                    {title}
-                                </h1>
-                            )}
-                            {description && (
-                                <p className="text-muted-foreground text-lg">
-                                    {description}
-                                </p>
-                            )}
+                {/* Header Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                >
+                    {backButton && <div className="mb-4">{backButton}</div>}
+
+                    {(title || action) && (
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div className="space-y-1.5">
+                                {title && (
+                                    <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl text-gradient-silver">
+                                        {title}
+                                    </h1>
+                                )}
+                                {description && (
+                                    <p className="text-muted-foreground text-lg">
+                                        {description}
+                                    </p>
+                                )}
+                            </div>
+                            {action && <div className="flex items-center gap-2">{action}</div>}
                         </div>
-                        {action && <div className="flex items-center gap-2">{action}</div>}
-                    </motion.div>
-                )}
+                    )}
+                </motion.div>
 
                 {/* Content Section */}
                 <motion.div
