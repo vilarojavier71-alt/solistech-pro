@@ -5,8 +5,7 @@ import { OnboardingProvider } from "@/components/providers/onboarding-provider"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { MobileMenu } from "@/components/dashboard/mobile-menu"
-import { OnboardingTourInit } from "@/components/onboarding/tour-init"
-import { TourOverlay } from "@/components/onboarding/tour-overlay"
+import { OnboardingTour } from "@/components/onboarding/onboarding-tour-driver"
 import { cn } from "@/lib/utils"
 
 function DashboardContent({ children, user }: { children: React.ReactNode, user: any }) {
@@ -43,8 +42,7 @@ function DashboardContent({ children, user }: { children: React.ReactNode, user:
                 {/* Logic moved to DashboardHeader as per previous step, but ensuring layout structure is clean */}
             </div>
 
-            <OnboardingTourInit />
-            <TourOverlay />
+            <OnboardingTour />
         </div>
     )
 }
