@@ -16,13 +16,13 @@ import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { createQuickLead } from "@/lib/actions/crm"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner" // Fixed import
 import { useRouter } from "next/navigation"
 
 export function AddLeadDialog() {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { toast } = useToast()
+    // const { toast } = useToast() // Removed hook
     const router = useRouter()
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -32,17 +32,14 @@ export function AddLeadDialog() {
 
         try {
             await createQuickLead(formData)
-            toast({
-                title: "Lead creado",
-                description: "El nuevo lead ha sido añadido al pipeline.",
+            toast.success("Lead creado", {
+                description: "El nuevo lead ha sido añadido al pipeline."
             })
             setOpen(false)
             router.refresh()
         } catch (error) {
-            toast({
-                title: "Error",
-                description: "No se pudo crear el lead.",
-                variant: "destructive"
+            toast.error("Error", {
+                description: "No se pudo crear el lead."
             })
         } finally {
             setLoading(false)

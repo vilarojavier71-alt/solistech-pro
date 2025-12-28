@@ -16,13 +16,13 @@ import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
 import { useState } from "react"
 import { createQuote } from "@/lib/actions/quotes"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner" // Fixed import
 import { useRouter } from "next/navigation"
 
 export function CreateQuoteDialog() {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const { toast } = useToast()
+    // const { toast } = useToast() // Removed hook
     const router = useRouter()
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -32,17 +32,14 @@ export function CreateQuoteDialog() {
 
         try {
             const quote = await createQuote(formData)
-            toast({
-                title: "Presupuesto creado",
-                description: `Se ha generado el presupuesto ${quote.quote_number}`,
+            toast.success("Presupuesto creado", {
+                description: `Se ha generado el presupuesto ${quote.quote_number}`
             })
             setOpen(false)
             router.push(`/dashboard/quotes/${quote.id}`) // Redirect to editor
         } catch (error) {
-            toast({
-                title: "Error",
-                description: "No se pudo crear el presupuesto.",
-                variant: "destructive"
+            toast.error("Error", {
+                description: "No se pudo crear el presupuesto."
             })
             setLoading(false)
         }

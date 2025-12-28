@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Send, CheckCircle, AlertCircle, FileText } from 'lucide-react'
 import { searchHelpArticles, createTicket } from '@/lib/actions/help'
-// import { useToast } from "@/components/ui/use-toast" // Assume UI components exist
+
 
 interface DeflectionFormProps {
     categories: { slug: string, name: string }[]

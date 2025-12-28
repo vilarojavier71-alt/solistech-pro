@@ -134,3 +134,28 @@ export async function getQuoteTargets() {
     return { leads, customers }
 }
 
+export async function createQuote(formData: FormData) {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.organizationId) throw new Error("Unauthorized")
+
+    const title = formData.get('title') as string
+    // const customerId = formData.get('customerId') as string // TODO: Implement in dialog
+
+    const count = await prisma.quote.count({ where: { organization_id: session.user.organizationId } })
+    const quoteNumber = `Q-${new Date().getFullYear()}-${String(count + 1).padStart(4, '0')}`
+
+    // Minimal Draft Creation
+    const quote = await prisma.quote.create({
+        data: {
+            organization_id: session.user.organizationId,
+            quote_number: quoteNumber,
+            title: title || `Presupuesto ${quoteNumber}`,
+            status: 'draft',
+            created_by: session.user.id,
+        }
+    })
+
+    revalidatePath('/dashboard/quotes')
+    return quote
+}
+
